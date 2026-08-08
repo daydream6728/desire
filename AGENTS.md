@@ -49,6 +49,8 @@ GitHub events) or in interactive chats, recorded as agent comments with verbatim
 quotes.
 
 Branch names carry nothing: use the branch you were assigned or open a new one.
+In MEMORY_REPO the open PR's branch wins over the assigned one, since only one
+memory PR is open at a time.
 
 **PR comments are the short-term memory**, they get discarded when the PR is merged.
 **Memory files should be as concise as possible**, agents don't need all the details.

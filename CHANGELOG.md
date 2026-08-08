@@ -2,6 +2,18 @@
 
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 
+## 2026-08-08
+
+**The open memory PR's branch wins over the assigned one** ([#45](https://github.com/toumix/desire/pull/45)) —
+USER's ruling on [#44](https://github.com/toumix/desire/issues/44), verbatim `1`: the first of three
+options, *one-PR rule wins, drop "use the branch you were assigned" for MEMORY_REPO, branch is
+whatever the open PR uses*. The scheduler hands each routine a fresh memory branch every fire, so
+"use the branch you were assigned" and "push to the open PR" could not both be obeyed once a PR was
+open — the second pileup in two days traceable to the branch convention. Narrows the branch clause
+rather than replacing it: outside MEMORY_REPO the assigned branch still stands. The day-boundary
+half of #44 — a PR titled with yesterday's date, still the only one open today — is unruled, so the
+issue stays open for it.
+
 ## 2026-08-06
 
 **One memory PR open at a time, not a stack** ([#43](https://github.com/toumix/desire/pull/43)) —
