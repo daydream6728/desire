@@ -2,6 +2,21 @@
 
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 
+## 2026-08-10
+
+**Name a pull request, don't just number it** ([#47](https://github.com/toumix/desire/pull/47)) —
+USER on the memory board PR of 08-09 ([memory#53](https://github.com/toumix/memory/pull/53)),
+verbatim: *I don't know PR numbers by heart please stop using them so much, or at least the first
+time you use it in a comment or any context give me a short description*. Applies everywhere, not
+just to comments: the board and the turn files are the worst offenders, being almost entirely
+numbers. New rule, replaces nothing.
+
+Same PR fixes `check-approval.sh`, which only ever queried `pulls/comments`, i.e. review comments
+attached to a line of the diff. A 🚀 on a plain PR comment lives under `issues/comments` and the
+script reported it as *not approved* — which is what it did to the reaction unblocking the Kleisli
+trace ([discopy#443](https://github.com/discopy/discopy/pull/443)), found by reading the reaction
+count off the comment listing instead. It now queries both.
+
 ## 2026-08-06
 
 **One memory PR open at a time, not a stack** ([#43](https://github.com/toumix/desire/pull/43)) —
