@@ -11,6 +11,11 @@ time you use it in a comment or any context give me a short description*. Applie
 just to comments: the board and the turn files are the worst offenders, being almost entirely
 numbers. New rule, replaces nothing.
 
+**Memory PRs open ready for review, not draft** — USER on the board PR of 08-10
+([memory#54](https://github.com/toumix/memory/pull/54)), verbatim: *next time make the memory PRs
+ready from the start, no need for draft mode so I can merge with one click less*. Memory PRs only,
+not work PRs: on discopy a draft is what says a `TODO.md` is still open.
+
 Same PR fixes `check-approval.sh`, which only ever queried `pulls/comments`, i.e. review comments
 attached to a line of the diff. A 🚀 on a plain PR comment lives under `issues/comments` and the
 script reported it as *not approved* — which is what it did to the reaction unblocking the Kleisli

@@ -44,9 +44,9 @@ A turn that stays within one workstream records itself on its dedicated work PR
 and leaves MEMORY_REPO untouched. Only changes that affect other PRs land there.
 One memory PR open at a time: if one is already open, push to it and leave a
 comment on the PR instead of opening another; only open a new one when none is
-open. Feedback happens either as comments on that PR (agents should listen to
-GitHub events) or in interactive chats, recorded as agent comments with verbatim
-quotes.
+open, ready for review rather than draft so USER can merge in one click.
+Feedback happens either as comments on that PR (agents should listen to GitHub
+events) or in interactive chats, recorded as agent comments with verbatim quotes.
 
 Branch names carry nothing: use the branch you were assigned or open a new one.
 
