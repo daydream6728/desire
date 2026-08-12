@@ -13,6 +13,26 @@ prompt PR also opens an issue stating it, closed when the PR merges — an open 
 AGENTS.md already tells every planner to read. Option A of #51's three; option B, copying the
 ruling to the board, was the 08-11 stopgap this replaces, and the board stays state-only.
 
+## 2026-08-10
+
+**Name a pull request, don't just number it** ([#47](https://github.com/toumix/desire/pull/47)) —
+USER on the memory board PR of 08-09 ([memory#53](https://github.com/toumix/memory/pull/53)),
+verbatim: *I don't know PR numbers by heart please stop using them so much, or at least the first
+time you use it in a comment or any context give me a short description*. Applies everywhere, not
+just to comments: the board and the turn files are the worst offenders, being almost entirely
+numbers. New rule, replaces nothing.
+
+**Memory PRs open ready for review, not draft** — USER on the board PR of 08-10
+([memory#54](https://github.com/toumix/memory/pull/54)), verbatim: *next time make the memory PRs
+ready from the start, no need for draft mode so I can merge with one click less*. Memory PRs only,
+not work PRs: on discopy a draft is what says a `TODO.md` is still open.
+
+Same PR fixes `check-approval.sh`, which only ever queried `pulls/comments`, i.e. review comments
+attached to a line of the diff. A 🚀 on a plain PR comment lives under `issues/comments` and the
+script reported it as *not approved* — which is what it did to the reaction unblocking the Kleisli
+trace ([discopy#443](https://github.com/discopy/discopy/pull/443)), found by reading the reaction
+count off the comment listing instead. It now queries both.
+
 ## 2026-08-08
 
 **The open memory PR's branch wins over the assigned one** ([#45](https://github.com/toumix/desire/pull/45)) —
