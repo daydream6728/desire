@@ -2,6 +2,17 @@
 
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 
+## 2026-08-12
+
+**A ruling in a prompt PR is also an open issue** ([#56](https://github.com/toumix/desire/pull/56),
+closes [#51](https://github.com/toumix/desire/issues/51)) — USER's ruling on
+[memory#54](https://github.com/toumix/memory/pull/54), *make the memory PRs ready from the start*,
+lived only in that PR's thread and the unmerged [#47](https://github.com/toumix/desire/pull/47); the
+thread merged away and the ruling went invisible for a day. Now the turn that lands a ruling in a
+prompt PR also opens an issue stating it, closed when the PR merges — an open issue is what
+AGENTS.md already tells every planner to read. Option A of #51's three; option B, copying the
+ruling to the board, was the 08-11 stopgap this replaces, and the board stays state-only.
+
 ## 2026-08-11
 
 **The memory PR is a period, its description is the summary, and the issues get reviewed too**
@@ -24,6 +35,38 @@ The title-and-description halves land in memory's own `AGENTS.md`; the Birdsong 
 every turn read the PR half only, which is why the issues pile up — so this sharpens a rule that
 existed rather than adding one, in the same shape as
 [#52](https://github.com/toumix/desire/issues/52)'s sweep: naming the half that gets skipped.
+
+## 2026-08-10
+
+**Name a pull request, don't just number it** ([#47](https://github.com/toumix/desire/pull/47)) —
+USER on the memory board PR of 08-09 ([memory#53](https://github.com/toumix/memory/pull/53)),
+verbatim: *I don't know PR numbers by heart please stop using them so much, or at least the first
+time you use it in a comment or any context give me a short description*. Applies everywhere, not
+just to comments: the board and the turn files are the worst offenders, being almost entirely
+numbers. New rule, replaces nothing.
+
+**Memory PRs open ready for review, not draft** — USER on the board PR of 08-10
+([memory#54](https://github.com/toumix/memory/pull/54)), verbatim: *next time make the memory PRs
+ready from the start, no need for draft mode so I can merge with one click less*. Memory PRs only,
+not work PRs: on discopy a draft is what says a `TODO.md` is still open.
+
+Same PR fixes `check-approval.sh`, which only ever queried `pulls/comments`, i.e. review comments
+attached to a line of the diff. A 🚀 on a plain PR comment lives under `issues/comments` and the
+script reported it as *not approved* — which is what it did to the reaction unblocking the Kleisli
+trace ([discopy#443](https://github.com/discopy/discopy/pull/443)), found by reading the reaction
+count off the comment listing instead. It now queries both.
+
+## 2026-08-08
+
+**The open memory PR's branch wins over the assigned one** ([#45](https://github.com/toumix/desire/pull/45)) —
+USER's ruling on [#44](https://github.com/toumix/desire/issues/44), verbatim `1`: the first of three
+options, *one-PR rule wins, drop "use the branch you were assigned" for MEMORY_REPO, branch is
+whatever the open PR uses*. The scheduler hands each routine a fresh memory branch every fire, so
+"use the branch you were assigned" and "push to the open PR" could not both be obeyed once a PR was
+open — the second pileup in two days traceable to the branch convention. Narrows the branch clause
+rather than replacing it: outside MEMORY_REPO the assigned branch still stands. The day-boundary
+half of #44 — a PR titled with yesterday's date, still the only one open today — is unruled, so the
+issue stays open for it.
 
 ## 2026-08-06
 
