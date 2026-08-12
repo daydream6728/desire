@@ -5,7 +5,7 @@ What landed on `main`, newest first — when each rule started binding, and what
 ## 2026-08-11
 
 **The memory PR is a period, its description is the summary, and the issues get reviewed too**
-([#56](https://github.com/toumix/desire/pull/56)) — three rulings USER left on
+([#55](https://github.com/toumix/desire/pull/55)) — three rulings USER left on
 [memory#55](https://github.com/toumix/memory/pull/55) and merged in the same breath, which
 discarded the thread carrying them.
 
