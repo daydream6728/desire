@@ -8,8 +8,9 @@ What landed on `main`, newest first — when each rule started binding, and what
 closes [#54](https://github.com/toumix/desire/issues/54)) — USER's *proposal sounds good* on #54:
 the no-reply rule keeps its teeth for anything that changes what we build, but an agent may leave
 one narrow kind of reply on a non-USER thread — a factual status pointing at an artefact that
-already exists, taking no position and accepting no instruction. The thread stays unresolved and
-closing it stays USER's call. Ends the archaeology of telling "unanswered because ignored" from
+already exists, taking no position and accepting no instruction. The issue proposed leaving the
+thread unresolved; USER on this PR, verbatim, *it's fine for you to resolve threads*, so a reply
+whose artefact settles the thread resolves it too. Ends the archaeology of telling "unanswered because ignored" from
 "unanswered because rule 4": daydream6728's three threads were acted on within minutes and could
 never say so.
 
