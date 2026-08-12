@@ -4,7 +4,7 @@ What landed on `main`, newest first — when each rule started binding, and what
 
 ## 2026-08-12
 
-**A factual status reply is not steering** ([#58](https://github.com/toumix/desire/pull/58),
+**A factual status reply is not steering** ([#59](https://github.com/toumix/desire/pull/59),
 closes [#54](https://github.com/toumix/desire/issues/54)) — USER's *proposal sounds good* on #54:
 the no-reply rule keeps its teeth for anything that changes what we build, but an agent may leave
 one narrow kind of reply on a non-USER thread — a factual status pointing at an artefact that
