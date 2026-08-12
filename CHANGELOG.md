@@ -2,6 +2,29 @@
 
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 
+## 2026-08-11
+
+**The memory PR is a period, its description is the summary, and the issues get reviewed too**
+([#56](https://github.com/toumix/desire/pull/56)) — three rulings USER left on
+[memory#55](https://github.com/toumix/memory/pull/55) and merged in the same breath, which
+discarded the thread carrying them.
+
+*Title covers the period, not the opening day.* Replaces "titled with the date alone — one PR a
+day" from the 2026-08-07 naming rule: a memory PR routinely outlives the date it was opened on,
+and the title is extended rather than left stale. This also **settles the open half of
+[#44](https://github.com/toumix/desire/issues/44)** — a PR spanning a day boundary was the anomaly
+that question was about, and it is now the normal case, so there is nothing left to rule.
+
+*The description is the executive summary of the whole period, kept current*, with each agent
+leaving its turn as a comment. Replaces the convention that the opening agent's message stands as
+the description for the PR's life, which made the summary go stale from the second turn onward.
+The title-and-description halves land in memory's own `AGENTS.md`; the Birdsong half is here.
+
+*Review the issues as well as the PRs.* `EVENING.md` already said "reviews the issues and PRs" and
+every turn read the PR half only, which is why the issues pile up — so this sharpens a rule that
+existed rather than adding one, in the same shape as
+[#52](https://github.com/toumix/desire/issues/52)'s sweep: naming the half that gets skipped.
+
 ## 2026-08-06
 
 **One memory PR open at a time, not a stack** ([#43](https://github.com/toumix/desire/pull/43)) —
