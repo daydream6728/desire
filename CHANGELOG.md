@@ -2,6 +2,17 @@
 
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 
+## 2026-08-12
+
+**A ruling in a prompt PR is also an open issue** ([#56](https://github.com/toumix/desire/pull/56),
+closes [#51](https://github.com/toumix/desire/issues/51)) — USER's ruling on
+[memory#54](https://github.com/toumix/memory/pull/54), *make the memory PRs ready from the start*,
+lived only in that PR's thread and the unmerged [#47](https://github.com/toumix/desire/pull/47); the
+thread merged away and the ruling went invisible for a day. Now the turn that lands a ruling in a
+prompt PR also opens an issue stating it, closed when the PR merges — an open issue is what
+AGENTS.md already tells every planner to read. Option A of #51's three; option B, copying the
+ruling to the board, was the 08-11 stopgap this replaces, and the board stays state-only.
+
 ## 2026-08-06
 
 **One memory PR open at a time, not a stack** ([#43](https://github.com/toumix/desire/pull/43)) —
