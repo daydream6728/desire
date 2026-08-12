@@ -4,6 +4,15 @@ What landed on `main`, newest first — when each rule started binding, and what
 
 ## 2026-08-12
 
+**The sweep is a rule: read USER's signal before planning** ([#60](https://github.com/toumix/desire/pull/60),
+closes [#52](https://github.com/toumix/desire/issues/52)) — twice a board concluded "no unblocked
+work" while trusted instructions sat unread, because checkboxes, CI and behind-counts are all state
+the agents wrote themselves. Now every turn runs
+[sweep.sh](.agents/skills/sweep/sweep.sh) over the repos in play before planning: USER comments no
+agent has answered, and APPROVE_EMOJI reacts on bodies as well as comments, across both comment
+endpoints. One reach beyond the issue's sketch: bodies carry reactions too — the day this landed,
+both live approvals were body 🚀s a comments-only sweep would have missed.
+
 **A factual status reply is not steering** ([#59](https://github.com/toumix/desire/pull/59),
 closes [#54](https://github.com/toumix/desire/issues/54)) — USER's *proposal sounds good* on #54:
 the no-reply rule keeps its teeth for anything that changes what we build, but an agent may leave
