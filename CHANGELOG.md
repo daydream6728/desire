@@ -8,7 +8,7 @@ What landed on `main`, newest first — when each rule started binding, and what
 closes [#52](https://github.com/toumix/desire/issues/52)) — twice a board concluded "no unblocked
 work" while trusted instructions sat unread, because checkboxes, CI and behind-counts are all state
 the agents wrote themselves. Now every turn runs
-[sweep.sh](.agents/skills/sweep/sweep.sh) over the repos in play before planning: USER comments no
+[sweep.py](.agents/skills/sweep/sweep.py) over the repos in play before planning: USER comments no
 agent has answered, and APPROVE_EMOJI reacts on bodies as well as comments, across both comment
 endpoints. One reach beyond the issue's sketch: bodies carry reactions too — the day this landed,
 both live approvals were body 🚀s a comments-only sweep would have missed. Replaces

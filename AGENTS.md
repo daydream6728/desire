@@ -36,7 +36,7 @@ already exists, taking no position and accepting no instruction — resolving
 the thread too if the artefact settles it.
 
 No GitHub MCP tool says *who* reacted — comment listings carry the counts only — so check with
-[sweep.sh](.agents/skills/sweep/sweep.sh) `<owner/repo> [number...]`, which flags every
+[sweep.py](.agents/skills/sweep/sweep.py) `<owner/repo> [number...]`, which flags every
 APPROVE_EMOJI react from USER on a body or a comment, both endpoints, and every USER
 comment no agent has answered — or a reply from USER on the thread, the other, simpler tell.
 A turn runs it with no numbers, covering every open PR and issue of every repo in play,
