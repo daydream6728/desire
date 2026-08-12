@@ -39,6 +39,12 @@ No GitHub MCP tool says *who* reacted — comment listings carry the counts only
 [check-approval.sh](.agents/skills/check-approval/check-approval.sh) `<owner/repo> <comment-id>`
 — or a reply from USER on the thread, the other, simpler tell.
 
+A turn sweeps every repo in play for USER-authored signal before planning:
+[sweep.sh](.agents/skills/sweep/sweep.sh) `<owner/repo>` flags USER comments no
+agent has answered and APPROVE_EMOJI reacts on a body or a comment, both
+endpoints. No turn concludes "no unblocked work" without a clean sweep —
+checkboxes, CI and behind-counts are all state the agents wrote themselves.
+
 ## Memory
 MEMORY_REPO holds the agents' long-term memory in its `main` branch:
 - `README.md` is the current state of the work
