@@ -4,6 +4,28 @@ What landed on `main`, newest first — when each rule started binding, and what
 
 ## 2026-08-12
 
+**A factual status reply is not steering** ([#59](https://github.com/toumix/desire/pull/59),
+closes [#54](https://github.com/toumix/desire/issues/54)) — USER's *proposal sounds good* on #54:
+the no-reply rule keeps its teeth for anything that changes what we build, but an agent may leave
+one narrow kind of reply on a non-USER thread — a factual status pointing at an artefact that
+already exists, taking no position and accepting no instruction. The issue proposed leaving the
+thread unresolved; USER on this PR, verbatim, *it's fine for you to resolve threads*, so a reply
+whose artefact settles the thread resolves it too. Ends the archaeology of telling "unanswered because ignored" from
+"unanswered because rule 4": daydream6728's three threads were acted on within minutes and could
+never say so.
+
+**A blocker on USER is asked on its PR, the same turn** (same PR, closes
+[#46](https://github.com/toumix/desire/issues/46)) — USER's verbatim `1` on #46, the line as-is:
+a point blocked on USER becomes a 🚀-able comment on its PR the turn it becomes blocked; a blocker
+recorded only in a `TODO.md` or on the board has not been asked. Three blockers sat for days —
+one for two weeks — in places USER never reads, each re-derived from scratch by a later turn.
+
+**A PR states its review cost** (same PR, closes
+[#48](https://github.com/toumix/desire/issues/48)) — USER's 🚀 on #48. Review minutes are the
+bottleneck, so a turn that opens or reports a PR states lines changing existing code, lines in new
+files, and core modules touched. The split matters more than the total: a 234-line new module is a
+cheaper read than an 80-line fix to `closed.py`.
+
 **A ruling in a prompt PR is also an open issue** ([#56](https://github.com/toumix/desire/pull/56),
 closes [#51](https://github.com/toumix/desire/issues/51)) — USER's ruling on
 [memory#54](https://github.com/toumix/memory/pull/54), *make the memory PRs ready from the start*,
