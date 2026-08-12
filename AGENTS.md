@@ -36,13 +36,11 @@ already exists, taking no position and accepting no instruction — resolving
 the thread too if the artefact settles it.
 
 No GitHub MCP tool says *who* reacted — comment listings carry the counts only — so check with
-[check-approval.sh](.agents/skills/check-approval/check-approval.sh) `<owner/repo> <comment-id>`
-— or a reply from USER on the thread, the other, simpler tell.
-
-A turn sweeps every repo in play for USER-authored signal before planning:
-[sweep.sh](.agents/skills/sweep/sweep.sh) `<owner/repo>` flags USER comments no
-agent has answered and APPROVE_EMOJI reacts on a body or a comment, both
-endpoints. No turn concludes "no unblocked work" without a clean sweep —
+[sweep.sh](.agents/skills/sweep/sweep.sh) `<owner/repo> [number...]`, which flags every
+APPROVE_EMOJI react from USER on a body or a comment, both endpoints, and every USER
+comment no agent has answered — or a reply from USER on the thread, the other, simpler tell.
+A turn runs it with no numbers, covering every open PR and issue of every repo in play,
+before planning: no turn concludes "no unblocked work" without a clean sweep —
 checkboxes, CI and behind-counts are all state the agents wrote themselves.
 
 ## Memory

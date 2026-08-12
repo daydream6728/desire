@@ -11,7 +11,9 @@ the agents wrote themselves. Now every turn runs
 [sweep.sh](.agents/skills/sweep/sweep.sh) over the repos in play before planning: USER comments no
 agent has answered, and APPROVE_EMOJI reacts on bodies as well as comments, across both comment
 endpoints. One reach beyond the issue's sketch: bodies carry reactions too — the day this landed,
-both live approvals were body 🚀s a comments-only sweep would have missed.
+both live approvals were body 🚀s a comments-only sweep would have missed. Replaces
+`check-approval.sh` (USER: *do we need two scripts?*): its one question — did USER 🚀 this
+comment? — is the sweep run on that comment's PR or issue, read off one line of output.
 
 **A factual status reply is not steering** ([#59](https://github.com/toumix/desire/pull/59),
 closes [#54](https://github.com/toumix/desire/issues/54)) — USER's *proposal sounds good* on #54:
