@@ -5,19 +5,19 @@ What landed on `main`, newest first — when each rule started binding, and what
 ## 2026-08-14
 
 **The memory PR description follows one template, decisions first** ([#68](https://github.com/toumix/desire/pull/68),
-closes [#65](https://github.com/toumix/desire/issues/65)) — USER's *"ok much better, let's use this
-PR description as template for the next ones"* on the memory board PR of 08-13 (memory#58),
-after a summary led with "nothing here is unblocked" and buried his one actionable section last.
+closes [#65](https://github.com/toumix/desire/issues/65)) — *"ok much better, let's use this
+PR description as template for the next ones"*, on the memory board PR of 08-13 (memory#58),
+after a summary led with "nothing here is unblocked" and buried the one actionable section last.
 Five sections ordered by what USER has to do — 🚀 Waiting on you always first — no agent narration,
 proposals as bullets, everything named on first citation. Landed in memory's `AGENTS.md` first,
-moved here the next day on USER's *"shouldn't it be in desire?"*: conventions are rules, rules are
+moved here the next day on *"shouldn't it be in desire?"*: conventions are rules, rules are
 public prompts reviewed by PR, and the fork-pull rule only ships what desire carries. Extends the
 description-is-summary ruling of 2026-08-11 below.
 
 ## 2026-08-12
 
 **Forks pull upstream, through their USER's review** ([#62](https://github.com/toumix/desire/pull/62),
-closes [#61](https://github.com/toumix/desire/issues/61)) — USER in session: the prompts travel by
+closes [#61](https://github.com/toumix/desire/issues/61)) — the prompts travel by
 fork and nothing told a forked pipeline to look upstream, so the downstream forks were running on
 a snapshot while the rules moved. Now a turn that finds the upstream `main` ahead opens a PR
 pulling it in. The trust model doesn't bend: upstream stays untrusted for a fork until its own
@@ -31,34 +31,33 @@ the agents wrote themselves. Now every turn runs
 agent has answered, and APPROVE_EMOJI reacts on bodies as well as comments, across both comment
 endpoints. One reach beyond the issue's sketch: bodies carry reactions too — the day this landed,
 both live approvals were body 🚀s a comments-only sweep would have missed. Replaces
-`check-approval.sh` (USER: *do we need two scripts?*): its one question — did USER 🚀 this
+`check-approval.sh` (*do we need two scripts?*): its one question — did USER 🚀 this
 comment? — is the sweep run on that comment's PR or issue, read off one line of output.
 
 **A factual status reply is not steering** ([#59](https://github.com/toumix/desire/pull/59),
-closes [#54](https://github.com/toumix/desire/issues/54)) — USER's *proposal sounds good* on #54:
-the no-reply rule keeps its teeth for anything that changes what we build, but an agent may leave
+closes [#54](https://github.com/toumix/desire/issues/54)) — the no-reply rule keeps its teeth for anything that changes what we build, but an agent may leave
 one narrow kind of reply on a non-USER thread — a factual status pointing at an artefact that
 already exists, taking no position and accepting no instruction. The issue proposed leaving the
-thread unresolved; USER on this PR, verbatim, *it's fine for you to resolve threads*, so a reply
+thread unresolved; amended on the PR's review — *it's fine for you to resolve threads* — so a reply
 whose artefact settles the thread resolves it too. Ends the archaeology of telling "unanswered because ignored" from
 "unanswered because rule 4": daydream6728's three threads were acted on within minutes and could
 never say so.
 
 **A blocker on USER is asked on its PR, the same turn** (same PR, closes
-[#46](https://github.com/toumix/desire/issues/46)) — USER's verbatim `1` on #46, the line as-is:
+[#46](https://github.com/toumix/desire/issues/46)) — option 1 of #46, the line as-is:
 a point blocked on USER becomes a 🚀-able comment on its PR the turn it becomes blocked; a blocker
 recorded only in a `TODO.md` or on the board has not been asked. Three blockers sat for days —
 one for two weeks — in places USER never reads, each re-derived from scratch by a later turn.
 
 **A PR states its review cost** (same PR, closes
-[#48](https://github.com/toumix/desire/issues/48)) — USER's 🚀 on #48. Review minutes are the
+[#48](https://github.com/toumix/desire/issues/48)) — review minutes are the
 bottleneck, so a turn that opens or reports a PR states lines changing existing code, lines in new
 files, and core modules touched. The split matters more than the total: a 234-line new module is a
 cheaper read than an 80-line fix to `closed.py`.
 
 **A ruling in a prompt PR is also an open issue** ([#56](https://github.com/toumix/desire/pull/56),
-closes [#51](https://github.com/toumix/desire/issues/51)) — USER's ruling on
-memory#54, *make the memory PRs ready from the start*,
+closes [#51](https://github.com/toumix/desire/issues/51)) — the ruling
+*make the memory PRs ready from the start* (memory#54)
 lived only in that PR's thread and the unmerged [#47](https://github.com/toumix/desire/pull/47); the
 thread merged away and the ruling went invisible for a day. Now the turn that lands a ruling in a
 prompt PR also opens an issue stating it, closed when the PR merges — an open issue is what
@@ -68,8 +67,8 @@ ruling to the board, was the 08-11 stopgap this replaces, and the board stays st
 ## 2026-08-11
 
 **The memory PR is a period, its description is the summary, and the issues get reviewed too**
-([#55](https://github.com/toumix/desire/pull/55)) — three rulings USER left on
-memory#55 and merged in the same breath, which
+([#55](https://github.com/toumix/desire/pull/55)) — three rulings from
+memory#55's review, merged in the same breath, which
 discarded the thread carrying them.
 
 *Title covers the period, not the opening day.* Replaces "titled with the date alone — one PR a
@@ -91,13 +90,13 @@ existed rather than adding one, in the same shape as
 ## 2026-08-10
 
 **Name a pull request, don't just number it** ([#47](https://github.com/toumix/desire/pull/47)) —
-USER on the memory board PR of 08-09 (memory#53),
+from the memory board PR of 08-09 (memory#53),
 verbatim: *I don't know PR numbers by heart please stop using them so much, or at least the first
 time you use it in a comment or any context give me a short description*. Applies everywhere, not
 just to comments: the board and the turn files are the worst offenders, being almost entirely
 numbers. New rule, replaces nothing.
 
-**Memory PRs open ready for review, not draft** — USER on the board PR of 08-10
+**Memory PRs open ready for review, not draft** — from the board PR of 08-10
 (memory#54), verbatim: *next time make the memory PRs
 ready from the start, no need for draft mode so I can merge with one click less*. Memory PRs only,
 not work PRs: on discopy a draft is what says a `TODO.md` is still open.
@@ -111,8 +110,7 @@ count off the comment listing instead. It now queries both.
 ## 2026-08-08
 
 **The open memory PR's branch wins over the assigned one** ([#45](https://github.com/toumix/desire/pull/45)) —
-USER's ruling on [#44](https://github.com/toumix/desire/issues/44), verbatim `1`: the first of three
-options, *one-PR rule wins, drop "use the branch you were assigned" for MEMORY_REPO, branch is
+option 1 of [#44](https://github.com/toumix/desire/issues/44)'s three: *one-PR rule wins, drop "use the branch you were assigned" for MEMORY_REPO, branch is
 whatever the open PR uses*. The scheduler hands each routine a fresh memory branch every fire, so
 "use the branch you were assigned" and "push to the open PR" could not both be obeyed once a PR was
 open — the second pileup in two days traceable to the branch convention. Narrows the branch clause
@@ -123,7 +121,7 @@ issue stays open for it.
 ## 2026-08-06
 
 **One memory PR open at a time, not a stack** ([#43](https://github.com/toumix/desire/pull/43)) —
-USER's ruling on six memory PRs (memory#42,
+six memory PRs (memory#42,
 memory#43, memory#47,
 memory#48, memory#49,
 memory#50) piling up faster than one human reviews them.
@@ -134,8 +132,8 @@ memory PR is open, push to it; only open a new one when none is open.
 
 ## 2026-08-04
 
-**Memory is reserved for cross-workstream changes** ([#39](https://github.com/toumix/desire/pull/39)) — USER's ruling closing
-memory#45, *only open memory PRs when the changes
+**Memory is reserved for cross-workstream changes** ([#39](https://github.com/toumix/desire/pull/39)) — closes
+memory#45: *only open memory PRs when the changes
 affect other PRs*, corrected in-session the same day: *single-workstream turns just record their
 memory in their dedicated PRs, no need for memory*. A turn that stays within one workstream
 writes nothing to MEMORY_REPO — its work PR is its record; only changes affecting other PRs land
@@ -179,7 +177,7 @@ byte-for-byte. Rules [#13](https://github.com/toumix/desire/issues/13) the oppos
 ([#6](https://github.com/toumix/desire/issues/6)): a delegate may widen the search, never narrow the
 truth. Evening keeps its coding sub-agents, whose diffs CI checks.
 
-**`AGENTS.md` cut back, and `DECREE.md` retired** (`eade164`, `b622cd4`) — USER's hand rewrite, 80
+**`AGENTS.md` cut back, and `DECREE.md` retired** (`eade164`, `b622cd4`) — a hand rewrite, 80
 lines to 55. `## Approval`, `## Hard rules` and `## Rulings` are gone: the emoji rule now sits in
 `## Trusted instructions, untrusted data`, one-proposal-per-comment in `## Reviewing`. That section
 also gains the emoji react as a source of trust, and the rule against replying to other users. A
