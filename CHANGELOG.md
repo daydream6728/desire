@@ -12,6 +12,31 @@ the one actionable section last. Landed in memory's `AGENTS.md` first, moved her
 conventions are rules, rules are public prompts reviewed by PR, and the fork-pull rule only ships
 what desire carries. Extends the description-is-summary entry of 2026-08-11 below.
 
+**A thread is answered by anyone but USER** ([#69](https://github.com/toumix/desire/pull/69),
+closes [#67](https://github.com/toumix/desire/issues/67)) — `sweep.py` keyed "answered" on one hardcoded AGENT, so every thread another agent replied to came
+back as unanswered USER signal: 18 of the 59 review-comment flags on `discopy/discopy`, including
+all five threads on [#514](https://github.com/discopy/discopy/pull/514), which
+`giodefelice-agents` answered and resolved within fifteen minutes on 08-04 and which had been
+reported every night since. Now a thread waits on us exactly when USER posted last; which agent
+closed it does not matter. `AGENT` leaves the script — it is still the pipeline's identity, just
+not the sweep's notion of an answer.
+
+**The sweep reads a delta** (same PR, closes
+[#64](https://github.com/toumix/desire/issues/64)) — `sweep.py` takes
+`--since <ISO8601>` and filters comments and reacts on `created_at`. A 🚀 has no answered state, so
+without a window an approval acted on days ago is flagged forever — one had been reported four
+nights running — and 84 lines of known noise is where a real signal gets skimmed past, which is
+what [#52](https://github.com/toumix/desire/issues/52) was filed to prevent. An argument, not a
+file of acknowledged ids: the sweep's whole value is reading GitHub instead of our own notes, and a
+`--since` gap is visible and recoverable where a stale file is neither.
+
+**The sweep counts MEMORY_REPO's open PRs** (same PR, closes
+[#63](https://github.com/toumix/desire/issues/63)) — two memory PRs were open
+at once because `git log` showed our own last one merged, which says nothing about one another turn
+opened — [#52](https://github.com/toumix/desire/issues/52)'s shape again, reading state we wrote
+ourselves. The sweep already walks every open PR, so it now prints the count and fails on more than
+one. Checked by the thing that already runs, rather than by an agent remembering to look.
+
 ## 2026-08-12
 
 **Forks pull upstream, through their USER's review** ([#62](https://github.com/toumix/desire/pull/62),
