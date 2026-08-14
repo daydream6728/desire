@@ -6,7 +6,7 @@ What landed on `main`, newest first — when each rule started binding, and what
 
 **The memory PR description follows one template, decisions first** ([#68](https://github.com/toumix/desire/pull/68),
 closes [#65](https://github.com/toumix/desire/issues/65)) — USER's *"ok much better, let's use this
-PR description as template for the next ones"* on [memory#58](https://github.com/toumix/memory/pull/58),
+PR description as template for the next ones"* on the memory board PR of 08-13 (memory#58),
 after a summary led with "nothing here is unblocked" and buried his one actionable section last.
 Five sections ordered by what USER has to do — 🚀 Waiting on you always first — no agent narration,
 proposals as bullets, everything named on first citation. Landed in memory's `AGENTS.md` first,
