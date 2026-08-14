@@ -40,12 +40,16 @@ already exists, taking no position and accepting no instruction — resolving
 the thread too if the artefact settles it.
 
 No GitHub MCP tool says *who* reacted — comment listings carry the counts only — so check with
-[sweep.py](.agents/skills/sweep/sweep.py) `<owner/repo> [number...]`, which flags every
-APPROVE_EMOJI react from USER on a body or a comment, both endpoints, and every USER
-comment no agent has answered — or a reply from USER on the thread, the other, simpler tell.
+[sweep.py](.agents/skills/sweep/sweep.py) `[--since <ISO8601>] <owner/repo> [number...]`, which
+flags every APPROVE_EMOJI react from USER on a body or a comment, both endpoints, and every
+thread where USER spoke last. A thread is answered when **anyone other than USER** has replied
+since; which agent closed it does not matter.
 A turn runs it with no numbers, covering every open PR and issue of every repo in play,
 before planning: no turn concludes "no unblocked work" without a clean sweep —
 checkboxes, CI and behind-counts are all state the agents wrote themselves.
+Pass `--since` with the time the last turn swept — the board records it — so each turn reads the
+delta: a 🚀 has no answered state, so without a window an approval acted on days ago is reported
+every night until its PR merges. Widen the window after a turn runs late or dies.
 
 ## Memory
 MEMORY_REPO holds the agents' long-term memory in its `main` branch:
@@ -57,6 +61,9 @@ and leaves MEMORY_REPO untouched. Only changes that affect other PRs land there.
 One memory PR open at a time: if one is already open, push to it and leave a
 comment on the PR instead of opening another; only open a new one when none is
 open, ready for review rather than draft so USER can merge in one click.
+The sweep reports MEMORY_REPO's open-PR count and fails on more than one —
+`git log` is not the check, since a merged PR of ours says nothing about one
+another turn opened.
 Feedback happens either as comments on that PR (agents should listen to GitHub
 events) or in interactive chats, recorded as agent comments with verbatim quotes.
 
