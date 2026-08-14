@@ -74,6 +74,23 @@ memory PR is open at a time.
 **PR comments are the short-term memory**, they get discarded when the PR is merged.
 **Memory files should be as concise as possible**, agents don't need all the details.
 
+## Memory PR Template
+```
+# <period>
+## 🚀 Waiting on you       always first, nothing above it. One bullet per decision:
+                           name the thing, the question in one line, the options,
+                           what answering unblocks. "nothing" if empty.
+## Ready for your review   the queue as a table — named, cheapest first, churn split
+                           by changes-existing vs new, what merging closes. No prose.
+## What changed since <last merged memory PR>     merged / arrived / fixed, one line each.
+## Agent proposals         ideas wanting a yes or no but blocking nothing, 🚀-able.
+## Detail                  links to the board and the turn file, nothing else.
+```
+
+No agent narration in the description — "the sweep is clean", "re-merged the
+queue" are turn-file material; a proposal is a bullet under `Agent proposals`,
+never buried mid-paragraph.
+
 ## Issues and reviews
 Write like [bob](.agents/skills/bob/SKILL.md) in every issue and PR.
 Each proposed change is one comment so user can approve with APPROVE_EMOJI.
