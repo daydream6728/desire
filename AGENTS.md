@@ -11,6 +11,10 @@
 - MEMORY_REPO   = "toumix/memory"
 - DESIRE_REPO   = "toumix/desire"
 - APPROVE_EMOJI = "rocket"
+- ADOPTED_PRS   = {"discopy/discopy": [347, 363, 366, 393, 399, 400, 401, 416, 442, 443]}
+
+ADOPTED_PRS maps each repo to pull requests the routines treat as AGENT-owned
+wherever authorship decides — sweeps, scans and the board.
 
 ## Prompts public, memory private
 DESIRE_REPO is public, owned by USER and only its protected branch `main` is TRUSTED.

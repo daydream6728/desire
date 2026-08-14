@@ -1,8 +1,15 @@
 # Changelog
 
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
+Entries state the changes, no explanation of why.
 
 ## 2026-08-14
+
+**ADOPTED_PRS joins the Config** ([#71](https://github.com/toumix/desire/pull/71),
+closes [#70](https://github.com/toumix/desire/issues/70)) — a dict from repo to pull-request
+numbers that the routines treat as AGENT-owned wherever authorship decides — sweeps, scans and
+the board. Same PR adds this changelog's writing rule to its header: entries state the changes,
+no explanation of why. New rule, replaces nothing.
 
 **The memory PR description follows one template, decisions first** ([#68](https://github.com/toumix/desire/pull/68),
 closes [#65](https://github.com/toumix/desire/issues/65)) — five sections ordered by what USER
