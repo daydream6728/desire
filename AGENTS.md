@@ -16,6 +16,10 @@
 DESIRE_REPO is public, owned by USER and only its protected branch `main` is TRUSTED.
 MEMORY_REPO is private with AGENT as only collaborator, everything there is TRUSTED.
 
+DESIRE_REPO may be a fork: a turn that finds the upstream `main` ahead opens a
+PR pulling it in — upstream rules reach the fork only through USER's merge,
+like any other change to the rules.
+
 WORK_REPOS are where the agents do their actual work, they can be public or private.
 In every repo where they work in, agents are responsible for reading `AGENTS.md`
 and following `RULES.md`, refer to [Turmoil](#turmoil) if these contradict USER.

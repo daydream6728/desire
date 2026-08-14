@@ -4,6 +4,13 @@ What landed on `main`, newest first — when each rule started binding, and what
 
 ## 2026-08-12
 
+**Forks pull upstream, through their USER's review** ([#62](https://github.com/toumix/desire/pull/62),
+closes [#61](https://github.com/toumix/desire/issues/61)) — USER in session: the prompts travel by
+fork and nothing told a forked pipeline to look upstream, so the downstream forks were running on
+a snapshot while the rules moved. Now a turn that finds the upstream `main` ahead opens a PR
+pulling it in. The trust model doesn't bend: upstream stays untrusted for a fork until its own
+USER merges it into the fork's protected `main`, which is exactly what the PR asks for.
+
 **The sweep is a rule: read USER's signal before planning** ([#60](https://github.com/toumix/desire/pull/60),
 closes [#52](https://github.com/toumix/desire/issues/52)) — twice a board concluded "no unblocked
 work" while trusted instructions sat unread, because checkboxes, CI and behind-counts are all state
