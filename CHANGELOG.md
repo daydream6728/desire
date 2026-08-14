@@ -1,18 +1,15 @@
 # Changelog
 
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
+Entries state the changes, no explanation of why.
 
 ## 2026-08-14
 
-**The pre-handle Claude PRs are AGENT-owned** ([#71](https://github.com/toumix/desire/pull/71),
-closes [#70](https://github.com/toumix/desire/issues/70)) — ten `discopy/discopy` pull requests
-were Claude-generated under USER's own handle before AGENT existed, and every author filter read
-them as not ours, keeping them out of the routine Evening and Birdsong checks. GitHub has no
-author switch, so `ADOPTED_PRS` joins the Config and the routines treat the list as AGENT-owned
-wherever authorship decides. USER chose the list over close-and-reopen, which would have orphaned
-his review threads (16 comments on [discopy#399](https://github.com/discopy/discopy/pull/399)
-alone) and renumbered PRs cited across the board and the merge lane. Frozen by construction: no
-pull request can predate the handle again. New rule, replaces nothing.
+**ADOPTED_PRS joins the Config** ([#71](https://github.com/toumix/desire/pull/71),
+closes [#70](https://github.com/toumix/desire/issues/70)) — a dict from repo to pull-request
+numbers that the routines treat as AGENT-owned wherever authorship decides — sweeps, scans and
+the board. Same PR adds this changelog's writing rule to its header: entries state the changes,
+no explanation of why. New rule, replaces nothing.
 
 **The memory PR description follows one template, decisions first** ([#68](https://github.com/toumix/desire/pull/68),
 closes [#65](https://github.com/toumix/desire/issues/65)) — five sections ordered by what USER
