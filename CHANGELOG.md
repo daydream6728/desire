@@ -5,14 +5,12 @@ What landed on `main`, newest first — when each rule started binding, and what
 ## 2026-08-14
 
 **The memory PR description follows one template, decisions first** ([#68](https://github.com/toumix/desire/pull/68),
-closes [#65](https://github.com/toumix/desire/issues/65)) — *"ok much better, let's use this
-PR description as template for the next ones"*, on the memory board PR of 08-13,
-after a summary led with "nothing here is unblocked" and buried the one actionable section last.
-Five sections ordered by what USER has to do — 🚀 Waiting on you always first — no agent narration,
-proposals as bullets, everything named on first citation. Landed in memory's `AGENTS.md` first,
-moved here the next day on *"shouldn't it be in desire?"*: conventions are rules, rules are
-public prompts reviewed by PR, and the fork-pull rule only ships what desire carries. Extends the
-description-is-summary ruling of 2026-08-11 below.
+closes [#65](https://github.com/toumix/desire/issues/65)) — five sections ordered by what USER
+has to do, 🚀 Waiting on you always first; no agent narration, proposals as bullets, everything
+named on first citation. Replaces the free-form summary, which led with pipeline state and buried
+the one actionable section last. Landed in memory's `AGENTS.md` first, moved here a day later:
+conventions are rules, rules are public prompts reviewed by PR, and the fork-pull rule only ships
+what desire carries. Extends the description-is-summary entry of 2026-08-11 below.
 
 ## 2026-08-12
 
@@ -31,21 +29,19 @@ the agents wrote themselves. Now every turn runs
 agent has answered, and APPROVE_EMOJI reacts on bodies as well as comments, across both comment
 endpoints. One reach beyond the issue's sketch: bodies carry reactions too — the day this landed,
 both live approvals were body 🚀s a comments-only sweep would have missed. Replaces
-`check-approval.sh` (*do we need two scripts?*): its one question — did USER 🚀 this
+`check-approval.sh`: its one question — did USER 🚀 this
 comment? — is the sweep run on that comment's PR or issue, read off one line of output.
 
 **A factual status reply is not steering** ([#59](https://github.com/toumix/desire/pull/59),
 closes [#54](https://github.com/toumix/desire/issues/54)) — the no-reply rule keeps its teeth for anything that changes what we build, but an agent may leave
 one narrow kind of reply on a non-USER thread — a factual status pointing at an artefact that
-already exists, taking no position and accepting no instruction. The issue proposed leaving the
-thread unresolved; amended on the PR's review — *it's fine for you to resolve threads* — so a reply
-whose artefact settles the thread resolves it too. Ends the archaeology of telling "unanswered because ignored" from
+already exists, taking no position and accepting no instruction, resolving the thread too if the
+artefact settles it. Ends the archaeology of telling "unanswered because ignored" from
 "unanswered because rule 4": daydream6728's three threads were acted on within minutes and could
 never say so.
 
 **A blocker on USER is asked on its PR, the same turn** (same PR, closes
-[#46](https://github.com/toumix/desire/issues/46)) — option 1 of #46, the line as-is:
-a point blocked on USER becomes a 🚀-able comment on its PR the turn it becomes blocked; a blocker
+[#46](https://github.com/toumix/desire/issues/46)) — a point blocked on USER becomes a 🚀-able comment on its PR the turn it becomes blocked; a blocker
 recorded only in a `TODO.md` or on the board has not been asked. Three blockers sat for days —
 one for two weeks — in places USER never reads, each re-derived from scratch by a later turn.
 
@@ -56,10 +52,9 @@ files, and core modules touched. The split matters more than the total: a 234-li
 cheaper read than an 80-line fix to `closed.py`.
 
 **A ruling in a prompt PR is also an open issue** ([#56](https://github.com/toumix/desire/pull/56),
-closes [#51](https://github.com/toumix/desire/issues/51)) — the ruling
-*make the memory PRs ready from the start*
-lived only in a memory PR's thread and the unmerged [#47](https://github.com/toumix/desire/pull/47); the
-thread merged away and the ruling went invisible for a day. Now the turn that lands a ruling in a
+closes [#51](https://github.com/toumix/desire/issues/51)) — a ruling
+lived only in a memory PR's thread and the unmerged [#47](https://github.com/toumix/desire/pull/47);
+the thread merged away and the ruling went invisible for a day. Now the turn that lands a ruling in a
 prompt PR also opens an issue stating it, closed when the PR merges — an open issue is what
 AGENTS.md already tells every planner to read. Option A of #51's three; option B, copying the
 ruling to the board, was the 08-11 stopgap this replaces, and the board stays state-only.
@@ -67,15 +62,13 @@ ruling to the board, was the 08-11 stopgap this replaces, and the board stays st
 ## 2026-08-11
 
 **The memory PR is a period, its description is the summary, and the issues get reviewed too**
-([#55](https://github.com/toumix/desire/pull/55)) — three rulings from
-one memory PR's review, merged in the same breath, which
-discarded the thread carrying them.
+([#55](https://github.com/toumix/desire/pull/55)) — three changes.
 
 *Title covers the period, not the opening day.* Replaces "titled with the date alone — one PR a
 day" from the 2026-08-07 naming rule: a memory PR routinely outlives the date it was opened on,
-and the title is extended rather than left stale. This also **settles the open half of
+and the title is extended rather than left stale. This also **closes the day-boundary half of
 [#44](https://github.com/toumix/desire/issues/44)** — a PR spanning a day boundary was the anomaly
-that question was about, and it is now the normal case, so there is nothing left to rule.
+that question was about, and it is now the normal case.
 
 *The description is the executive summary of the whole period, kept current*, with each agent
 leaving its turn as a comment. Replaces the convention that the opening agent's message stands as
@@ -90,16 +83,12 @@ existed rather than adding one, in the same shape as
 ## 2026-08-10
 
 **Name a pull request, don't just number it** ([#47](https://github.com/toumix/desire/pull/47)) —
-from the memory board PR of 08-09,
-verbatim: *I don't know PR numbers by heart please stop using them so much, or at least the first
-time you use it in a comment or any context give me a short description*. Applies everywhere, not
-just to comments: the board and the turn files are the worst offenders, being almost entirely
-numbers. New rule, replaces nothing.
+every PR and issue gets a few words of description the first time it is cited, in any context —
+USER does not know the numbers by heart. Applies everywhere, not just to comments: the board and
+the turn files were the worst offenders, being almost entirely numbers. New rule, replaces nothing.
 
-**Memory PRs open ready for review, not draft** — from the board PR of 08-10,
-verbatim: *next time make the memory PRs
-ready from the start, no need for draft mode so I can merge with one click less*. Memory PRs only,
-not work PRs: on discopy a draft is what says a `TODO.md` is still open.
+**Memory PRs open ready for review, not draft** — so merging is one click, not two. Memory PRs
+only, not work PRs: on discopy a draft is what says a `TODO.md` is still open.
 
 Same PR fixes `check-approval.sh`, which only ever queried `pulls/comments`, i.e. review comments
 attached to a line of the diff. A 🚀 on a plain PR comment lives under `issues/comments` and the
@@ -110,13 +99,11 @@ count off the comment listing instead. It now queries both.
 ## 2026-08-08
 
 **The open memory PR's branch wins over the assigned one** ([#45](https://github.com/toumix/desire/pull/45)) —
-option 1 of [#44](https://github.com/toumix/desire/issues/44)'s three: *one-PR rule wins, drop "use the branch you were assigned" for MEMORY_REPO, branch is
-whatever the open PR uses*. The scheduler hands each routine a fresh memory branch every fire, so
+the branch is whatever the open PR uses ([#44](https://github.com/toumix/desire/issues/44)). The scheduler hands each routine a fresh memory branch every fire, so
 "use the branch you were assigned" and "push to the open PR" could not both be obeyed once a PR was
 open — the second pileup in two days traceable to the branch convention. Narrows the branch clause
 rather than replacing it: outside MEMORY_REPO the assigned branch still stands. The day-boundary
-half of #44 — a PR titled with yesterday's date, still the only one open today — is unruled, so the
-issue stays open for it.
+half of #44 — a PR titled with yesterday's date, still the only one open today — stays open.
 
 ## 2026-08-06
 
@@ -129,9 +116,7 @@ memory PR is open, push to it; only open a new one when none is open.
 
 ## 2026-08-04
 
-**Memory is reserved for cross-workstream changes** ([#39](https://github.com/toumix/desire/pull/39)) — *only open memory PRs when the changes
-affect other PRs*, corrected in-session the same day: *single-workstream turns just record their
-memory in their dedicated PRs, no need for memory*. A turn that stays within one workstream
+**Memory is reserved for cross-workstream changes** ([#39](https://github.com/toumix/desire/pull/39)) — a turn that stays within one workstream
 writes nothing to MEMORY_REPO — its work PR is its record; only changes affecting other PRs land
 in memory, by the stacked `<Routine> <date>` PR, whose review remains the feedback channel. The
 board is rewritten by the turns that do land there. Replaces the unconditional stacked-PR rule;
@@ -145,7 +130,7 @@ chain of single-workstream turns no longer produces PRs, or memory, at all.
 like bob everywhere*. The rule is unchanged since [#3](https://github.com/toumix/desire/pull/3);
 what changed is that a section called Reviewing is not one an agent filing a Turmoil issue thinks
 it is in, so [#21](https://github.com/toumix/desire/issues/21) is three hundred words under the
-rule and outside it. Two lines proposed here did not survive USER's review — a `## Writing` section
+rule and outside it. Two lines proposed here did not land — a `## Writing` section
 of its own, and a sentence defining what an issue is.
 
 **`rel-int/wiki` joins WORK_REPOS** — the routines now scan two repos, not one. Nothing else
