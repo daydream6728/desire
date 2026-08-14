@@ -6,7 +6,7 @@ What landed on `main`, newest first — when each rule started binding, and what
 
 **The memory PR description follows one template, decisions first** ([#68](https://github.com/toumix/desire/pull/68),
 closes [#65](https://github.com/toumix/desire/issues/65)) — *"ok much better, let's use this
-PR description as template for the next ones"*, on the memory board PR of 08-13 (memory#58),
+PR description as template for the next ones"*, on the memory board PR of 08-13,
 after a summary led with "nothing here is unblocked" and buried the one actionable section last.
 Five sections ordered by what USER has to do — 🚀 Waiting on you always first — no agent narration,
 proposals as bullets, everything named on first citation. Landed in memory's `AGENTS.md` first,
@@ -57,8 +57,8 @@ cheaper read than an 80-line fix to `closed.py`.
 
 **A ruling in a prompt PR is also an open issue** ([#56](https://github.com/toumix/desire/pull/56),
 closes [#51](https://github.com/toumix/desire/issues/51)) — the ruling
-*make the memory PRs ready from the start* (memory#54)
-lived only in that PR's thread and the unmerged [#47](https://github.com/toumix/desire/pull/47); the
+*make the memory PRs ready from the start*
+lived only in a memory PR's thread and the unmerged [#47](https://github.com/toumix/desire/pull/47); the
 thread merged away and the ruling went invisible for a day. Now the turn that lands a ruling in a
 prompt PR also opens an issue stating it, closed when the PR merges — an open issue is what
 AGENTS.md already tells every planner to read. Option A of #51's three; option B, copying the
@@ -68,7 +68,7 @@ ruling to the board, was the 08-11 stopgap this replaces, and the board stays st
 
 **The memory PR is a period, its description is the summary, and the issues get reviewed too**
 ([#55](https://github.com/toumix/desire/pull/55)) — three rulings from
-memory#55's review, merged in the same breath, which
+one memory PR's review, merged in the same breath, which
 discarded the thread carrying them.
 
 *Title covers the period, not the opening day.* Replaces "titled with the date alone — one PR a
@@ -90,14 +90,14 @@ existed rather than adding one, in the same shape as
 ## 2026-08-10
 
 **Name a pull request, don't just number it** ([#47](https://github.com/toumix/desire/pull/47)) —
-from the memory board PR of 08-09 (memory#53),
+from the memory board PR of 08-09,
 verbatim: *I don't know PR numbers by heart please stop using them so much, or at least the first
 time you use it in a comment or any context give me a short description*. Applies everywhere, not
 just to comments: the board and the turn files are the worst offenders, being almost entirely
 numbers. New rule, replaces nothing.
 
-**Memory PRs open ready for review, not draft** — from the board PR of 08-10
-(memory#54), verbatim: *next time make the memory PRs
+**Memory PRs open ready for review, not draft** — from the board PR of 08-10,
+verbatim: *next time make the memory PRs
 ready from the start, no need for draft mode so I can merge with one click less*. Memory PRs only,
 not work PRs: on discopy a draft is what says a `TODO.md` is still open.
 
@@ -121,10 +121,7 @@ issue stays open for it.
 ## 2026-08-06
 
 **One memory PR open at a time, not a stack** ([#43](https://github.com/toumix/desire/pull/43)) —
-six memory PRs (memory#42,
-memory#43, memory#47,
-memory#48, memory#49,
-memory#50) piling up faster than one human reviews them.
+six memory PRs piling up faster than one human reviews them.
 *Stacked on the previous open PR* required every turn to correctly find and target that one PR; four
 of five turns didn't, branching off `main` instead, and even a correct stack is still N PRs to open,
 review in order and merge. Replaces the stacking clause from the 2026-08-04 entry below: now, if a
@@ -132,8 +129,7 @@ memory PR is open, push to it; only open a new one when none is open.
 
 ## 2026-08-04
 
-**Memory is reserved for cross-workstream changes** ([#39](https://github.com/toumix/desire/pull/39)) — closes
-memory#45: *only open memory PRs when the changes
+**Memory is reserved for cross-workstream changes** ([#39](https://github.com/toumix/desire/pull/39)) — *only open memory PRs when the changes
 affect other PRs*, corrected in-session the same day: *single-workstream turns just record their
 memory in their dedicated PRs, no need for memory*. A turn that stays within one workstream
 writes nothing to MEMORY_REPO — its work PR is its record; only changes affecting other PRs land
