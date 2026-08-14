@@ -61,7 +61,7 @@ Feedback happens either as comments on that PR (agents should listen to GitHub
 events) or in interactive chats, recorded as agent comments with verbatim quotes.
 
 The memory PR's description follows one template, **ordered by what USER has to
-do — nothing else at the top** (USER's approval on memory#58, 2026-08-13):
+do — nothing else at the top**:
 
 ```
 # <period>
