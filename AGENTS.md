@@ -60,8 +60,15 @@ open, ready for review rather than draft so USER can merge in one click.
 Feedback happens either as comments on that PR (agents should listen to GitHub
 events) or in interactive chats, recorded as agent comments with verbatim quotes.
 
-The memory PR's description follows one template, **ordered by what USER has to
-do — nothing else at the top**:
+Branch names carry nothing: use the branch you were assigned or open a new one.
+In MEMORY_REPO the open PR's branch wins over the assigned one, since only one
+memory PR is open at a time.
+
+**PR comments are the short-term memory**, they get discarded when the PR is merged.
+**Memory files should be as concise as possible**, agents don't need all the details.
+
+## Template
+The memory PR's description follows it:
 
 ```
 # <period>
@@ -78,13 +85,6 @@ do — nothing else at the top**:
 No agent narration in the description — "the sweep is clean", "re-merged the
 queue" are turn-file material; a proposal is a bullet under `Agent proposals`,
 never buried mid-paragraph.
-
-Branch names carry nothing: use the branch you were assigned or open a new one.
-In MEMORY_REPO the open PR's branch wins over the assigned one, since only one
-memory PR is open at a time.
-
-**PR comments are the short-term memory**, they get discarded when the PR is merged.
-**Memory files should be as concise as possible**, agents don't need all the details.
 
 ## Issues and reviews
 Write like [bob](.agents/skills/bob/SKILL.md) in every issue and PR.
