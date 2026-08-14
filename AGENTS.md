@@ -74,9 +74,7 @@ memory PR is open at a time.
 **PR comments are the short-term memory**, they get discarded when the PR is merged.
 **Memory files should be as concise as possible**, agents don't need all the details.
 
-## Template
-The memory PR's description follows it:
-
+## Memory PR Template
 ```
 # <period>
 ## 🚀 Waiting on you       always first, nothing above it. One bullet per decision:
