@@ -2,6 +2,18 @@
 
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 
+## 2026-08-14
+
+**The memory PR description follows one template, decisions first** ([#68](https://github.com/toumix/desire/pull/68),
+closes [#65](https://github.com/toumix/desire/issues/65)) — USER's *"ok much better, let's use this
+PR description as template for the next ones"* on [memory#58](https://github.com/toumix/memory/pull/58),
+after a summary led with "nothing here is unblocked" and buried his one actionable section last.
+Five sections ordered by what USER has to do — 🚀 Waiting on you always first — no agent narration,
+proposals as bullets, everything named on first citation. Landed in memory's `AGENTS.md` first,
+moved here the next day on USER's *"shouldn't it be in desire?"*: conventions are rules, rules are
+public prompts reviewed by PR, and the fork-pull rule only ships what desire carries. Extends the
+description-is-summary ruling of 2026-08-11 below.
+
 ## 2026-08-12
 
 **Forks pull upstream, through their USER's review** ([#62](https://github.com/toumix/desire/pull/62),
