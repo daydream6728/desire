@@ -56,6 +56,26 @@ open, ready for review rather than draft so USER can merge in one click.
 Feedback happens either as comments on that PR (agents should listen to GitHub
 events) or in interactive chats, recorded as agent comments with verbatim quotes.
 
+The memory PR's description follows one template, **ordered by what USER has to
+do — nothing else at the top** (USER's approval on
+[memory#58](https://github.com/toumix/memory/pull/58), 2026-08-13):
+
+```
+# <period>
+## 🚀 Waiting on you       always first, nothing above it. One bullet per decision:
+                           name the thing, the question in one line, the options,
+                           what answering unblocks. "nothing" if empty.
+## Ready for your review   the queue as a table — named, cheapest first, churn split
+                           by changes-existing vs new, what merging closes. No prose.
+## What changed since <last merged memory PR>     merged / arrived / fixed, one line each.
+## Agent proposals         ideas wanting a yes or no but blocking nothing, 🚀-able.
+## Detail                  links to the board and the turn file, nothing else.
+```
+
+No agent narration in the description — "the sweep is clean", "re-merged the
+queue" are turn-file material; a proposal is a bullet under `Agent proposals`,
+never buried mid-paragraph.
+
 Branch names carry nothing: use the branch you were assigned or open a new one.
 In MEMORY_REPO the open PR's branch wins over the assigned one, since only one
 memory PR is open at a time.
