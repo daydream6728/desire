@@ -8,7 +8,14 @@ A thread is **answered when anyone other than USER has replied since**: the
 pipeline does not care which agent closed it. Keying on one AGENT reported 30%
 of the review-comment flags on `discopy/discopy` as unanswered when another
 agent had already replied and resolved them — all five threads on one PR, every
-night for ten nights.
+night for ten nights. A reply whose last line carries the Claude Code
+attribution footer counts as an agent's whoever authored it: the adopted PRs
+predate the agent handle and were answered from USER's own account, sixteen
+threads on one of them.
+
+A finding is marked 👀 when anyone but USER has eye-reacted the comment or body
+it points at, which is how a turn tells work in progress from an instruction
+that never arrived. No `--since` applies: an old 👀 still says received.
 
 GitHub splits comments across two endpoints: `pulls/comments` holds review
 comments attached to a line of the diff (threaded by in_reply_to_id), while
@@ -41,6 +48,8 @@ import urllib.error
 import urllib.request
 
 USER, EMOJI, MEMORY_REPO = "toumix", "rocket", "toumix/memory"
+FOOTER = "claude.ai/code"  # the attribution link every agent post signs off with
+REACTIONS = {}  # one listing per body or comment, every emoji read off it
 
 
 def get(path):
@@ -65,16 +74,36 @@ def review_comments(number):
         raise
 
 
+def reacted(kind, target, emoji, by_user):
+    """The reactions of `emoji` on a body or comment, USER's or everyone
+    else's. The counts come free with the target, so only the ones carrying the
+    emoji cost a request to find out who reacted and when."""
+    if not target["reactions"][emoji]:
+        return []
+    if kind not in REACTIONS:
+        REACTIONS[kind] = get(kind)
+    return [reaction for reaction in REACTIONS[kind]
+            if reaction["content"] == emoji
+            and (reaction["user"]["login"] == USER) == by_user]
+
+
 def approved(kind, target):
-    """USER's APPROVE_EMOJI reaction if it is newer than `since`, else None.
-    The count comes free with the target, so only bodies and comments carrying
-    one cost a request to find out who reacted and when."""
-    if not target["reactions"][EMOJI]:
-        return None
-    return next((reaction for reaction in get(kind)
-                 if reaction["user"]["login"] == USER
-                 and reaction["content"] == EMOJI
-                 and reaction["created_at"] >= since), None)
+    """USER's APPROVE_EMOJI reaction if it is newer than `since`, else None."""
+    return next((reaction for reaction in reacted(kind, target, EMOJI, True)
+                 if reaction["created_at"] >= since), None)
+
+
+def seen(kind, target):
+    """" 👀" when the pipeline has reacted to say it received the instruction,
+    "" when nothing has: a flag alone cannot tell the two apart."""
+    return " 👀" if reacted(kind, target, "eyes", False) else ""
+
+
+def answered(comment):
+    """Whether anyone but USER wrote this, the footer deciding for the comments
+    an agent posted from USER's account. Bodies are read for that line only."""
+    return (comment["user"]["login"] != USER
+            or FOOTER in (comment["body"].strip().splitlines() or [""])[-1])
 
 
 arguments = sys.argv[1:]
@@ -98,22 +127,24 @@ if not numbers:
 for number in numbers:
     item = get(f"issues/{number}")
     if approved(f"issues/{number}/reactions", item):
-        findings.append(
-            f"#{number} {EMOJI} from {USER} on the body: " + item["html_url"])
+        findings.append(f"#{number} {EMOJI} from {USER} on the body: "
+                        + item["html_url"] + seen(f"issues/{number}/reactions", item))
     threads = {}  # review comments threaded by root, conversation flat
     comments = [(c, c.get("in_reply_to_id", c["id"]), "pulls")
                 for c in review_comments(number)]
     comments += [(c, number, "issues") for c in get(f"issues/{number}/comments")]
     for comment, thread, kind in comments:
         threads.setdefault((kind, thread), []).append(comment)
-        if approved(f"{kind}/comments/{comment['id']}/reactions", comment):
-            findings.append(
-                f"#{number} {EMOJI} from {USER}: " + comment["html_url"])
-    for thread in threads.values():
+        reactions = f"{kind}/comments/{comment['id']}/reactions"
+        if approved(reactions, comment):
+            findings.append(f"#{number} {EMOJI} from {USER}: "
+                            + comment["html_url"] + seen(reactions, comment))
+    for (kind, _), thread in threads.items():
         asked = thread[-1]  # both endpoints list oldest first
-        if asked["user"]["login"] == USER and asked["created_at"] >= since:
+        if not answered(asked) and asked["created_at"] >= since:
             findings.append(
-                f"#{number} unanswered {USER} comment: " + asked["html_url"])
+                f"#{number} unanswered {USER} comment: " + asked["html_url"]
+                + seen(f"{kind}/comments/{asked['id']}/reactions", asked))
 
 print("\n".join(findings) if findings else "clean", file=sys.stderr)
 sys.exit(1 if findings else 0)
