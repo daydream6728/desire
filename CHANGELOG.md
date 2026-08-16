@@ -3,6 +3,56 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-16
+
+**👀 says received, nothing says never arrived** ([#PR](https://github.com/toumix/desire/pull/PR),
+closes [#79](https://github.com/toumix/desire/issues/79)) — an agent reacts 👀 on the comment or
+body it is picking up, before doing the work, and `sweep.py` marks a flag `👀` when anyone but
+USER has. A flag on its own could not tell work in progress from an instruction that never
+reached a turn. New rule, replaces nothing.
+
+**Adopting a pull request gives it a `TODO.md`** (same PR, closes
+[#76](https://github.com/toumix/desire/issues/76)) — four of the ten adopted PRs predate rule 1
+and carry none, and discopy's guard marks a PR ready only when a push *deletes* one, so
+[#347](https://github.com/discopy/discopy/pull/347) met all three sign-off criteria and could not
+leave draft by any push. Extends the ADOPTED_PRS entry of 2026-08-14 below.
+
+**Closing keywords in the form GitHub parses** (same PR, closes
+[#77](https://github.com/toumix/desire/issues/77)) — one keyword per issue, next to its reference
+on the same line, and every count of what merging closes read from
+`closed_by_pull_requests` rather than from PR prose. Eight queued PRs carried no keyword at all,
+`closes #1, #2` linked the first only, and a line break between keyword and number linked
+neither; three boards recorded [#437](https://github.com/discopy/discopy/issues/437) as closed by
+[#438](https://github.com/discopy/discopy/pull/438) while GitHub left it open. Replaces counting
+our own sentences.
+
+**A 🚀 bullet cites the comment it waits on** (same PR, closes
+[#73](https://github.com/toumix/desire/issues/73)) — and a turn republishing one re-reads that
+thread first, dropping it when USER has spoken since; an entry with nothing to cite is not an
+ask, one waiting on someone else belongs in another section. Asking entries were copied forward
+as text: three consecutive boards kept a naming question under "Waiting on USER" that he had
+answered, and the sweep structurally cannot catch it, since an agent answering the thread the
+same morning is what marks it answered. Extends the memory-PR-template entry of 2026-08-14 below.
+
+**The attribution footer decides authorship** (same PR, closes
+[#72](https://github.com/toumix/desire/issues/72)) — a reply whose last line carries the Claude
+Code link counts as an agent's whoever posted it. The adopted PRs predate the agent handle and
+were answered from USER's own account: sixteen threads on
+[#399](https://github.com/discopy/discopy/pull/399) came back as unanswered USER signal every
+night. Extends the answered-by-anyone-but-USER entry of 2026-08-14 below.
+
+**Assert the clone is complete before measuring it** (same PR, closes
+[#75](https://github.com/toumix/desire/issues/75)) — `git rev-parse --is-shallow-repository`
+before any behind-count or collision measurement. Shallow, `git merge-base` exits 1 and
+`git merge-tree` dies with exit 128 and no `CONFLICT` line, which reads as no conflicts: a turn
+reported two branches as having no common ancestor and needing a rebuild, when one was 19
+conflicts behind and the other 1. New rule, replaces nothing.
+
+**Every AGENT-owned PR tags `@cubic-dev-ai`** (same PR, closes
+[#78](https://github.com/toumix/desire/issues/78)) — on open and after a substantial rebuild,
+its findings triaged into `TODO.md` and churned before the PR is flagged ready for USER. New
+rule, replaces nothing; supersedes for now the bespoke reviewer-agent design of 08-14.
+
 ## 2026-08-14
 
 **ADOPTED_PRS joins the Config** ([#71](https://github.com/toumix/desire/pull/71),
