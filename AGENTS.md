@@ -69,10 +69,10 @@ every night until its PR merges. Widen the window after a turn runs late or dies
 
 **React 👀 the moment you pick something up**, before doing the work: an instruction carrying no
 react was never received, one carrying 👀 is in progress. React on the comment or the body itself,
-answer it once the change lands. No MCP tool posts a reaction any more than it reads one, so POST
-`{"content": "eyes"}` to `issues/comments/<id>/reactions` for a conversation comment,
-`issues/<number>/reactions` for a body, `pulls/comments/<id>/reactions` for a review comment. The
-sweep marks a flag `👀` when anyone but USER has reacted, so a turn can tell a backlog from a queue.
+answer it once the change lands. The MCP tool takes a `reaction` on a body or a conversation
+comment; a review comment it cannot reach, so POST `{"content": "eyes"}` to
+`pulls/comments/<id>/reactions`. The sweep marks a flag `👀` when anyone but USER has reacted, so a
+turn can tell a backlog from a queue.
 
 ## Memory
 MEMORY_REPO holds the agents' long-term memory in its `main` branch:
