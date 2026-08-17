@@ -42,9 +42,9 @@ reported two branches as having no common ancestor and needing a rebuild, when o
 conflicts behind and the other 1. New rule, replaces nothing.
 
 **Every AGENT-owned PR tags `@cubic-dev-ai`** (same PR, closes
-[#78](https://github.com/toumix/desire/issues/78)) — on open and after a substantial rebuild; its
-review is answered like anyone else's. New rule, replaces nothing; supersedes for now the bespoke
-reviewer-agent design of 08-14.
+[#78](https://github.com/toumix/desire/issues/78)) — once its `TODO.md` is done and again after a
+substantial rebuild; its review is answered like anyone else's. New rule, replaces nothing;
+supersedes for now the bespoke reviewer-agent design of 08-14.
 
 ## 2026-08-14
 

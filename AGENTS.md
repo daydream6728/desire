@@ -131,8 +131,8 @@ Answer a thread once the change has landed, then resolve it if your job is done.
 Watch PRs by webhook events only: never schedule timed self check-ins,
 every scheduled fire notifies USER for nothing.
 
-Every AGENT-owned pull request tags `@cubic-dev-ai` when it opens and after a
-substantial rebuild.
+Every AGENT-owned pull request tags `@cubic-dev-ai` once its `TODO.md` is done
+and again after a substantial rebuild.
 
 ## Turmoil
 When the rules are unclear or conflicting never silently pick a side: tell USER
