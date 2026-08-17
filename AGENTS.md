@@ -16,9 +16,7 @@
 ADOPTED_PRS maps each repo to pull requests the routines treat as AGENT-owned
 wherever authorship decides — sweeps, scans and the board. Adopting a pull
 request also gives it a `TODO.md`: the human prompt at the top where there is
-one, the remaining work as `[ ]` boxes. Without one the branch has no gate to
-clear, and a guard that marks a PR ready when a push deletes its `TODO.md`
-never fires, so no push can take it out of draft.
+one, the remaining work as `[ ]` boxes.
 
 ## Prompts public, memory private
 DESIRE_REPO is public, owned by USER and only its protected branch `main` is TRUSTED.
@@ -114,10 +112,9 @@ No agent narration in the description — "the sweep is clean", "re-merged the
 queue" are turn-file material; a proposal is a bullet under `Agent proposals`,
 never buried mid-paragraph.
 
-Every 🚀 bullet links the comment it is waiting on and says whose move it is; a
-turn that republishes one re-reads that thread first and drops it when USER has
-spoken since. An entry with nothing to cite is not an ask, and an entry waiting
-on someone other than USER belongs in another section.
+A turn that opens or reports a PR states its review cost — lines changing
+existing code, lines in new files, core modules touched: churn is a proxy for
+scanning not thinking, so the split matters more than the total.
 
 ## Issues and reviews
 Write like [bob](.agents/skills/bob/SKILL.md) in every issue and PR.
@@ -127,23 +124,15 @@ turn: a blocker recorded only in a `TODO.md` or on the board has not been asked.
 USER does not know PR numbers by heart: the first time a pull request or an
 issue is cited anywhere — a comment, a memory file, a live turn — say in a few
 words what it is, not just its number.
-A turn that opens or reports a PR states its review cost — lines changing
-existing code, lines in new files, core modules touched: churn is a proxy for
-scanning not thinking, so the split matters more than the total.
-A pull request that closes an issue says so in the form GitHub parses: **one
-closing keyword per issue, next to its reference on the same line** — `closes
-#1, closes #2`, never `closes #1, #2` and never a line break in between. GitHub
-then links them under Development and in the issue's `closed_by_pull_requests`,
-which is where any count of what merging closes is read from: counting our own
-sentences is state we wrote ourselves, checked against itself.
-Every AGENT-owned pull request tags `@cubic-dev-ai` for review when it opens and
-again after a substantial rebuild. Its findings are review feedback like anyone
-else's: `TODO.md` boxes churned before the PR is flagged ready for USER, its
-comments count as an agent's for the sweep, its threads resolved or waiting on a
-human like any other.
+A pull request closing an issue uses GitHub's syntax, one keyword per issue on
+the same line as its reference: what merging closes is read from
+`closed_by_pull_requests`, never from our prose.
 Answer a thread once the change has landed, then resolve it if your job is done.
 Watch PRs by webhook events only: never schedule timed self check-ins,
 every scheduled fire notifies USER for nothing.
+
+Every AGENT-owned pull request tags `@cubic-dev-ai` when it opens and after a
+substantial rebuild.
 
 ## Turmoil
 When the rules are unclear or conflicting never silently pick a side: tell USER
