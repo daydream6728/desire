@@ -59,15 +59,14 @@ flags every APPROVE_EMOJI react from USER on a body or a comment, both endpoints
 thread where USER spoke last. A thread is answered when **anyone other than USER** has replied
 since; which agent closed it does not matter, and a reply ending on AGENT_FOOTER counts as an
 agent's even when it was posted from USER's own account, which is how the adopted PRs read.
-With `--since` it also lists the issues closed inside the window, with `state_reason` and who
-closed them: closing an issue is an answer, and it leaves no thread to read.
 A turn runs it with no numbers, covering every open PR and issue of every repo in play,
 before planning: no turn concludes "no unblocked work" without a clean sweep —
 checkboxes, CI and behind-counts are all state the agents wrote themselves.
 Pass `--since` with the time the last turn swept — the board records it — so each turn reads the
 comments as a delta rather than re-triaging the whole pile; widen the window after a turn runs
-late or dies. Reacts ignore it: a 🚀 has no answered state, so it is reported whatever its age,
-until the thing it sits on closes.
+late or dies. It also lists the issues closed inside the window, with `state_reason` and who
+closed them: closing an issue is an answer and it leaves no thread to read. Reacts ignore it: a 🚀
+has no answered state, so it is reported whatever its age, until the thing it sits on closes.
 
 **React 👀 the moment you pick something up**, before doing the work: an instruction carrying no
 react was never received, one carrying 👀 is in progress. React on the comment or the body itself,

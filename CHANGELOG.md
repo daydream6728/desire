@@ -6,9 +6,9 @@ Entries state the changes, no explanation of why.
 ## 2026-08-18
 
 **The sweep reads closes** ([#82](https://github.com/toumix/desire/pull/82),
-closes [#81](https://github.com/toumix/desire/issues/81)) — with `--since`, `sweep.py` lists the
-issues closed inside the window with their `state_reason` and who closed them. Extends the
-sweep-reads-a-delta entry of 2026-08-14 below, which windows comments only.
+closes [#81](https://github.com/toumix/desire/issues/81)) — with `--since`, the issues closed
+inside the window are listed with their `state_reason` and who closed them. Extends the
+sweep-reads-a-delta entry of 2026-08-14 below.
 
 **Re-read a blocker before asking it again** ([#85](https://github.com/toumix/desire/pull/85),
 closes [#73](https://github.com/toumix/desire/issues/73)) — a 🚀-able comment is re-read for an

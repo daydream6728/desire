@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
-threads where USER spoke last, APPROVE_EMOJI reacts from USER, and MEMORY_REPO's
-open-PR count. A finding is marked 👀 when the pipeline has reacted to say it
-received it. AGENTS.md is the ground truth: its Config section names USER, the
-repos and the emoji, and its rules say what to do with a finding.
+threads where USER spoke last, APPROVE_EMOJI reacts from USER, the issues closed
+inside the window, and MEMORY_REPO's open-PR count. A finding is marked 👀 when
+the pipeline has reacted to say it received it. AGENTS.md is the ground truth:
+its Config section names USER, the repos and the emoji, and its rules say what
+to do with a finding.
 
 Usage: sweep.py [--since <ISO8601>] <owner/repo> [number...]
-       # no numbers: every open PR and issue; --since windows the comments and
-       # lists the issues closed inside it, reacts are reported whatever it is
+       # no numbers: every open PR and issue; --since windows comments and closes
 Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding.
 """
 import ast
@@ -65,6 +65,19 @@ def reactors(repo, kind, target, emoji, cache):
     return [reaction for reaction in cache[kind] if reaction["content"] == emoji]
 
 
+def closed_since(repo, since):
+    """The issues closed inside the window, with why and by whom. USER answers
+    some questions by closing the issue, which leaves no thread to read and no
+    open item to walk. One listing per repo, plus one request per issue found
+    to say who closed it; without a window there is no delta, hence nothing."""
+    for issue in get(repo, f"issues?state=closed&since={since}") if since else []:
+        if "pull_request" in issue or issue["closed_at"] < since:
+            continue
+        closer = get(repo, f"issues/{issue['number']}").get("closed_by") or {}
+        yield (f"#{issue['number']} closed {issue['state_reason']} by "
+               f"{closer.get('login', 'unknown')}: " + issue["html_url"])
+
+
 def approved(repo, kind, target, setup, cache):
     """Whether USER's APPROVE_EMOJI is on the target. No `since`: a react has no
     answered state, so a window hides a live approval as readily as an old one,
@@ -101,20 +114,6 @@ def memory(repo, setup):
     return [] if len(open_prs) < 2 else [
         f"{repo}: {len(open_prs)} open PRs, at most one is allowed — push to the"
         " oldest and close the rest, don't open another"]
-
-
-def closed(repo, since):
-    """The issues closed inside the window, with why and by whom. USER answers
-    some questions by closing the issue, and no thread records that: the sweep
-    reads open items, so the pipeline carries such a question as pending
-    forever. One listing per repo plus one request per issue found, for the
-    closer. Without `--since` there is no window, hence no delta to read."""
-    for issue in get(repo, f"issues?state=closed&since={since}") if since else []:
-        if "pull_request" in issue or issue["closed_at"] < since:
-            continue
-        closer = get(repo, f"issues/{issue['number']}").get("closed_by") or {}
-        yield (f"#{issue['number']} closed {issue['state_reason']} by"
-               f" {closer.get('login', 'unknown')}: {issue['html_url']}")
 
 
 def item(repo, number, setup, since, cache):
@@ -156,7 +155,7 @@ def sweep(repo, numbers, since, setup):
     if repo == setup["MEMORY_REPO"] and not numbers:
         findings += memory(repo, setup)
     if not numbers:
-        findings += closed(repo, since)
+        findings += closed_since(repo, since)
         numbers = sorted({
             issue["number"] for issue in get(repo, "issues?state=open")})
     for number in numbers:
