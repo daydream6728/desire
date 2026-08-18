@@ -3,6 +3,22 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-18
+
+**Re-read a blocker before asking it again** ([#85](https://github.com/toumix/desire/pull/85),
+closes [#73](https://github.com/toumix/desire/issues/73)) — a 🚀-able comment is re-read for an
+answer before a later turn repeats it. New rule, replaces nothing.
+
+**The sweep reports a 🚀 whatever the window** (same PR) — `--since` windows comments only, and an
+approval stands until the thing it sits on closes. Narrows the sweep-reads-a-delta entry of
+2026-08-14 below.
+
+**Every write to GitHub goes through the MCP tools** (same PR, closes
+[#83](https://github.com/toumix/desire/issues/83)) — `GITHUB_TOKEN` is for reads only, and a turn
+asserts `mcp__github__get_me` is AGENT before its first write. `add_reply_to_pull_request_comment`
+takes the 👀 on a review comment, replacing the raw POST of 2026-08-16 below. #83's third
+proposal, naming the other identity in the Config, is declined.
+
 ## 2026-08-16
 
 **👀 says received, nothing says never arrived** ([#80](https://github.com/toumix/desire/pull/80),
