@@ -11,6 +11,8 @@
 - MEMORY_REPO   = "toumix/memory"
 - DESIRE_REPO   = "toumix/desire"
 - APPROVE_EMOJI = "rocket"
+- REVIEWER      = "cubic-dev-ai"
+- AGENT_FOOTER  = "claude.ai/code"
 - ADOPTED_PRS   = {"discopy/discopy": [347, 363, 366, 393, 399, 400, 401, 416, 442, 443]}
 
 ADOPTED_PRS maps each repo to pull requests the routines treat as AGENT-owned
@@ -55,9 +57,8 @@ No GitHub MCP tool says *who* reacted — comment listings carry the counts only
 [sweep.py](.agents/skills/sweep/sweep.py) `[--since <ISO8601>] <owner/repo> [number...]`, which
 flags every APPROVE_EMOJI react from USER on a body or a comment, both endpoints, and every
 thread where USER spoke last. A thread is answered when **anyone other than USER** has replied
-since; which agent closed it does not matter, and a reply ending on the Claude Code attribution
-footer counts as an agent's even when it was posted from USER's own account, which is how the
-adopted PRs read.
+since; which agent closed it does not matter, and a reply ending on AGENT_FOOTER counts as an
+agent's even when it was posted from USER's own account, which is how the adopted PRs read.
 A turn runs it with no numbers, covering every open PR and issue of every repo in play,
 before planning: no turn concludes "no unblocked work" without a clean sweep —
 checkboxes, CI and behind-counts are all state the agents wrote themselves.
@@ -131,8 +132,8 @@ Answer a thread once the change has landed, then resolve it if your job is done.
 Watch PRs by webhook events only: never schedule timed self check-ins,
 every scheduled fire notifies USER for nothing.
 
-Every AGENT-owned pull request tags `@cubic-dev-ai` once its `TODO.md` is done
-and again after a substantial rebuild.
+Every AGENT-owned pull request tags REVIEWER once its `TODO.md` is done and
+again after a substantial rebuild.
 
 ## Turmoil
 When the rules are unclear or conflicting never silently pick a side: tell USER

@@ -5,7 +5,7 @@ Entries state the changes, no explanation of why.
 
 ## 2026-08-16
 
-**👀 says received, nothing says never arrived** ([#PR](https://github.com/toumix/desire/pull/PR),
+**👀 says received, nothing says never arrived** ([#80](https://github.com/toumix/desire/pull/80),
 closes [#79](https://github.com/toumix/desire/issues/79)) — an agent reacts 👀 on the comment or
 body it is picking up, before doing the work, and `sweep.py` marks a flag `👀` when anyone but
 USER has. A flag on its own could not tell work in progress from an instruction that never
@@ -28,9 +28,9 @@ keyword and number linked neither; three boards recorded
 our own sentences.
 
 **The attribution footer decides authorship** (same PR, closes
-[#72](https://github.com/toumix/desire/issues/72)) — a reply whose last line carries the Claude
-Code link counts as an agent's whoever posted it. The adopted PRs predate the agent handle and
-were answered from USER's own account: sixteen threads on
+[#72](https://github.com/toumix/desire/issues/72)) — a reply whose last line carries the new
+`AGENT_FOOTER` config key counts as an agent's whoever posted it. The adopted PRs predate the
+agent handle and were answered from USER's own account: sixteen threads on
 [#399](https://github.com/discopy/discopy/pull/399) came back as unanswered USER signal every
 night. Extends the answered-by-anyone-but-USER entry of 2026-08-14 below.
 
@@ -41,9 +41,11 @@ before any behind-count or collision measurement. Shallow, `git merge-base` exit
 reported two branches as having no common ancestor and needing a rebuild, when one was 19
 conflicts behind and the other 1. New rule, replaces nothing.
 
-**Every AGENT-owned PR tags `@cubic-dev-ai`** (same PR, closes
+**Every AGENT-owned PR tags REVIEWER** (same PR, closes
 [#78](https://github.com/toumix/desire/issues/78)) — once its `TODO.md` is done and again after a
-substantial rebuild; its review is answered like anyone else's. New rule, replaces nothing;
+substantial rebuild; its review is answered like anyone else's. The reviewer's handle and the
+footer are new Config keys, `REVIEWER` and `AGENT_FOOTER`, so a downstream fork sets its own and
+`sweep.py` reads the Config section rather than repeating it. New rule, replaces nothing;
 supersedes for now the bespoke reviewer-agent design of 08-14.
 
 ## 2026-08-14
