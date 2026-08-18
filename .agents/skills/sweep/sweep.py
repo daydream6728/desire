@@ -1,53 +1,38 @@
 #!/usr/bin/env python3
-"""Sweep open PRs and issues for USER-authored signal the pipeline hasn't acted
-on: threads where USER spoke last, and APPROVE_EMOJI reacts from USER on
-anyone's body or comment. A turn may not conclude "no unblocked work" without a
-clean sweep — the TODO.md is not a substitute, it is our own state.
-
-A thread is **answered when anyone other than USER has replied since**: the
-pipeline does not care which agent closed it. Keying on one AGENT reported 30%
-of the review-comment flags on `discopy/discopy` as unanswered when another
-agent had already replied and resolved them — all five threads on one PR, every
-night for ten nights.
-
-GitHub splits comments across two endpoints: `pulls/comments` holds review
-comments attached to a line of the diff (threaded by in_reply_to_id), while
-`issues/comments` holds the conversation tab of issues and PRs alike (flat).
-Both are swept, and so are the bodies; the endpoint split is what hid a 🚀 for
-eight hours once, and body reactions are where two approvals landed the day
-this script was written.
-
-A close is an answer too: with `--since`, the issues closed inside the window
-are reported with their `state_reason` and who closed them, since neither the
-comment endpoints nor the open listings say anything about them.
-
-`--since` filters on each comment's and reaction's `created_at` so a turn reads
-the delta rather than re-triaging the whole pile: a 🚀 has no answered state, so
-without it an approval acted on days ago is reported forever. Widen the window
-after a turn runs late or dies — a gap is visible and recoverable, which is why
-this is an argument and not a file of acknowledged ids we would have to keep
-true. MEMORY_REPO's open-PR count is checked whatever the window, since it is an
-invariant rather than a delta.
-
-Reactions listings are one request per flagged item, so only bodies and
-comments carrying the emoji count are queried for who. Unauthenticated GETs
-work on public repos but are rate-limited to 60/hr; GITHUB_TOKEN or GH_TOKEN
-is used when set.
+"""Sweep open PRs and issues for USER signal the pipeline has not acted on:
+threads where USER spoke last, APPROVE_EMOJI reacts from USER, the issues closed
+inside the window, and MEMORY_REPO's open-PR count. A finding is marked 👀 when
+the pipeline has reacted to say it received it. AGENTS.md is the ground truth:
+its Config section names USER, the repos and the emoji, and its rules say what
+to do with a finding.
 
 Usage: sweep.py [--since <ISO8601>] <owner/repo> [number...]
-       # no numbers: every open PR and issue; no --since: everything, ever
+       # no numbers: every open PR and issue; --since windows comments and closes
 Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding.
 """
+import ast
 import json
 import os
+import pathlib
 import sys
 import urllib.error
 import urllib.request
 
-USER, EMOJI, MEMORY_REPO = "toumix", "rocket", "toumix/memory"
+AGENTS = pathlib.Path(__file__).parents[3] / "AGENTS.md"
 
 
-def get(path):
+def config(path):
+    """The Config section of AGENTS.md as a dict, so that the pipeline is
+    configured in one place and this script hard-codes no repo and no agent."""
+    section = path.read_text().split("## Config")[1].split("\n##")[0]
+    return {name.strip(): ast.literal_eval(value.strip())
+            for line in section.splitlines() if line.startswith("- ")
+            for name, _, value in [line[2:].partition("=")] if value}
+
+
+def get(repo, path):
+    """A GitHub REST listing. Unauthenticated GETs work on public repos but are
+    rate-limited to 60/hr; GITHUB_TOKEN or GH_TOKEN is used when set."""
     request = urllib.request.Request(
         f"https://api.github.com/repos/{repo}/{path}"
         + ("&" if "?" in path else "?") + "per_page=100",
@@ -59,82 +44,134 @@ def get(path):
         return json.load(response)
 
 
-def review_comments(number):
+def review_comments(repo, number):
     """The pulls/ endpoints reject plain issues, which the sweep also covers."""
     try:
-        return get(f"pulls/{number}/comments")
+        return get(repo, f"pulls/{number}/comments")
     except urllib.error.HTTPError as error:
         if error.code in (403, 404):
             return []
         raise
 
 
-def closed_since():
-    """The issues closed inside the window, with why and by whom.
+def reactors(repo, kind, target, emoji, cache):
+    """Who reacted with `emoji` on a body or comment, and when. The counts come
+    with the target, so only the ones carrying it cost a request, and the
+    listing is cached since both emojis are read off the same one."""
+    if not target["reactions"][emoji]:
+        return []
+    if kind not in cache:
+        cache[kind] = get(repo, kind)
+    return [reaction for reaction in cache[kind] if reaction["content"] == emoji]
 
-    USER answers some questions by closing the issue, which no thread records:
-    the sweep reads open items, so the pipeline carries such a question as
-    pending forever. One listing per repo, plus one request per issue found to
-    say who closed it. Without `--since` there is no window, hence no delta.
-    """
-    for item in get(f"issues?state=closed&since={since}") if since else []:
-        if "pull_request" in item or item["closed_at"] < since:
+
+def closed_since(repo, since):
+    """The issues closed inside the window, with why and by whom. USER answers
+    some questions by closing the issue, which leaves no thread to read and no
+    open item to walk. One listing per repo, plus one request per issue found
+    to say who closed it; without a window there is no delta, hence nothing."""
+    for issue in get(repo, f"issues?state=closed&since={since}") if since else []:
+        if "pull_request" in issue or issue["closed_at"] < since:
             continue
-        closer = get(f"issues/{item['number']}").get("closed_by") or {}
-        yield (f"#{item['number']} closed {item['state_reason']} by "
-               f"{closer.get('login', 'unknown')}: " + item["html_url"])
+        closer = get(repo, f"issues/{issue['number']}").get("closed_by") or {}
+        yield (f"#{issue['number']} closed {issue['state_reason']} by "
+               f"{closer.get('login', 'unknown')}: " + issue["html_url"])
 
 
-def approved(kind, target):
-    """USER's APPROVE_EMOJI reaction if it is newer than `since`, else None.
-    The count comes free with the target, so only bodies and comments carrying
-    one cost a request to find out who reacted and when."""
-    if not target["reactions"][EMOJI]:
-        return None
-    return next((reaction for reaction in get(kind)
-                 if reaction["user"]["login"] == USER
-                 and reaction["content"] == EMOJI
-                 and reaction["created_at"] >= since), None)
+def approved(repo, kind, target, setup, cache):
+    """Whether USER's APPROVE_EMOJI is on the target. No `since`: a react has no
+    answered state, so a window hides a live approval as readily as an old one,
+    and every approval on a swept target is reported whatever its age."""
+    return any(
+        reaction["user"]["login"] == setup["USER"]
+        for reaction in reactors(
+            repo, kind, target, setup["APPROVE_EMOJI"], cache))
 
 
-arguments = sys.argv[1:]
-since = ""  # ISO 8601 UTC sorts lexicographically, so "" is the epoch
-if arguments and arguments[0] == "--since":
-    _, since, *arguments = arguments
-repo, numbers = arguments[0], [int(n) for n in arguments[1:]]
+def seen(repo, kind, target, setup, cache):
+    """" 👀" when the pipeline has reacted to say it received the instruction,
+    "" when nothing has: a flag alone cannot tell the two apart. No `since` —
+    an old 👀 still says received."""
+    return " 👀" if any(
+        reaction["user"]["login"] != setup["USER"]
+        for reaction in reactors(repo, kind, target, "eyes", cache)) else ""
 
-findings = []
-if repo == MEMORY_REPO and not numbers:
-    open_prs = get("pulls?state=open")
+
+def answered(comment, setup):
+    """Whether anyone but USER wrote this, AGENT_FOOTER deciding for the ones an
+    agent posted from USER's account. Bodies are read for that line only."""
+    return (comment["user"]["login"] != setup["USER"]
+            or setup["AGENT_FOOTER"]
+            in (comment["body"].strip().splitlines() or [""])[-1])
+
+
+def memory(repo, setup):
+    """MEMORY_REPO holds one open PR, checked whatever the window since it is an
+    invariant rather than a delta."""
+    open_prs = get(repo, "pulls?state=open")
     print(f"{repo}: {len(open_prs)} open PR(s)"
           + "".join("\n  " + pr["html_url"] for pr in open_prs), file=sys.stderr)
-    if len(open_prs) > 1:
-        findings.append(
-            f"{repo}: {len(open_prs)} open PRs, at most one is allowed — push to"
-            " the oldest and close the rest, don't open another")
+    return [] if len(open_prs) < 2 else [
+        f"{repo}: {len(open_prs)} open PRs, at most one is allowed — push to the"
+        " oldest and close the rest, don't open another"]
 
-if not numbers:
-    findings += closed_since()
-    numbers = sorted({item["number"] for item in get("issues?state=open")})
-for number in numbers:
-    item = get(f"issues/{number}")
-    if approved(f"issues/{number}/reactions", item):
+
+def item(repo, number, setup, since, cache):
+    """The findings on one PR or issue: USER's APPROVE_EMOJI on the body or on
+    any comment, and every thread where USER spoke last. GitHub splits comments
+    across two endpoints, review comments threaded by in_reply_to_id and the
+    conversation tab flat; both are swept, and so are the bodies."""
+    findings, threads, body = [], {}, get(repo, f"issues/{number}")
+    kind = f"issues/{number}/reactions"
+    if approved(repo, kind, body, setup, cache):
         findings.append(
-            f"#{number} {EMOJI} from {USER} on the body: " + item["html_url"])
-    threads = {}  # review comments threaded by root, conversation flat
-    comments = [(c, c.get("in_reply_to_id", c["id"]), "pulls")
-                for c in review_comments(number)]
-    comments += [(c, number, "issues") for c in get(f"issues/{number}/comments")]
-    for comment, thread, kind in comments:
-        threads.setdefault((kind, thread), []).append(comment)
-        if approved(f"{kind}/comments/{comment['id']}/reactions", comment):
+            f"#{number} {setup['APPROVE_EMOJI']} from {setup['USER']} on the"
+            f" body: {body['html_url']}" + seen(repo, kind, body, setup, cache))
+    comments = [(comment, comment.get("in_reply_to_id", comment["id"]), "pulls")
+                for comment in review_comments(repo, number)]
+    comments += [(comment, number, "issues")
+                 for comment in get(repo, f"issues/{number}/comments")]
+    for comment, thread, endpoint in comments:
+        threads.setdefault((endpoint, thread), []).append(comment)
+        kind = f"{endpoint}/comments/{comment['id']}/reactions"
+        if approved(repo, kind, comment, setup, cache):
             findings.append(
-                f"#{number} {EMOJI} from {USER}: " + comment["html_url"])
-    for thread in threads.values():
+                f"#{number} {setup['APPROVE_EMOJI']} from {setup['USER']}:"
+                f" {comment['html_url']}"
+                + seen(repo, kind, comment, setup, cache))
+    for (endpoint, _), thread in threads.items():
         asked = thread[-1]  # both endpoints list oldest first
-        if asked["user"]["login"] == USER and asked["created_at"] >= since:
+        kind = f"{endpoint}/comments/{asked['id']}/reactions"
+        if not answered(asked, setup) and asked["created_at"] >= since:
             findings.append(
-                f"#{number} unanswered {USER} comment: " + asked["html_url"])
+                f"#{number} unanswered {setup['USER']} comment:"
+                f" {asked['html_url']}" + seen(repo, kind, asked, setup, cache))
+    return findings
 
-print("\n".join(findings) if findings else "clean", file=sys.stderr)
-sys.exit(1 if findings else 0)
+
+def sweep(repo, numbers, since, setup):
+    """One line per finding, empty when the sweep is clean."""
+    cache, findings = {}, []
+    if repo == setup["MEMORY_REPO"] and not numbers:
+        findings += memory(repo, setup)
+    if not numbers:
+        findings += closed_since(repo, since)
+        numbers = sorted({
+            issue["number"] for issue in get(repo, "issues?state=open")})
+    for number in numbers:
+        findings += item(repo, number, setup, since, cache)
+    return findings
+
+
+def main(arguments):
+    since = ""  # ISO 8601 UTC sorts lexicographically, so "" is the epoch
+    if arguments and arguments[0] == "--since":
+        _, since, *arguments = arguments
+    findings = sweep(arguments[0], [int(n) for n in arguments[1:]], since,
+                     config(AGENTS))
+    print("\n".join(findings) if findings else "clean", file=sys.stderr)
+    return 1 if findings else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
