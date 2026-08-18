@@ -67,7 +67,7 @@ def reactors(repo, kind, target, emoji, cache):
 def approved(repo, kind, target, setup, cache):
     """Whether USER's APPROVE_EMOJI is on the target. No `since`: a react has no
     answered state, so a window hides a live approval as readily as an old one,
-    and the sweep only ever walks what is still open."""
+    and every approval on a swept target is reported whatever its age."""
     return any(
         reaction["user"]["login"] == setup["USER"]
         for reaction in reactors(

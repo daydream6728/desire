@@ -63,15 +63,15 @@ A turn runs it with no numbers, covering every open PR and issue of every repo i
 before planning: no turn concludes "no unblocked work" without a clean sweep —
 checkboxes, CI and behind-counts are all state the agents wrote themselves.
 Pass `--since` with the time the last turn swept — the board records it — so each turn reads the
-delta: a 🚀 has no answered state, so without a window an approval acted on days ago is reported
-every night until its PR merges. Widen the window after a turn runs late or dies.
+comments as a delta rather than re-triaging the whole pile; widen the window after a turn runs
+late or dies. Reacts ignore it: a 🚀 has no answered state, so it is reported whatever its age,
+until the thing it sits on closes.
 
 **React 👀 the moment you pick something up**, before doing the work: an instruction carrying no
 react was never received, one carrying 👀 is in progress. React on the comment or the body itself,
 answer it once the change lands. `add_issue_comment` takes a `reaction` on a body or a
 conversation comment, `add_reply_to_pull_request_comment` on a review comment. The sweep marks a
-flag `👀` when anyone but USER has reacted, so a turn can tell a backlog from a queue, and it
-reports a 🚀 whatever the window, since only closing the thing it sits on retires it.
+flag `👀` when anyone but USER has reacted, so a turn can tell a backlog from a queue.
 
 ## Memory
 MEMORY_REPO holds the agents' long-term memory in its `main` branch:
