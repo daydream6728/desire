@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
-threads where USER spoke last, APPROVE_EMOJI reacts from USER, and MEMORY_REPO's
-open-PR count. A finding is marked 👀 when the pipeline has reacted to say it
-received it. AGENTS.md is the ground truth: its Config section names USER, the
-repos and the emoji, and its rules say what to do with a finding.
+threads where USER spoke last, APPROVE_EMOJI reacts from USER, the issues closed
+inside the window, and MEMORY_REPO's open-PR count. A finding is marked 👀 when
+the pipeline has reacted to say it received it. AGENTS.md is the ground truth:
+its Config section names USER, the repos and the emoji, and its rules say what
+to do with a finding.
 
-Usage: sweep.py [--since <ISO8601>] <owner/repo> [number...]
-       # no numbers: every open PR and issue; --since windows the comments only
+Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
+                [number...]
+       # no numbers: every open PR and issue; --since windows comments and closes
 Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding.
 """
 import ast
@@ -30,17 +32,29 @@ def config(path):
 
 
 def get(repo, path):
-    """A GitHub REST listing. Unauthenticated GETs work on public repos but are
-    rate-limited to 60/hr; GITHUB_TOKEN or GH_TOKEN is used when set."""
-    request = urllib.request.Request(
-        f"https://api.github.com/repos/{repo}/{path}"
-        + ("&" if "?" in path else "?") + "per_page=100",
-        headers={"User-Agent": "sweep", "Accept": "application/vnd.github+json"})
-    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
-    if token:
-        request.add_header("Authorization", f"Bearer {token}")
-    with urllib.request.urlopen(request) as response:
-        return json.load(response)
+    """A GitHub REST resource, every page of a listing. A page holds 100 and
+    `discopy/discopy` had 153 open items the day this stopped reading one page:
+    the tail is the oldest, so a 🚀 on an old issue was invisible for good.
+    Unauthenticated GETs work on public repos but are rate-limited to 60/hr;
+    GITHUB_TOKEN or GH_TOKEN is used when set."""
+    results, page = [], 1
+    while True:
+        request = urllib.request.Request(
+            f"https://api.github.com/repos/{repo}/{path}"
+            + ("&" if "?" in path else "?") + f"per_page=100&page={page}",
+            headers={"User-Agent": "sweep",
+                     "Accept": "application/vnd.github+json"})
+        token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+        if token:
+            request.add_header("Authorization", f"Bearer {token}")
+        with urllib.request.urlopen(request) as response:
+            items = json.load(response)
+        if not isinstance(items, list):  # a single issue, comment or user
+            return items
+        results += items
+        if len(items) < 100:
+            return results
+        page += 1
 
 
 def review_comments(repo, number):
@@ -62,6 +76,20 @@ def reactors(repo, kind, target, emoji, cache):
     if kind not in cache:
         cache[kind] = get(repo, kind)
     return [reaction for reaction in cache[kind] if reaction["content"] == emoji]
+
+
+def closed_since(repo, since):
+    """The issues closed inside the window, with why and by whom. USER answers
+    some questions by closing the issue, which leaves no thread to read and no
+    open item to walk. One listing per repo, which carries the closer as well
+    as the reason; without a window there is no delta, hence nothing."""
+    for issue in get(repo, f"issues?state=closed&since={since}") if since else []:
+        if "pull_request" in issue or issue["closed_at"] < since:
+            continue
+        closer = issue.get("closed_by") or {}
+        reason = f" {issue['state_reason']}" if issue["state_reason"] else ""
+        yield (f"#{issue['number']} closed{reason} by "
+               f"{closer.get('login', 'unknown')}: " + issue["html_url"])
 
 
 def approved(repo, kind, target, setup, cache):
@@ -141,6 +169,7 @@ def sweep(repo, numbers, since, setup):
     if repo == setup["MEMORY_REPO"] and not numbers:
         findings += memory(repo, setup)
     if not numbers:
+        findings += closed_since(repo, since)
         numbers = sorted({
             issue["number"] for issue in get(repo, "issues?state=open")})
     for number in numbers:
