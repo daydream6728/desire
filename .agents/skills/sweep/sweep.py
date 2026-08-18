@@ -6,7 +6,8 @@ the pipeline has reacted to say it received it. AGENTS.md is the ground truth:
 its Config section names USER, the repos and the emoji, and its rules say what
 to do with a finding.
 
-Usage: sweep.py [--since <ISO8601>] <owner/repo> [number...]
+Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
+                [number...]
        # no numbers: every open PR and issue; --since windows comments and closes
 Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding.
 """
@@ -31,17 +32,29 @@ def config(path):
 
 
 def get(repo, path):
-    """A GitHub REST listing. Unauthenticated GETs work on public repos but are
-    rate-limited to 60/hr; GITHUB_TOKEN or GH_TOKEN is used when set."""
-    request = urllib.request.Request(
-        f"https://api.github.com/repos/{repo}/{path}"
-        + ("&" if "?" in path else "?") + "per_page=100",
-        headers={"User-Agent": "sweep", "Accept": "application/vnd.github+json"})
-    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
-    if token:
-        request.add_header("Authorization", f"Bearer {token}")
-    with urllib.request.urlopen(request) as response:
-        return json.load(response)
+    """A GitHub REST resource, every page of a listing. A page holds 100 and
+    `discopy/discopy` had 153 open items the day this stopped reading one page:
+    the tail is the oldest, so a 🚀 on an old issue was invisible for good.
+    Unauthenticated GETs work on public repos but are rate-limited to 60/hr;
+    GITHUB_TOKEN or GH_TOKEN is used when set."""
+    results, page = [], 1
+    while True:
+        request = urllib.request.Request(
+            f"https://api.github.com/repos/{repo}/{path}"
+            + ("&" if "?" in path else "?") + f"per_page=100&page={page}",
+            headers={"User-Agent": "sweep",
+                     "Accept": "application/vnd.github+json"})
+        token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+        if token:
+            request.add_header("Authorization", f"Bearer {token}")
+        with urllib.request.urlopen(request) as response:
+            items = json.load(response)
+        if not isinstance(items, list):  # a single issue, comment or user
+            return items
+        results += items
+        if len(items) < 100:
+            return results
+        page += 1
 
 
 def review_comments(repo, number):
@@ -74,7 +87,8 @@ def closed_since(repo, since):
         if "pull_request" in issue or issue["closed_at"] < since:
             continue
         closer = get(repo, f"issues/{issue['number']}").get("closed_by") or {}
-        yield (f"#{issue['number']} closed {issue['state_reason']} by "
+        reason = f" {issue['state_reason']}" if issue["state_reason"] else ""
+        yield (f"#{issue['number']} closed{reason} by "
                f"{closer.get('login', 'unknown')}: " + issue["html_url"])
 
 
