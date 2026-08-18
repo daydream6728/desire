@@ -78,7 +78,7 @@ endpoints. Replaces `check-approval.sh`.
 closes [#54](https://github.com/toumix/desire/issues/54)) — an agent may leave one narrow kind of
 reply on a non-USER thread: a factual status pointing at an artefact that already exists, taking
 no position and accepting no instruction, resolving the thread if the artefact settles it.
-Narrows the no-reply rule, which keeps its teeth for anything that changes what we build.
+Narrows the no-reply rule.
 
 **A blocker on USER is asked on its PR, the same turn** (same PR, closes
 [#46](https://github.com/toumix/desire/issues/46)) — a point blocked on USER becomes a 🚀-able
@@ -157,8 +157,7 @@ changes.
 
 **Evening scans mentions instead of reading an inbox** ([#22](https://github.com/toumix/desire/pull/22),
 closes [#20](https://github.com/toumix/desire/issues/20)) — `mentions:AGENT` replaces the
-notifications endpoint, which an app installation cannot reach. 👀 marks only a mention queued as
-a `TODO.md` box; 🚀 stays USER's.
+notifications endpoint. 👀 marks only a mention queued as a `TODO.md` box; 🚀 stays USER's.
 
 ## 2026-07-28
 
