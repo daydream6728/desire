@@ -63,15 +63,15 @@ A turn runs it with no numbers, covering every open PR and issue of every repo i
 before planning: no turn concludes "no unblocked work" without a clean sweep —
 checkboxes, CI and behind-counts are all state the agents wrote themselves.
 Pass `--since` with the time the last turn swept — the board records it — so each turn reads the
-delta: a 🚀 has no answered state, so without a window an approval acted on days ago is reported
-every night until its PR merges. Widen the window after a turn runs late or dies.
+comments as a delta rather than re-triaging the whole pile; widen the window after a turn runs
+late or dies. Reacts ignore it: a 🚀 has no answered state, so it is reported whatever its age,
+until the thing it sits on closes.
 
 **React 👀 the moment you pick something up**, before doing the work: an instruction carrying no
 react was never received, one carrying 👀 is in progress. React on the comment or the body itself,
-answer it once the change lands. The MCP tool takes a `reaction` on a body or a conversation
-comment; a review comment it cannot reach, so POST `{"content": "eyes"}` to
-`pulls/comments/<id>/reactions`. The sweep marks a flag `👀` when anyone but USER has reacted, so a
-turn can tell a backlog from a queue.
+answer it once the change lands. `add_issue_comment` takes a `reaction` on a body or a
+conversation comment, `add_reply_to_pull_request_comment` on a review comment. The sweep marks a
+flag `👀` when anyone but USER has reacted, so a turn can tell a backlog from a queue.
 
 ## Memory
 MEMORY_REPO holds the agents' long-term memory in its `main` branch:
@@ -122,6 +122,7 @@ Write like [bob](.agents/skills/bob/SKILL.md) in every issue and PR.
 Each proposed change is one comment so user can approve with APPROVE_EMOJI.
 When a point is blocked on USER, post it as a 🚀-able comment on its PR the same
 turn: a blocker recorded only in a `TODO.md` or on the board has not been asked.
+Re-read that comment before asking again, it may already be answered.
 USER does not know PR numbers by heart: the first time a pull request or an
 issue is cited anywhere — a comment, a memory file, a live turn — say in a few
 words what it is, not just its number.
@@ -134,6 +135,11 @@ every scheduled fire notifies USER for nothing.
 
 Every AGENT-owned pull request tags REVIEWER once its `TODO.md` is done and
 again after a substantial rebuild.
+
+Every write to GitHub — pull requests, comments, reviews, reactions — goes
+through the MCP tools, and `GITHUB_TOKEN` is for reads only: the two
+authenticate as different accounts. Assert it before the first write of a turn,
+`mcp__github__get_me` must be AGENT.
 
 ## Turmoil
 When the rules are unclear or conflicting never silently pick a side: tell USER

@@ -6,7 +6,7 @@ received it. AGENTS.md is the ground truth: its Config section names USER, the
 repos and the emoji, and its rules say what to do with a finding.
 
 Usage: sweep.py [--since <ISO8601>] <owner/repo> [number...]
-       # no numbers: every open PR and issue; no --since: everything, ever
+       # no numbers: every open PR and issue; --since windows the comments only
 Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding.
 """
 import ast
@@ -64,11 +64,12 @@ def reactors(repo, kind, target, emoji, cache):
     return [reaction for reaction in cache[kind] if reaction["content"] == emoji]
 
 
-def approved(repo, kind, target, setup, since, cache):
-    """Whether USER's APPROVE_EMOJI is on the target and newer than `since`."""
+def approved(repo, kind, target, setup, cache):
+    """Whether USER's APPROVE_EMOJI is on the target. No `since`: a react has no
+    answered state, so a window hides a live approval as readily as an old one,
+    and every approval on a swept target is reported whatever its age."""
     return any(
         reaction["user"]["login"] == setup["USER"]
-        and reaction["created_at"] >= since
         for reaction in reactors(
             repo, kind, target, setup["APPROVE_EMOJI"], cache))
 
@@ -108,7 +109,7 @@ def item(repo, number, setup, since, cache):
     conversation tab flat; both are swept, and so are the bodies."""
     findings, threads, body = [], {}, get(repo, f"issues/{number}")
     kind = f"issues/{number}/reactions"
-    if approved(repo, kind, body, setup, since, cache):
+    if approved(repo, kind, body, setup, cache):
         findings.append(
             f"#{number} {setup['APPROVE_EMOJI']} from {setup['USER']} on the"
             f" body: {body['html_url']}" + seen(repo, kind, body, setup, cache))
@@ -119,7 +120,7 @@ def item(repo, number, setup, since, cache):
     for comment, thread, endpoint in comments:
         threads.setdefault((endpoint, thread), []).append(comment)
         kind = f"{endpoint}/comments/{comment['id']}/reactions"
-        if approved(repo, kind, comment, setup, since, cache):
+        if approved(repo, kind, comment, setup, cache):
             findings.append(
                 f"#{number} {setup['APPROVE_EMOJI']} from {setup['USER']}:"
                 f" {comment['html_url']}"
