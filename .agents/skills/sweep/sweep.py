@@ -81,12 +81,12 @@ def reactors(repo, kind, target, emoji, cache):
 def closed_since(repo, since):
     """The issues closed inside the window, with why and by whom. USER answers
     some questions by closing the issue, which leaves no thread to read and no
-    open item to walk. One listing per repo, plus one request per issue found
-    to say who closed it; without a window there is no delta, hence nothing."""
+    open item to walk. One listing per repo, which carries the closer as well
+    as the reason; without a window there is no delta, hence nothing."""
     for issue in get(repo, f"issues?state=closed&since={since}") if since else []:
         if "pull_request" in issue or issue["closed_at"] < since:
             continue
-        closer = get(repo, f"issues/{issue['number']}").get("closed_by") or {}
+        closer = issue.get("closed_by") or {}
         reason = f" {issue['state_reason']}" if issue["state_reason"] else ""
         yield (f"#{issue['number']} closed{reason} by "
                f"{closer.get('login', 'unknown')}: " + issue["html_url"])
