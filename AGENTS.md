@@ -47,7 +47,9 @@ No GitHub MCP tool says *who* reacted — comment listings carry the counts only
 [sweep.py](.agents/skills/sweep/sweep.py) `[--since <ISO8601>] <owner/repo> [number...]`, which
 flags every APPROVE_EMOJI react from USER on a body or a comment, both endpoints, and every
 thread where USER spoke last. A thread is answered when **anyone other than USER** has replied
-since; which agent closed it does not matter.
+since; which agent closed it does not matter. With `--since` it also lists the issues closed
+inside the window, with `state_reason` and who closed them: closing an issue is an answer, and
+it leaves no thread to read.
 A turn runs it with no numbers, covering every open PR and issue of every repo in play,
 before planning: no turn concludes "no unblocked work" without a clean sweep —
 checkboxes, CI and behind-counts are all state the agents wrote themselves.

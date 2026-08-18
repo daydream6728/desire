@@ -17,6 +17,10 @@ Both are swept, and so are the bodies; the endpoint split is what hid a 🚀 for
 eight hours once, and body reactions are where two approvals landed the day
 this script was written.
 
+A close is an answer too: with `--since`, the issues closed inside the window
+are reported with their `state_reason` and who closed them, since neither the
+comment endpoints nor the open listings say anything about them.
+
 `--since` filters on each comment's and reaction's `created_at` so a turn reads
 the delta rather than re-triaging the whole pile: a 🚀 has no answered state, so
 without it an approval acted on days ago is reported forever. Widen the window
@@ -65,6 +69,22 @@ def review_comments(number):
         raise
 
 
+def closed_since():
+    """The issues closed inside the window, with why and by whom.
+
+    USER answers some questions by closing the issue, which no thread records:
+    the sweep reads open items, so the pipeline carries such a question as
+    pending forever. One listing per repo, plus one request per issue found to
+    say who closed it. Without `--since` there is no window, hence no delta.
+    """
+    for item in get(f"issues?state=closed&since={since}") if since else []:
+        if "pull_request" in item or item["closed_at"] < since:
+            continue
+        closer = get(f"issues/{item['number']}").get("closed_by") or {}
+        yield (f"#{item['number']} closed {item['state_reason']} by "
+               f"{closer.get('login', 'unknown')}: " + item["html_url"])
+
+
 def approved(kind, target):
     """USER's APPROVE_EMOJI reaction if it is newer than `since`, else None.
     The count comes free with the target, so only bodies and comments carrying
@@ -94,6 +114,7 @@ if repo == MEMORY_REPO and not numbers:
             " the oldest and close the rest, don't open another")
 
 if not numbers:
+    findings += closed_since()
     numbers = sorted({item["number"] for item in get("issues?state=open")})
 for number in numbers:
     item = get(f"issues/{number}")

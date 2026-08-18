@@ -3,6 +3,14 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-18
+
+**The sweep reads closes** ([#82](https://github.com/toumix/desire/pull/82),
+closes [#81](https://github.com/toumix/desire/issues/81)) — with `--since`, `sweep.py` lists the
+issues closed inside the window with their `state_reason` and who closed them, and `AGENTS.md`
+says so. Extends the `--since` delta of 2026-08-14 below, which windows comments and reactions
+only.
+
 ## 2026-08-14
 
 **ADOPTED_PRS joins the Config** ([#71](https://github.com/toumix/desire/pull/71),
