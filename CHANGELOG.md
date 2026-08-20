@@ -3,6 +3,25 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-20
+
+**Commits are authored by AGENT and AGENT_EMAIL** ([#93](https://github.com/toumix/desire/pull/93),
+closes [#92](https://github.com/toumix/desire/issues/92)) — `AGENT_EMAIL` joins the Config, set with
+`AGENT` on every clone before a turn's first commit. New rule, replaces nothing.
+
+**`RULES.md` lands here** (same PR, closes
+[#91](https://github.com/toumix/desire/issues/91)) — a verbatim copy of discopy's, imported by
+`CLAUDE.md`, until [#87](https://github.com/toumix/desire/issues/87) gives it one home. `sweep.py`
+reads its `TODO.md` off each AGENT-owned head in WORK_REPOS: open boxes as context, a `[WIP]` claim
+past twelve hours and a branch that never carried one as findings; a branch that carried one and
+deleted it at the gate is not a finding. New rule, replaces nothing.
+
+**The sweep reads a body USER wrote** (same PR, closes
+[#90](https://github.com/toumix/desire/issues/90)) — an issue or pull request USER opened is the
+thread while nothing else is said on it, windowed on `created_at`; once anyone comments, that
+thread's last word answers for it. Replaces reporting a body only when it carries a 🚀. Same PR
+stops `answered` raising on a body with no description.
+
 ## 2026-08-18
 
 **The sweep reads closes** ([#82](https://github.com/toumix/desire/pull/82),
