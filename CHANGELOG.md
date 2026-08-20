@@ -19,9 +19,10 @@ file off each AGENT-owned head in WORK_REPOS: open boxes as context, a `[WIP]` c
 hours and a missing file as findings. New rule, replaces nothing.
 
 **The sweep reads a body USER wrote** (same PR, closes
-[#90](https://github.com/toumix/desire/issues/90)) — an issue or pull request USER opened is a
-thread of one, windowed on `created_at`. Replaces reporting a body only when it carries a 🚀. Same
-PR stops `answered` raising on a body with no description.
+[#90](https://github.com/toumix/desire/issues/90)) — an issue or pull request USER opened is the
+thread while nothing else is said on it, windowed on `created_at`; once anyone comments, that
+thread's last word answers for it. Replaces reporting a body only when it carries a 🚀. Same PR
+stops `answered` raising on a body with no description.
 
 ## 2026-08-18
 

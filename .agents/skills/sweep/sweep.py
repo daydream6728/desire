@@ -238,19 +238,15 @@ def item(repo, number, setup, since, cache):
     any comment, and every thread where USER spoke last. GitHub splits comments
     across two endpoints, review comments threaded by in_reply_to_id and the
     conversation tab flat; both are swept, and so are the bodies. A body USER
-    wrote is a thread of one, windowed on `created_at` like the others: an
-    issue nobody has commented on is the shape a standing order arrives in."""
+    wrote is the thread when nothing else was said on it, which is the shape a
+    standing order arrives in; once anyone comments, that thread's last word
+    answers for it and the body would only report it twice."""
     findings, threads, body = [], {}, get(repo, f"issues/{number}")
     kind = f"issues/{number}/reactions"
     if approved(repo, kind, body, setup, cache):
         findings.append(
             f"#{number} {setup['APPROVE_EMOJI']} from {setup['USER']} on the"
             f" body: {body['html_url']}" + seen(repo, kind, body, setup, cache))
-    if not answered(body, setup) and body["created_at"] >= since:
-        findings.append(
-            f"#{number} unanswered {setup['USER']}"
-            f" {'pull request' if 'pull_request' in body else 'issue'}:"
-            f" {body['html_url']}" + seen(repo, kind, body, setup, cache))
     comments = [(comment, comment.get("in_reply_to_id", comment["id"]), "pulls")
                 for comment in review_comments(repo, number)]
     comments += [(comment, number, "issues")
@@ -270,6 +266,13 @@ def item(repo, number, setup, since, cache):
             findings.append(
                 f"#{number} unanswered {setup['USER']} comment:"
                 f" {asked['html_url']}" + seen(repo, kind, asked, setup, cache))
+    kind = f"issues/{number}/reactions"
+    if ("issues", number) not in threads and not answered(body, setup) \
+            and body["created_at"] >= since:
+        findings.append(
+            f"#{number} unanswered {setup['USER']}"
+            f" {'pull request' if 'pull_request' in body else 'issue'}:"
+            f" {body['html_url']}" + seen(repo, kind, body, setup, cache))
     return findings + todo(repo, number, body, setup, cache)
 
 
