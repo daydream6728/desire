@@ -16,8 +16,17 @@ log() { echo "session-start: $*" >&2; }
 # covers every WORK_REPO/MEMORY_REPO/DESIRE_REPO clone in the container
 # without a hook in each. Only user.name/email — leaves the harness's own
 # commit-signing config (signingkey, gpg.*) untouched.
-git config --global --replace-all user.name "toumix-agents"
-git config --global --replace-all user.email "agents@toumi.email"
+#
+# config.yaml (next to AGENTS.md) is the source of truth for AGENT/AGENT_EMAIL.
+# Read with sed, not yq: yq here shells out to jq, and jq is only installed
+# below, best-effort. The literal fallback only fires if config.yaml can't
+# be read at all.
+config_root="$(cd "$(dirname "$0")/../.." && pwd)"
+scalar() { sed -n "s/^$1:[[:space:]]*//p" "$config_root/config.yaml" 2>/dev/null | head -1; }
+agent="$(scalar AGENT)"; agent="${agent:-toumix-agents}"
+agent_email="$(scalar AGENT_EMAIL)"; agent_email="${agent_email:-agents@toumi.email}"
+git config --global --replace-all user.name "$agent"
+git config --global --replace-all user.email "$agent_email"
 log "git identity: $(git config --global user.name) <$(git config --global user.email)>"
 
 pkgs=()

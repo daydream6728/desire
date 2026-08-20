@@ -3,8 +3,8 @@
 bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
 issues closed inside the window, MEMORY_REPO's open-PR count and the state of
 each AGENT-owned `TODO.md`. A finding is marked 👀 when the pipeline has reacted
-to say it received it. AGENTS.md is the ground truth: its Config section names
-USER, the repos and the emoji, and its rules say what to do with a finding.
+to say it received it. config.yaml is the ground truth for USER, the repos
+and the emoji; AGENTS.md's rules say what to do with a finding.
 
 Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
                 [number...]
@@ -12,7 +12,6 @@ Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
 Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding. Open
 `TODO.md` boxes are printed as context and do not make the sweep dirty.
 """
-import ast
 import base64
 import datetime
 import json
@@ -23,7 +22,9 @@ import sys
 import urllib.error
 import urllib.request
 
-AGENTS = pathlib.Path(__file__).parents[3] / "AGENTS.md"
+import yaml
+
+CONFIG = pathlib.Path(__file__).parents[3] / "config.yaml"
 BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
 CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
                    r"(?:Z|[+-]\d{2}:?\d{2})?)?")
@@ -31,12 +32,9 @@ STALE = datetime.timedelta(hours=12)
 
 
 def config(path):
-    """The Config section of AGENTS.md as a dict, so that the pipeline is
-    configured in one place and this script hard-codes no repo and no agent."""
-    section = path.read_text().split("## Config")[1].split("\n##")[0]
-    return {name.strip(): ast.literal_eval(value.strip())
-            for line in section.splitlines() if line.startswith("- ")
-            for name, _, value in [line[2:].partition("=")] if value}
+    """config.yaml as a dict, so that the pipeline is configured in one place
+    and this script hard-codes no repo and no agent."""
+    return yaml.safe_load(path.read_text())
 
 
 def get(repo, path):
@@ -314,7 +312,7 @@ def main(arguments):
     if arguments and arguments[0] == "--since":
         _, since, *arguments = arguments
     findings = sweep(arguments[0], [int(n) for n in arguments[1:]], since,
-                     config(AGENTS))
+                     config(CONFIG))
     print("\n".join(findings) if findings else "clean", file=sys.stderr)
     return 1 if findings else 0
 
