@@ -16,8 +16,8 @@ log() { echo "session-start: $*" >&2; }
 # covers every WORK_REPO/MEMORY_REPO/DESIRE_REPO clone in the container
 # without a hook in each. Only user.name/email — leaves the harness's own
 # commit-signing config (signingkey, gpg.*) untouched.
-git config --global user.name "toumix-agents"
-git config --global user.email "agents@toumi.email"
+git config --global --replace-all user.name "toumix-agents"
+git config --global --replace-all user.email "agents@toumi.email"
 log "git identity: $(git config --global user.name) <$(git config --global user.email)>"
 
 pkgs=()
