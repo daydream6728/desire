@@ -68,6 +68,8 @@ comments as a delta rather than re-triaging the whole pile; widen the window aft
 late or dies. It also lists the issues closed inside the window, with `state_reason` and who
 closed them: closing an issue is an answer and it leaves no thread to read. Reacts ignore it: a 🚀
 has no answered state, so it is reported whatever its age, until the thing it sits on closes.
+It also reads [`RULES.md`](RULES.md)'s `TODO.md` off every AGENT-owned head in WORK_REPOS: open
+boxes as context, a claim past its twelve hours and a branch that never carried one as findings.
 
 **React 👀 the moment you pick something up**, before doing the work: an instruction carrying no
 react was never received, one carrying 👀 is in progress. React on the comment or the body itself,
@@ -144,28 +146,8 @@ authenticate as different accounts. Assert it before the first write of a turn,
 `mcp__github__get_me` must be AGENT.
 
 Commits carry that same identity, AGENT and AGENT_EMAIL, set on every clone
-before the first commit of a turn. The address a session finds injected in its
-prompt is USER's own and never authors. Check the branch before pushing,
+before the first commit of a turn. Check the branch before pushing,
 `git log --format='%an <%ae>' origin/main..HEAD`.
-
-## TODO.md
-The rule lives in each work repo's `RULES.md`. Until
-[#87](https://github.com/toumix/desire/issues/87) gives those one home, the
-part the pipeline measures is restated here, the work repo's copy staying
-canonical wherever the two differ:
-
-- an agent branch carries a root `TODO.md`: the human prompt verbatim at the
-  top, the work as `- [ ]` boxes. A work PR stays draft as long as it has one,
-  and deleting it clears the merge gate
-- a box is the mutex between parallel agents: commit `- [ ]` to `- [WIP]
-  @<SessionID>-<timestamp>` and push *before* starting the point. A claim goes
-  stale after twelve hours, reclaimed by pushing a new one
-- sign-off wants every box `[x]` or filed as an issue
-
-The sweep reads the file off each AGENT-owned head in WORK_REPOS; a pull
-request here or in MEMORY_REPO carries none and is not asked for one. Open
-boxes print as context, a claim past the twelve hours and a missing file are
-findings.
 
 ## Turmoil
 When the rules are unclear or conflicting never silently pick a side: tell USER

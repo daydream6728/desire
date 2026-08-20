@@ -151,14 +151,17 @@ def heads(repo, cache):
 
 def contents(repo, path, ref):
     """A file at one commit, `None` when that commit does not carry it: a
-    missing `TODO.md` is a finding here rather than an error."""
+    missing `TODO.md` is a finding here rather than an error. Undecodable bytes
+    are replaced rather than raised, since one unreadable file would otherwise
+    abort the whole sweep. `validate=True` is wrong here — GitHub wraps the
+    base64 it serves, which the strict decoder rejects."""
     try:
         blob = get(repo, f"contents/{path}?ref={ref}")
     except urllib.error.HTTPError as error:
         if error.code == 404:
             return None
         raise
-    return base64.b64decode(blob["content"]).decode()
+    return base64.b64decode(blob["content"]).decode(errors="replace")
 
 
 def claimed(box):
@@ -177,6 +180,20 @@ def claimed(box):
         return None
     return when if when.tzinfo else when.replace(
         tzinfo=datetime.timezone.utc)
+
+
+def cleared(repo, head, cache):
+    """Whether this branch carried a `TODO.md` and deleted it, which is what
+    clears the merge gate. Both cases read as missing at the head, and the
+    diff cannot tell them apart either: adding a file and deleting it again
+    nets out to nothing. The branch's own commits touching the path do, once
+    the ones it inherits from `main` are taken out. Asked only of a branch
+    already known to have no `TODO.md`."""
+    if "cleared" not in cache:
+        cache["cleared"] = {commit["sha"] for commit in get(
+            repo, "commits?sha=main&path=TODO.md")}
+    return any(commit["sha"] not in cache["cleared"] for commit in get(
+        repo, f"commits?sha={head}&path=TODO.md"))
 
 
 def elapsed(age):
@@ -203,14 +220,16 @@ def todo(repo, number, body, setup, cache):
     finished and nothing else in the sweep reads it. Open boxes are printed
     the way MEMORY_REPO's PR count is — work left is the normal state of a
     branch, not a finding — while a claim past Rule 2's twelve hours and a
-    missing file are reported."""
+    branch that never carried the file are reported."""
     if not owned(repo, number, body, setup):
         return []
-    head = heads(repo, cache).get(number) or get(repo, f"pulls/{number}")
-    text = contents(repo, "TODO.md", head["head"]["sha"])
+    head = (heads(repo, cache).get(number)
+            or get(repo, f"pulls/{number}"))["head"]["sha"]
+    text = contents(repo, "TODO.md", head)
     if text is None:
-        return [f"#{number} no TODO.md, so it cannot reach sign-off: "
-                + body["html_url"]]
+        return [] if cleared(repo, head, cache) else [
+            f"#{number} never carried a TODO.md, so it cannot reach sign-off: "
+            + body["html_url"]]
     boxes = [(mark.group(1).strip(), line) for line in text.splitlines()
              for mark in [BOX.match(line)] if mark]
     if opened := [line for mark, line in boxes if not mark]:
@@ -267,7 +286,7 @@ def item(repo, number, setup, since, cache):
                 f"#{number} unanswered {setup['USER']} comment:"
                 f" {asked['html_url']}" + seen(repo, kind, asked, setup, cache))
     kind = f"issues/{number}/reactions"
-    if ("issues", number) not in threads and not answered(body, setup) \
+    if not threads and not answered(body, setup) \
             and body["created_at"] >= since:
         findings.append(
             f"#{number} unanswered {setup['USER']}"

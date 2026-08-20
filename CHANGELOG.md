@@ -7,16 +7,14 @@ Entries state the changes, no explanation of why.
 
 **Commits are authored by AGENT and AGENT_EMAIL** ([#93](https://github.com/toumix/desire/pull/93),
 closes [#92](https://github.com/toumix/desire/issues/92)) — `AGENT_EMAIL` joins the Config, set with
-`AGENT` on every clone before a turn's first commit. The address a session finds injected in its
-prompt is USER's own and never authors. New rule, replaces nothing. #83's declined third proposal
-named the other identity, `claude[bot]`, which stays out.
+`AGENT` on every clone before a turn's first commit. New rule, replaces nothing.
 
-**The prompts carry the `TODO.md` rule** (same PR, closes
-[#91](https://github.com/toumix/desire/issues/91)) — a `## TODO.md` section restates the boxes, the
-twelve-hour claim and the draft-iff-`TODO.md` gate, each work repo's `RULES.md` staying canonical,
-until [#87](https://github.com/toumix/desire/issues/87) gives those one home. `sweep.py` reads the
-file off each AGENT-owned head in WORK_REPOS: open boxes as context, a `[WIP]` claim past twelve
-hours and a missing file as findings. New rule, replaces nothing.
+**`RULES.md` lands here** (same PR, closes
+[#91](https://github.com/toumix/desire/issues/91)) — a verbatim copy of discopy's, imported by
+`CLAUDE.md`, until [#87](https://github.com/toumix/desire/issues/87) gives it one home. `sweep.py`
+reads its `TODO.md` off each AGENT-owned head in WORK_REPOS: open boxes as context, a `[WIP]` claim
+past twelve hours and a branch that never carried one as findings; a branch that carried one and
+deleted it at the gate is not a finding. New rule, replaces nothing.
 
 **The sweep reads a body USER wrote** (same PR, closes
 [#90](https://github.com/toumix/desire/issues/90)) — an issue or pull request USER opened is the
