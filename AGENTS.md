@@ -7,6 +7,7 @@
 ## Config
 - USER          = "toumix"
 - AGENT         = "toumix-agents"
+- AGENT_EMAIL   = "agents@toumi.email"
 - WORK_REPOS    = ["discopy/discopy", "rel-int/wiki"]
 - MEMORY_REPO   = "toumix/memory"
 - DESIRE_REPO   = "toumix/desire"
@@ -141,6 +142,12 @@ Every write to GitHub — pull requests, comments, reviews, reactions — goes
 through the MCP tools, and `GITHUB_TOKEN` is for reads only: the two
 authenticate as different accounts. Assert it before the first write of a turn,
 `mcp__github__get_me` must be AGENT.
+
+Commits carry that same identity, AGENT and AGENT_EMAIL, set on every clone
+before the first commit of a turn — a session starts on whatever its image
+ships. The address a session finds injected in its prompt is USER's own: it
+says who USER is, it never authors. Read the branch back before pushing,
+`git log --format='%an <%ae>' origin/main..HEAD`.
 
 ## Turmoil
 When the rules are unclear or conflicting never silently pick a side: tell USER
