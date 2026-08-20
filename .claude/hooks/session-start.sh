@@ -11,6 +11,15 @@ set -uo pipefail   # deliberately no -e — an install failure must not abort th
 
 log() { echo "session-start: $*" >&2; }
 
+# AGENTS.md: "Commits carry that same identity, AGENT and AGENT_EMAIL, set on
+# every clone before the first commit of a turn." Global, not per-repo, so it
+# covers every WORK_REPO/MEMORY_REPO/DESIRE_REPO clone in the container
+# without a hook in each. Only user.name/email — leaves the harness's own
+# commit-signing config (signingkey, gpg.*) untouched.
+git config --global user.name "toumix-agents"
+git config --global user.email "agents@toumi.email"
+log "git identity: $(git config --global user.name) <$(git config --global user.email)>"
+
 pkgs=()
 command -v jq >/dev/null 2>&1 || pkgs+=(jq)
 command -v gh >/dev/null 2>&1 || pkgs+=(gh)
