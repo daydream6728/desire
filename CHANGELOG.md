@@ -3,6 +3,26 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-20
+
+**Commits are authored by AGENT and AGENT_EMAIL** ([#93](https://github.com/toumix/desire/pull/93),
+closes [#92](https://github.com/toumix/desire/issues/92)) — `AGENT_EMAIL` joins the Config, set with
+`AGENT` on every clone before a turn's first commit. The address a session finds injected in its
+prompt is USER's own and never authors. New rule, replaces nothing. #83's declined third proposal
+named the other identity, `claude[bot]`, which stays out.
+
+**The prompts carry the `TODO.md` rule** (same PR, closes
+[#91](https://github.com/toumix/desire/issues/91)) — a `## TODO.md` section restates the boxes, the
+twelve-hour claim and the draft-iff-`TODO.md` gate, each work repo's `RULES.md` staying canonical,
+until [#87](https://github.com/toumix/desire/issues/87) gives those one home. `sweep.py` reads the
+file off each AGENT-owned head in WORK_REPOS: open boxes as context, a `[WIP]` claim past twelve
+hours and a missing file as findings. New rule, replaces nothing.
+
+**The sweep reads a body USER wrote** (same PR, closes
+[#90](https://github.com/toumix/desire/issues/90)) — an issue or pull request USER opened is a
+thread of one, windowed on `created_at`. Replaces reporting a body only when it carries a 🚀. Same
+PR stops `answered` raising on a body with no description.
+
 ## 2026-08-18
 
 **The sweep reads closes** ([#82](https://github.com/toumix/desire/pull/82),

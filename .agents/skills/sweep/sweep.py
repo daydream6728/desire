@@ -1,25 +1,33 @@
 #!/usr/bin/env python3
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
-threads where USER spoke last, APPROVE_EMOJI reacts from USER, the issues closed
-inside the window, and MEMORY_REPO's open-PR count. A finding is marked 👀 when
-the pipeline has reacted to say it received it. AGENTS.md is the ground truth:
-its Config section names USER, the repos and the emoji, and its rules say what
-to do with a finding.
+bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
+issues closed inside the window, MEMORY_REPO's open-PR count and the state of
+each AGENT-owned `TODO.md`. A finding is marked 👀 when the pipeline has reacted
+to say it received it. AGENTS.md is the ground truth: its Config section names
+USER, the repos and the emoji, and its rules say what to do with a finding.
 
 Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
                 [number...]
        # no numbers: every open PR and issue; --since windows comments and closes
-Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding.
+Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding. Open
+`TODO.md` boxes are printed as context and do not make the sweep dirty.
 """
 import ast
+import base64
+import datetime
 import json
 import os
 import pathlib
+import re
 import sys
 import urllib.error
 import urllib.request
 
 AGENTS = pathlib.Path(__file__).parents[3] / "AGENTS.md"
+BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
+CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
+                   r"(?:Z|[+-]\d{2}:?\d{2})?)?")
+STALE = datetime.timedelta(hours=12)
 
 
 def config(path):
@@ -113,10 +121,11 @@ def seen(repo, kind, target, setup, cache):
 
 def answered(comment, setup):
     """Whether anyone but USER wrote this, AGENT_FOOTER deciding for the ones an
-    agent posted from USER's account. Bodies are read for that line only."""
+    agent posted from USER's account. Bodies are read for that line only, and
+    an issue opened with no description has `None` for one."""
     return (comment["user"]["login"] != setup["USER"]
             or setup["AGENT_FOOTER"]
-            in (comment["body"].strip().splitlines() or [""])[-1])
+            in ((comment["body"] or "").strip().splitlines() or [""])[-1])
 
 
 def memory(repo, setup):
@@ -130,17 +139,118 @@ def memory(repo, setup):
         " oldest and close the rest, don't open another"]
 
 
+def heads(repo, cache):
+    """Every open pull request by number. `TODO.md` is read off the head
+    commit, which the listing already carries, so the whole repo costs one
+    request rather than one per pull request."""
+    if "heads" not in cache:
+        cache["heads"] = {pull["number"]: pull
+                          for pull in get(repo, "pulls?state=open")}
+    return cache["heads"]
+
+
+def contents(repo, path, ref):
+    """A file at one commit, `None` when that commit does not carry it: a
+    missing `TODO.md` is a finding here rather than an error."""
+    try:
+        blob = get(repo, f"contents/{path}?ref={ref}")
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            return None
+        raise
+    return base64.b64decode(blob["content"]).decode()
+
+
+def claimed(box):
+    """When a `[WIP]` box was claimed, `None` when it carries no readable date.
+    Rule 2 stamps `@<SessionID>-<yyyy-MM-dd HH:mm>`, in practice with an offset
+    or a `Z` and sometimes a range, so the first date on the line wins and a
+    naive one is read as UTC."""
+    stamp = CLAIM.search(box)
+    if not stamp:
+        return None
+    text = re.sub(r"([+-]\d{2})(\d{2})$", r"\1:\2",
+                  stamp.group().replace(" ", "T").replace("Z", "+00:00"))
+    try:
+        when = datetime.datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    return when if when.tzinfo else when.replace(
+        tzinfo=datetime.timezone.utc)
+
+
+def elapsed(age):
+    """An age in whole hours, in days once there are two of them: the window
+    is twelve hours and the claims that break it run to weeks."""
+    hours = int(age.total_seconds() // 3600)
+    return f"{hours // 24} days" if hours >= 48 else f"{hours} hours"
+
+
+def owned(repo, number, body, setup):
+    """Whether the pipeline is answerable for this pull request: AGENT opened
+    it or ADOPTED_PRS lists it, the same test the board and the scans use.
+    Nobody else's branch owes us a `TODO.md`, and neither does one in
+    DESIRE_REPO or MEMORY_REPO — the rule binds where the work happens."""
+    return "pull_request" in body and repo in setup["WORK_REPOS"] and (
+        body["user"]["login"] == setup["AGENT"]
+        or number in setup.get("ADOPTED_PRS", {}).get(repo, []))
+
+
+def todo(repo, number, body, setup, cache):
+    """The `TODO.md` findings on one AGENT-owned pull request. Its boxes are
+    the mutex between parallel agents and deleting the file is what clears the
+    merge gate, so it is the one file that says whether a pull request is
+    finished and nothing else in the sweep reads it. Open boxes are printed
+    the way MEMORY_REPO's PR count is — work left is the normal state of a
+    branch, not a finding — while a claim past Rule 2's twelve hours and a
+    missing file are reported."""
+    if not owned(repo, number, body, setup):
+        return []
+    head = heads(repo, cache).get(number) or get(repo, f"pulls/{number}")
+    text = contents(repo, "TODO.md", head["head"]["sha"])
+    if text is None:
+        return [f"#{number} no TODO.md, so it cannot reach sign-off: "
+                + body["html_url"]]
+    boxes = [(mark.group(1).strip(), line) for line in text.splitlines()
+             for mark in [BOX.match(line)] if mark]
+    if opened := [line for mark, line in boxes if not mark]:
+        print(f"{repo}#{number}: {len(opened)} of {len(boxes)} TODO.md"
+              " point(s) open", file=sys.stderr)
+    findings = []
+    for mark, line in boxes:
+        if "WIP" not in mark.upper():
+            continue
+        when = claimed(line)
+        age = None if when is None else (
+            datetime.datetime.now(datetime.timezone.utc) - when)
+        if age is not None and age < STALE:
+            continue
+        findings.append(
+            f"#{number} stale [WIP] claim, "
+            + ("no readable date" if age is None else
+               f"{when:%Y-%m-%d} ({elapsed(age)} old)")
+            + ", reclaim it: " + body["html_url"])
+    return findings
+
+
 def item(repo, number, setup, since, cache):
     """The findings on one PR or issue: USER's APPROVE_EMOJI on the body or on
     any comment, and every thread where USER spoke last. GitHub splits comments
     across two endpoints, review comments threaded by in_reply_to_id and the
-    conversation tab flat; both are swept, and so are the bodies."""
+    conversation tab flat; both are swept, and so are the bodies. A body USER
+    wrote is a thread of one, windowed on `created_at` like the others: an
+    issue nobody has commented on is the shape a standing order arrives in."""
     findings, threads, body = [], {}, get(repo, f"issues/{number}")
     kind = f"issues/{number}/reactions"
     if approved(repo, kind, body, setup, cache):
         findings.append(
             f"#{number} {setup['APPROVE_EMOJI']} from {setup['USER']} on the"
             f" body: {body['html_url']}" + seen(repo, kind, body, setup, cache))
+    if not answered(body, setup) and body["created_at"] >= since:
+        findings.append(
+            f"#{number} unanswered {setup['USER']}"
+            f" {'pull request' if 'pull_request' in body else 'issue'}:"
+            f" {body['html_url']}" + seen(repo, kind, body, setup, cache))
     comments = [(comment, comment.get("in_reply_to_id", comment["id"]), "pulls")
                 for comment in review_comments(repo, number)]
     comments += [(comment, number, "issues")
@@ -160,7 +270,7 @@ def item(repo, number, setup, since, cache):
             findings.append(
                 f"#{number} unanswered {setup['USER']} comment:"
                 f" {asked['html_url']}" + seen(repo, kind, asked, setup, cache))
-    return findings
+    return findings + todo(repo, number, body, setup, cache)
 
 
 def sweep(repo, numbers, since, setup):
