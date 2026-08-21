@@ -5,41 +5,26 @@ set -uo pipefail
 
 log() { echo "session-start: $*" >&2; }
 
-config_root="$(cd "$(dirname "$0")/../.." && pwd)"
-if identity="$(python3 - "$config_root" <<'PY'
-import pathlib
-import sys
-
-root = pathlib.Path(sys.argv[1])
-sys.path.insert(0, str(root / ".agents/skills/sweep"))
-import sweep
-
-try:
-    setup = sweep.config(root / "config.yaml")
-except OSError as error:
-    sys.exit(f"session-start: config.yaml is unreadable: {error}")
-except Exception as error:
-    sys.exit(f"session-start: config.yaml does not parse: {error!r}")
-missing = [key for key in ("AGENT", "AGENT_EMAIL")
-           if not str(setup.get(key, "")).strip()]
-if missing:
-    sys.exit(f"session-start: config.yaml sets no {' and no '.join(missing)}")
-print(setup["AGENT"])
-print(setup["AGENT_EMAIL"])
-PY
-)"; then
-  git config --global --replace-all user.name \
-    "$(printf '%s\n' "$identity" | sed -n 1p)"
-  git config --global --replace-all user.email \
-    "$(printf '%s\n' "$identity" | sed -n 2p)"
+config="$(cd "$(dirname "$0")/../.." && pwd)/config.env"
+agent="$(sed -n 's/^AGENT=//p' "$config" 2>/dev/null | tail -1)"
+agent_email="$(sed -n 's/^AGENT_EMAIL=//p' "$config" 2>/dev/null | tail -1)"
+if [ -n "$agent" ] && [ -n "$agent_email" ]; then
+  git config --global --replace-all user.name "$agent"
+  git config --global --replace-all user.email "$agent_email"
   log "git identity: $(git config --global user.name) <$(git config --global user.email)>"
 else
+  if [ ! -r "$config" ]; then
+    log "config.env is unreadable"
+  else
+    [ -n "$agent" ] || log "config.env sets no AGENT"
+    [ -n "$agent_email" ] || log "config.env sets no AGENT_EMAIL"
+  fi
   cleared=yes
   for key in user.name user.email; do
     git config --global --unset-all "$key"
     case $? in 0 | 5) ;; *) cleared=no ;; esac
   done
-  log "git identity NOT set (see above) — fix config.yaml before committing"
+  log "git identity NOT set (see above) — fix config.env before committing"
   [ "$cleared" = yes ] || log "could NOT clear the global identity: commits may" \
     "still be authored as $(git config --global user.name)" \
     "<$(git config --global user.email)> — clear it by hand"

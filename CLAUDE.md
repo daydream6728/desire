@@ -1,5 +1,5 @@
 @AGENTS.md
-@config.yaml
+@config.env
 @RULES.md
 @BIRDSONG.md
 @DAYLIGHT.md

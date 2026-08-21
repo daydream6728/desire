@@ -11,7 +11,7 @@ Software engineering prompts inspired by the asymmetric board game Root:
 - 🌙 [Evening](EVENING.md) reviews and implements, overnight, what you approved
 
 [AGENTS.md](AGENTS.md) is the operating base they all follow: the two layers of memory, what
-authorizes a change — with the values it runs on in [config.yaml](config.yaml). It is deliberately
+authorizes a change — with the values it runs on in [config.env](config.env). It is deliberately
 short (under a hundred lines with the phase files) because every line of it is loaded into every
 session. Some guiding principles:
 
@@ -22,7 +22,7 @@ session. Some guiding principles:
 ## Get started
 
 1) Open a new GitHub account for your agents, add it as collaborator to your fork for this repo,
-   and name it `AGENT` in [`config.yaml`](config.yaml) — with `USER` and `AGENT_EMAIL` beside it.
+   and name it `AGENT` in [`config.env`](config.env) — with `USER` and `AGENT_EMAIL` beside it.
 2) Create a new GitHub repo (e.g. called `memory`), set it as `MEMORY_REPO` in that same file,
    set your fork as `DESIRE_REPO`, and list the repos your agents work in under `WORK_REPOS`.
 3) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.

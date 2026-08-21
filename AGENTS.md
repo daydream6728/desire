@@ -7,9 +7,9 @@
 ## Config
 The values (USER, AGENT, AGENT_EMAIL, WORK_REPOS, MEMORY_REPO, DESIRE_REPO,
 APPROVE_EMOJI, REVIEWER, AGENT_FOOTER, ADOPTED_PRS) live in
-[`config.yaml`](config.yaml), the one file that names them — nothing here
+[`config.env`](config.env), the one file that names them — nothing here
 duplicates it. `session-start.sh` reads it before the first commit of a turn,
-`sweep.py`'s `config()` before every sweep. A config.yaml that cannot be read
+`sweep.py`'s `config()` before every sweep. A config.env that cannot be read
 clears the global git identity rather than set a stale one: committing fails
 loudly, and the hook warns when the clearing itself fails.
 

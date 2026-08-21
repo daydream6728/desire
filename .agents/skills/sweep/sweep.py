@@ -3,7 +3,7 @@
 bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
 issues closed inside the window, MEMORY_REPO's open-PR count and the state of
 each AGENT-owned `TODO.md`. A finding is marked 👀 when the pipeline has reacted
-to say it received it. config.yaml is the ground truth for USER, the repos
+to say it received it. config.env is the ground truth for USER, the repos
 and the emoji; AGENTS.md's rules say what to do with a finding.
 
 Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
@@ -22,80 +22,34 @@ import sys
 import urllib.error
 import urllib.request
 
-CONFIG = pathlib.Path(__file__).parents[3] / "config.yaml"
-COMMENT = re.compile(r"(?:^|\s)#.*")
-INTEGER = re.compile(r"-?\d+")
+CONFIG = pathlib.Path(__file__).parents[3] / "config.env"
 BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
 CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
                    r"(?:Z|[+-]\d{2}:?\d{2})?)?")
 STALE = datetime.timedelta(hours=12)
 
 
-def quoted(text):
-    """A quoted scalar, read to its closing quote: `#` inside it is content,
-    `\'\'` is one quote inside single quotes and `\\"`/`\\\\` are one inside
-    double quotes. Every other escape, an unterminated quote and anything but
-    a comment after the closing quote raise — this is the identity the whole
-    pipeline commits under, so a value it cannot read exactly is an error and
-    never a truncation."""
-    quote, value, index = text[0], "", 1
-    while index < len(text):
-        character = text[index]
-        if character == "\\" and quote == '"':
-            escaped = text[index + 1:index + 2]
-            if escaped not in ('"', "\\"):
-                raise ValueError(f"config.yaml: unsupported escape in {text!r}")
-            value, index = value + escaped, index + 2
-        elif character != quote:
-            value, index = value + character, index + 1
-        elif quote == "'" and text[index + 1:index + 2] == "'":
-            value, index = value + "'", index + 2
-        elif COMMENT.sub("", text[index + 1:]).strip():
-            raise ValueError(f"config.yaml: trailing text in {text!r}")
-        else:
-            return value
-    raise ValueError(f"config.yaml: unterminated quote in {text!r}")
-
-
-def scalar(text):
-    """One YAML scalar — quoted or bare, integer or string — or an inline list
-    of them. Quotes are read before comments, so a `#` is a comment only in a
-    bare scalar, where it ends the value."""
-    text = text.strip()
-    if text[:1] in ("'", '"'):
-        return quoted(text)
-    text = COMMENT.sub("", text).strip()
-    if text[:1] == "[" and text[-1:] == "]":
-        return [scalar(item) for item in text[1:-1].split(",") if item.strip()]
-    return int(text) if INTEGER.fullmatch(text) else text
-
-
 def config(path):
-    """config.yaml as a dict, so that the pipeline is configured in one place
-    and this script hard-codes no repo and no agent. Parsed here rather than
-    with PyYAML, which no dependency file declares and which the interpreter
-    running a fresh session need not have: the subset is this file's own shape
-    — comments, scalars, a block list of scalars, a mapping of inline lists.
-    A key with no value opens a block; a line carrying no `key:` raises rather
-    than parsing to a key nothing will look up, and a key the file does not
-    set is absent, so a caller reading it raises too."""
-    setup, block = {}, None
+    """config.env as a dict, so that the pipeline is configured in one place
+    and this script hard-codes no repo and no agent. A value is everything
+    after the first `=`; WORK_REPOS is a comma-separated list and ADOPTED_PRS
+    space-separated `repo:number,number` entries. A line carrying no `=`
+    raises rather than parsing to a key nothing will look up, and a key the
+    file does not set is absent, so a caller reading it raises too."""
+    setup = {}
     for line in path.read_text().splitlines():
-        entry = line.strip()
-        if not entry or entry.startswith("#"):
-            continue
-        if line.startswith(" ") and entry.startswith("- "):
-            setup.setdefault(block, []).append(scalar(entry[2:]))
-            continue
-        key, separator, value = entry.partition(":")
-        if not separator:
-            raise ValueError(f"config.yaml: no key in {line!r}")
-        if line.startswith(" "):
-            setup.setdefault(block, {})[key.strip()] = scalar(value)
-        else:
-            block = key.strip()
-            if value.strip() and not value.strip().startswith("#"):
-                setup[block] = scalar(value)
+        key, separator, value = line.partition("=")
+        if line.strip() and (not separator or not key.strip()):
+            raise ValueError(f"config.env: no key in {line!r}")
+        if line.strip():
+            setup[key.strip()] = value.strip()
+    if "WORK_REPOS" in setup:
+        setup["WORK_REPOS"] = setup["WORK_REPOS"].split(",")
+    if "ADOPTED_PRS" in setup:
+        setup["ADOPTED_PRS"] = {
+            repo: [int(number) for number in numbers.split(",") if number]
+            for entry in setup["ADOPTED_PRS"].split()
+            for repo, _, numbers in [entry.partition(":")]}
     return setup
 
 
