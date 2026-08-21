@@ -31,17 +31,39 @@ CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
 STALE = datetime.timedelta(hours=12)
 
 
+def quoted(text):
+    """A quoted scalar, read to its closing quote: `#` inside it is content,
+    `\'\'` is one quote inside single quotes and `\\"`/`\\\\` are one inside
+    double quotes. Every other escape, an unterminated quote and anything but
+    a comment after the closing quote raise — this is the identity the whole
+    pipeline commits under, so a value it cannot read exactly is an error and
+    never a truncation."""
+    quote, value, index = text[0], "", 1
+    while index < len(text):
+        character = text[index]
+        if character == "\\" and quote == '"':
+            escaped = text[index + 1:index + 2]
+            if escaped not in ('"', "\\"):
+                raise ValueError(f"config.yaml: unsupported escape in {text!r}")
+            value, index = value + escaped, index + 2
+        elif character != quote:
+            value, index = value + character, index + 1
+        elif quote == "'" and text[index + 1:index + 2] == "'":
+            value, index = value + "'", index + 2
+        elif COMMENT.sub("", text[index + 1:]).strip():
+            raise ValueError(f"config.yaml: trailing text in {text!r}")
+        else:
+            return value
+    raise ValueError(f"config.yaml: unterminated quote in {text!r}")
+
+
 def scalar(text):
     """One YAML scalar — quoted or bare, integer or string — or an inline list
-    of them. Quotes are read before comments, the way YAML reads them: a
-    quoted scalar ends at its closing quote and a `#` inside it is content,
-    a bare one ends at a ` #`."""
+    of them. Quotes are read before comments, so a `#` is a comment only in a
+    bare scalar, where it ends the value."""
     text = text.strip()
     if text[:1] in ("'", '"'):
-        end = text.find(text[0], 1)
-        if end < 0:
-            raise ValueError(f"config.yaml: unterminated quote in {text!r}")
-        return text[1:end]
+        return quoted(text)
     text = COMMENT.sub("", text).strip()
     if text[:1] == "[" and text[-1:] == "]":
         return [scalar(item) for item in text[1:-1].split(",") if item.strip()]

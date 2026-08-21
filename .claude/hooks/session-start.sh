@@ -57,6 +57,11 @@ PY
     "$(printf '%s\n' "$identity" | sed -n 2p)"
   log "git identity: $(git config --global user.name) <$(git config --global user.email)>"
 else
+  # Clearing rather than leaving what was there: a stale global identity from
+  # the image or an earlier session would commit under itself, quietly, while
+  # this line claims nothing is set. Unset, `git commit` stops and asks.
+  git config --global --unset-all user.name 2>/dev/null || true
+  git config --global --unset-all user.email 2>/dev/null || true
   log "git identity NOT set (see above) — fix config.yaml before committing"
 fi
 
