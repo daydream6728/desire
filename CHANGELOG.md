@@ -5,6 +5,13 @@ Entries state the changes, no explanation of why.
 
 ## 2026-08-21
 
+**The VM startup script wires the hook for multi-repo sessions** (closes
+[#103](https://github.com/toumix/desire/issues/103)) — a multi-repo session opens in the clones'
+parent directory, so `desire/.claude/settings.json` never loads and `session-start.sh` never
+fires; the environment's startup script writes `/home/user/.claude/settings.json` pointing
+`SessionStart` at the hook by absolute path. The snippet lands in README's Get started. Extends
+the two hook entries below, same day.
+
 **The hook starts unsigned by clearing the whole signing config**
 ([#101](https://github.com/toumix/desire/pull/101), closes
 [#99](https://github.com/toumix/desire/issues/99)) — `session-start.sh` unsets `commit.gpgsign`,
