@@ -31,8 +31,10 @@ session. Some guiding principles:
 
 ## Verified commits
 
-The SessionStart hook sets `AGENT`'s git identity on every remote session and signs its commits,
-so they show Verified. Wiring it up, on Claude Code on the web:
+**Optional** — everything above works without this. What it buys: every commit the agents push
+is authored by `AGENT` rather than a default identity, and signed so it shows the **Verified**
+badge — one glance tells a real agent commit from anything else. The SessionStart hook does
+both; wiring it up, on Claude Code on the web:
 
 1) Generate a passphrase-free SSH key: `ssh-keygen -t ed25519 -f ~/.ssh/agents_signing -N ''` —
    under `~/.ssh`, never in a checkout, where a broad `git add` could commit it.
