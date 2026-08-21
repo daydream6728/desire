@@ -60,9 +60,18 @@ else
   # Clearing rather than leaving what was there: a stale global identity from
   # the image or an earlier session would commit under itself, quietly, while
   # this line claims nothing is set. Unset, `git commit` stops and asks.
-  git config --global --unset-all user.name 2>/dev/null || true
-  git config --global --unset-all user.email 2>/dev/null || true
+  # Exit 5 is "nothing to unset", which is already the wanted state; anything
+  # else means the line below would be a lie, so it is said out loud instead
+  # of swallowed. git's own error goes to stderr with it.
+  cleared=yes
+  for key in user.name user.email; do
+    git config --global --unset-all "$key"
+    case $? in 0 | 5) ;; *) cleared=no ;; esac
+  done
   log "git identity NOT set (see above) — fix config.yaml before committing"
+  [ "$cleared" = yes ] || log "could NOT clear the global identity: commits may" \
+    "still be authored as $(git config --global user.name)" \
+    "<$(git config --global user.email)> — clear it by hand"
 fi
 
 pkgs=()
