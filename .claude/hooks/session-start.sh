@@ -33,6 +33,7 @@ fi
 pkgs=()
 command -v jq >/dev/null 2>&1 || pkgs+=(jq)
 command -v gh >/dev/null 2>&1 || pkgs+=(gh)
+[ -n "${AGENTS_SIGNING_KEY:-}" ] && ! command -v ssh-keygen >/dev/null 2>&1 && pkgs+=(openssh-client)
 
 if [ ${#pkgs[@]} -gt 0 ]; then
   export DEBIAN_FRONTEND=noninteractive
@@ -47,4 +48,26 @@ fi
 [ -n "${GH_TOKEN:-}${GITHUB_TOKEN:-}" ] || log "note: no GH_TOKEN/GITHUB_TOKEN in env — gh will be unauthenticated"
 
 command -v gh >/dev/null 2>&1 && log "$(gh --version | head -1)" || true
+
+git config --global --unset-all commit.gpgsign 2>/dev/null || true
+if [ -n "${AGENTS_SIGNING_KEY:-}" ] && ! command -v ssh-keygen >/dev/null 2>&1; then
+  log "AGENTS_SIGNING_KEY set but ssh-keygen unavailable — commits stay unsigned"
+elif [ -n "${AGENTS_SIGNING_KEY:-}" ]; then
+  key="$HOME/.ssh/agents_signing"
+  mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+  printf '%s\n' "$AGENTS_SIGNING_KEY" > "$key"
+  chmod 600 "$key"
+  if ssh-keygen -y -P '' -f "$key" > "$key.pub" 2>/dev/null; then
+    git config --global gpg.format ssh
+    git config --global user.signingkey "$key"
+    git config --global commit.gpgsign true
+    log "commit signing on ($(ssh-keygen -lf "$key.pub" | awk '{print $2}'))"
+  else
+    rm -f "$key" "$key.pub"
+    log "AGENTS_SIGNING_KEY is not a valid passphrase-free SSH key — commits stay unsigned"
+  fi
+else
+  log "no AGENTS_SIGNING_KEY in env — commits stay unsigned"
+fi
+
 exit 0
