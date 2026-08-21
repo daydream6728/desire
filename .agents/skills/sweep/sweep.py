@@ -76,9 +76,9 @@ def config(path):
     with PyYAML, which no dependency file declares and which the interpreter
     running a fresh session need not have: the subset is this file's own shape
     — comments, scalars, a block list of scalars, a mapping of inline lists.
-    A line carrying no `key:` raises rather than parsing to a key nothing will
-    look up, and a key the file does not set is absent, so a caller reading it
-    raises too."""
+    A key with no value opens a block; a line carrying no `key:` raises rather
+    than parsing to a key nothing will look up, and a key the file does not
+    set is absent, so a caller reading it raises too."""
     setup, block = {}, None
     for line in path.read_text().splitlines():
         entry = line.strip()
@@ -92,7 +92,7 @@ def config(path):
             raise ValueError(f"config.yaml: no key in {line!r}")
         if line.startswith(" "):
             setup.setdefault(block, {})[key.strip()] = scalar(value)
-        else:  # a key with no value opens a block, it does not set one
+        else:
             block = key.strip()
             if value.strip() and not value.strip().startswith("#"):
                 setup[block] = scalar(value)
