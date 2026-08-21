@@ -38,6 +38,9 @@ command -v gh >/dev/null 2>&1 && log "$(gh --version | head -1)" || true
 # AGENT's account as a signing key only — it cannot authenticate or push.
 # Environment variables are readable by every session in the environment, so
 # nothing more capable than a signing key ever goes in one.
+# Start from unsigned every run — only the success branch turns signing on, so
+# stale config cannot outlive its key if $HOME ever persists between sessions.
+git config --global --unset commit.gpgsign 2>/dev/null || true
 if [ -n "${AGENTS_SIGNING_KEY:-}" ] && ! command -v ssh-keygen >/dev/null 2>&1; then
   log "AGENTS_SIGNING_KEY set but ssh-keygen unavailable — commits stay unsigned"
 elif [ -n "${AGENTS_SIGNING_KEY:-}" ]; then
