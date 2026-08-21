@@ -147,7 +147,9 @@ before the first commit of a turn. Check the branch before pushing,
 `git log --format='%an <%ae>' origin/main..HEAD`.
 
 Commits are signed when the environment provides `AGENTS_SIGNING_KEY`: an SSH
-private key, passphrase-free, whose public half is registered on AGENT's
+private key, passphrase-free, that USER pastes into the Claude cloud
+environment's variables (claude.ai/code → the environment's settings, a
+multiline value in quotes), and whose public half is registered on AGENT's
 account as a **signing key** — never an authentication key, since environment
 variables are readable by every session. The SessionStart hook starts every
 run unsigned so stale config never outlives its key, installs `openssh-client`
