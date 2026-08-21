@@ -17,14 +17,43 @@ log() { echo "session-start: $*" >&2; }
 # without a hook in each. Only user.name/email — leaves the harness's own
 # commit-signing config (signingkey, gpg.*) untouched.
 #
-# config.yaml (next to AGENTS.md) is the source of truth for AGENT/AGENT_EMAIL.
-# Read with sed, not yq: yq here shells out to jq, and jq is only installed
-# below, best-effort. The literal fallback only fires if config.yaml can't
-# be read at all.
+# config.yaml (next to AGENTS.md) is the source of truth for AGENT/AGENT_EMAIL,
+# read through sweep.py's own parser so the two readers cannot disagree and
+# YAML quoting is honoured — not with sed, which would hand `"name" # note`
+# to git verbatim, and not with yq, which shells out to the jq installed
+# below, best-effort. An unreadable file and a config missing either key are
+# told apart and named on stderr; the built-in identity is the last resort
+# and never a silent one.
 config_root="$(cd "$(dirname "$0")/../.." && pwd)"
-scalar() { sed -n "s/^$1:[[:space:]]*//p" "$config_root/config.yaml" 2>/dev/null | head -1; }
-agent="$(scalar AGENT)"; agent="${agent:-toumix-agents}"
-agent_email="$(scalar AGENT_EMAIL)"; agent_email="${agent_email:-agents@toumi.email}"
+if identity="$(python3 - "$config_root" <<'PY'
+import pathlib
+import sys
+
+root = pathlib.Path(sys.argv[1])
+sys.path.insert(0, str(root / ".agents/skills/sweep"))
+import sweep
+
+try:
+    setup = sweep.config(root / "config.yaml")
+except OSError as error:
+    sys.exit(f"session-start: config.yaml is unreadable: {error}")
+except Exception as error:  # a line outside the subset config() parses
+    sys.exit(f"session-start: config.yaml does not parse: {error!r}")
+missing = [key for key in ("AGENT", "AGENT_EMAIL")
+           if not str(setup.get(key, "")).strip()]
+if missing:
+    sys.exit(f"session-start: config.yaml sets no {' and no '.join(missing)}")
+print(setup["AGENT"])
+print(setup["AGENT_EMAIL"])
+PY
+)"; then
+  agent="$(printf '%s\n' "$identity" | sed -n 1p)"
+  agent_email="$(printf '%s\n' "$identity" | sed -n 2p)"
+else
+  log "config.yaml gave no identity (see above) — using the built-in one"
+  agent="toumix-agents"
+  agent_email="agents@toumi.email"
+fi
 git config --global --replace-all user.name "$agent"
 git config --global --replace-all user.email "$agent_email"
 log "git identity: $(git config --global user.name) <$(git config --global user.email)>"

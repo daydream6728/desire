@@ -22,19 +22,50 @@ import sys
 import urllib.error
 import urllib.request
 
-import yaml
-
 CONFIG = pathlib.Path(__file__).parents[3] / "config.yaml"
+COMMENT = re.compile(r"(?:^|\s)#.*")
+INTEGER = re.compile(r"-?\d+")
 BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
 CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
                    r"(?:Z|[+-]\d{2}:?\d{2})?)?")
 STALE = datetime.timedelta(hours=12)
 
 
+def scalar(text):
+    """One YAML scalar — quoted or bare, integer or string — or an inline
+    list of them."""
+    text = text.strip()
+    if text[:1] == "[" and text[-1:] == "]":
+        return [scalar(item) for item in text[1:-1].split(",") if item.strip()]
+    if len(text) > 1 and text[0] == text[-1] and text[0] in "\"'":
+        return text[1:-1]
+    return int(text) if INTEGER.fullmatch(text) else text
+
+
 def config(path):
     """config.yaml as a dict, so that the pipeline is configured in one place
-    and this script hard-codes no repo and no agent."""
-    return yaml.safe_load(path.read_text())
+    and this script hard-codes no repo and no agent. Parsed here rather than
+    with PyYAML, which no dependency file declares and which the interpreter
+    running a fresh session need not have: the subset is this file's own shape
+    — comments, scalars, a block list of scalars, a mapping of inline lists —
+    and a line outside it raises rather than parsing to something else. A key
+    the file does not set is absent, so a caller reading it raises too."""
+    setup, block = {}, None
+    for line in path.read_text().splitlines():
+        line = COMMENT.sub("", line).rstrip()
+        if not line:
+            continue
+        if not line.startswith(" "):
+            block, _, value = line.partition(":")
+            block = block.strip()
+            if value.strip():
+                setup[block] = scalar(value)
+        elif line.strip().startswith("- "):
+            setup.setdefault(block, []).append(scalar(line.strip()[2:]))
+        else:
+            key, _, value = line.strip().partition(":")
+            setup.setdefault(block, {})[key.strip()] = scalar(value)
+    return setup
 
 
 def get(repo, path):

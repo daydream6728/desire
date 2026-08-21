@@ -1,5 +1,7 @@
-# Canonical config for the pipeline — read by session-start.sh (sed, for
-# AGENT/AGENT_EMAIL only) and sweep.py (PyYAML). AGENTS.md's Config section
+# Canonical config for the pipeline — read by sweep.py's config(), and through
+# it by session-start.sh, which takes AGENT/AGENT_EMAIL from here. That parser
+# is the standard library and covers this file's shape only: comments, scalars,
+# a block list of scalars, a mapping of inline lists. AGENTS.md's Config section
 # points here rather than duplicating it; see AGENTS.md for what each key means.
 USER: toumix
 AGENT: toumix-agents
