@@ -5,6 +5,13 @@ Entries state the changes, no explanation of why.
 
 ## 2026-08-21
 
+**The hook starts unsigned by clearing the whole signing config**
+([#101](https://github.com/toumix/desire/pull/101), closes
+[#99](https://github.com/toumix/desire/issues/99)) — `session-start.sh` unsets `commit.gpgsign`,
+`user.signingkey`, `gpg.format` and `gpg.ssh.program`, not `commit.gpgsign` alone, and pins
+`gpg.ssh.program` to `ssh-keygen` when signing turns on, overriding the environment's own.
+Amends the entry below, same day.
+
 **Commits are signed** ([#97](https://github.com/toumix/desire/pull/97), closes
 [#96](https://github.com/toumix/desire/issues/96)) — the SessionStart hook turns
 `AGENTS_SIGNING_KEY`, an SSH key registered on AGENT's account as signing-only, into
