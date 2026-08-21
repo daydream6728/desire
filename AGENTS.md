@@ -152,7 +152,8 @@ environment's variables (claude.ai/code → the environment's settings, a
 multiline value in quotes), and whose public half is registered on AGENT's
 account as a **signing key** — never an authentication key, since environment
 variables are readable by every session. The SessionStart hook starts every
-run unsigned so stale config never outlives its key, installs `openssh-client`
+run unsigned by clearing the global signing config (a fresh clone carries no
+local one), so stale config never outlives its key, installs `openssh-client`
 — git signs through `ssh-keygen -Y sign` — then writes the key to disk and
 sets `commit.gpgsign`, so pushed commits show Verified; a session without the
 variable commits unsigned rather than failing. Leaked, the key can
