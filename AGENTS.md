@@ -149,9 +149,11 @@ before the first commit of a turn. Check the branch before pushing,
 Commits are signed when the environment provides `AGENTS_SIGNING_KEY`: an SSH
 private key, passphrase-free, whose public half is registered on AGENT's
 account as a **signing key** — never an authentication key, since environment
-variables are readable by every session. The SessionStart hook writes it to
-disk and sets `commit.gpgsign`, so pushed commits show Verified; a session
-without the variable commits unsigned rather than failing. Leaked, the key can
+variables are readable by every session. The SessionStart hook starts every
+run unsigned so stale config never outlives its key, installs `openssh-client`
+— git signs through `ssh-keygen -Y sign` — then writes the key to disk and
+sets `commit.gpgsign`, so pushed commits show Verified; a session without the
+variable commits unsigned rather than failing. Leaked, the key can
 only forge the badge: revoke by deleting the public half from AGENT's account.
 
 ## Turmoil
