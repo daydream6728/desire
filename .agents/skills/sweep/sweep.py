@@ -32,13 +32,19 @@ STALE = datetime.timedelta(hours=12)
 
 
 def scalar(text):
-    """One YAML scalar — quoted or bare, integer or string — or an inline
-    list of them."""
+    """One YAML scalar — quoted or bare, integer or string — or an inline list
+    of them. Quotes are read before comments, the way YAML reads them: a
+    quoted scalar ends at its closing quote and a `#` inside it is content,
+    a bare one ends at a ` #`."""
     text = text.strip()
+    if text[:1] in ("'", '"'):
+        end = text.find(text[0], 1)
+        if end < 0:
+            raise ValueError(f"config.yaml: unterminated quote in {text!r}")
+        return text[1:end]
+    text = COMMENT.sub("", text).strip()
     if text[:1] == "[" and text[-1:] == "]":
         return [scalar(item) for item in text[1:-1].split(",") if item.strip()]
-    if len(text) > 1 and text[0] == text[-1] and text[0] in "\"'":
-        return text[1:-1]
     return int(text) if INTEGER.fullmatch(text) else text
 
 
@@ -47,24 +53,27 @@ def config(path):
     and this script hard-codes no repo and no agent. Parsed here rather than
     with PyYAML, which no dependency file declares and which the interpreter
     running a fresh session need not have: the subset is this file's own shape
-    — comments, scalars, a block list of scalars, a mapping of inline lists —
-    and a line outside it raises rather than parsing to something else. A key
-    the file does not set is absent, so a caller reading it raises too."""
+    — comments, scalars, a block list of scalars, a mapping of inline lists.
+    A line carrying no `key:` raises rather than parsing to a key nothing will
+    look up, and a key the file does not set is absent, so a caller reading it
+    raises too."""
     setup, block = {}, None
     for line in path.read_text().splitlines():
-        line = COMMENT.sub("", line).rstrip()
-        if not line:
+        entry = line.strip()
+        if not entry or entry.startswith("#"):
             continue
-        if not line.startswith(" "):
-            block, _, value = line.partition(":")
-            block = block.strip()
-            if value.strip():
-                setup[block] = scalar(value)
-        elif line.strip().startswith("- "):
-            setup.setdefault(block, []).append(scalar(line.strip()[2:]))
-        else:
-            key, _, value = line.strip().partition(":")
+        if line.startswith(" ") and entry.startswith("- "):
+            setup.setdefault(block, []).append(scalar(entry[2:]))
+            continue
+        key, separator, value = entry.partition(":")
+        if not separator:
+            raise ValueError(f"config.yaml: no key in {line!r}")
+        if line.startswith(" "):
             setup.setdefault(block, {})[key.strip()] = scalar(value)
+        else:  # a key with no value opens a block, it does not set one
+            block = key.strip()
+            if value.strip() and not value.strip().startswith("#"):
+                setup[block] = scalar(value)
     return setup
 
 

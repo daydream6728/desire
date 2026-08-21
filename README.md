@@ -23,8 +23,8 @@ session. Some guiding principles:
 
 1) Open a new GitHub account for your agents, add it as collaborator to your fork for this repo,
    and name it `AGENT` in [`config.yaml`](config.yaml) — with `USER` and `AGENT_EMAIL` beside it.
-2) Create a new GitHub repo (e.g. called `memory`), set it as `MEMORY_REPO` in that same file, and
-   list the repos your agents work in under `WORK_REPOS`.
+2) Create a new GitHub repo (e.g. called `memory`), set it as `MEMORY_REPO` in that same file,
+   set your fork as `DESIRE_REPO`, and list the repos your agents work in under `WORK_REPOS`.
 3) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
 
 **Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.

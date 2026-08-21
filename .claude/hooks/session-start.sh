@@ -21,9 +21,13 @@ log() { echo "session-start: $*" >&2; }
 # read through sweep.py's own parser so the two readers cannot disagree and
 # YAML quoting is honoured — not with sed, which would hand `"name" # note`
 # to git verbatim, and not with yq, which shells out to the jq installed
-# below, best-effort. An unreadable file and a config missing either key are
-# told apart and named on stderr; the built-in identity is the last resort
-# and never a silent one.
+# below, best-effort. There is no built-in identity to fall back on: a literal
+# here would be a second place naming AGENT, which is what moving the config
+# into one file removed, and it would stamp the old name on every commit of a
+# session whose config.yaml was mid-rotation. So a file that cannot be read,
+# does not parse, or sets neither key leaves the identity alone and says which
+# of the three it was; committing then fails loudly instead of quietly
+# attributing the work to the wrong agent.
 config_root="$(cd "$(dirname "$0")/../.." && pwd)"
 if identity="$(python3 - "$config_root" <<'PY'
 import pathlib
@@ -47,16 +51,14 @@ print(setup["AGENT"])
 print(setup["AGENT_EMAIL"])
 PY
 )"; then
-  agent="$(printf '%s\n' "$identity" | sed -n 1p)"
-  agent_email="$(printf '%s\n' "$identity" | sed -n 2p)"
+  git config --global --replace-all user.name \
+    "$(printf '%s\n' "$identity" | sed -n 1p)"
+  git config --global --replace-all user.email \
+    "$(printf '%s\n' "$identity" | sed -n 2p)"
+  log "git identity: $(git config --global user.name) <$(git config --global user.email)>"
 else
-  log "config.yaml gave no identity (see above) — using the built-in one"
-  agent="toumix-agents"
-  agent_email="agents@toumi.email"
+  log "git identity NOT set (see above) — fix config.yaml before committing"
 fi
-git config --global --replace-all user.name "$agent"
-git config --global --replace-all user.email "$agent_email"
-log "git identity: $(git config --global user.name) <$(git config --global user.email)>"
 
 pkgs=()
 command -v jq >/dev/null 2>&1 || pkgs+=(jq)
