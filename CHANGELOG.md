@@ -10,8 +10,9 @@ Entries state the changes, no explanation of why.
 [#103](https://github.com/toumix/desire/issues/103)) — a multi-repo session opens in the clones'
 parent directory, so `desire/.claude/settings.json` never loads and `session-start.sh` never
 fires; the environment's startup script writes `/home/user/.claude/settings.json` pointing
-`SessionStart` at the hook by absolute path. The snippet lands in README's Get started. Extends
-the two hook entries below, same day.
+`SessionStart` at the hook by absolute path. The snippet lands in the README's new Verified
+commits section, with the key setup — generate, register as a signing key, paste into
+`AGENTS_SIGNING_KEY`. Extends the two hook entries below, same day.
 
 **The hook starts unsigned by clearing the whole signing config**
 ([#101](https://github.com/toumix/desire/pull/101), closes

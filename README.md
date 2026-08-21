@@ -26,11 +26,23 @@ session. Some guiding principles:
 2) Create a new GitHub repo (e.g. called `memory`), set it as `MEMORY_REPO` in that same file,
    set your fork as `DESIRE_REPO`, and list the repos your agents work in under `WORK_REPOS`.
 3) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
-4) On Claude Code on the web, paste this into the environment's startup script. A multi-repo
-   session opens in the parent directory of its clones, so no repo is the project directory,
-   `desire/.claude/settings.json` never loads, and the SessionStart hook silently does not run —
-   no git identity, no signing. A workspace-level settings file wires it by absolute path, so it
-   pins where the `desire` clone lands:
+
+**Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
+
+## Verified commits
+
+The SessionStart hook sets `AGENT`'s git identity on every remote session and signs its commits,
+so they show Verified. Wiring it up, on Claude Code on the web:
+
+1) Generate a passphrase-free SSH key: `ssh-keygen -t ed25519 -f agents_signing -N ''`.
+2) Register `agents_signing.pub` on `AGENT`'s account as a **signing key** — not an
+   authentication key: leaked, it can only forge the badge, revoked by deleting the public half.
+3) Paste the private key into `AGENTS_SIGNING_KEY` in the environment's variables; a session
+   without it commits unsigned rather than failing.
+4) Paste this into the environment's startup script. A multi-repo session opens in the parent
+   directory of its clones, so no repo is the project directory, `desire/.claude/settings.json`
+   never loads, and the hook silently does not run — no identity, no signing. A workspace-level
+   settings file wires it by absolute path, so it pins where the `desire` clone lands:
 
 ```sh
 mkdir -p /home/user/.claude
@@ -38,5 +50,3 @@ cat > /home/user/.claude/settings.json <<'EOF'
 {"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"/home/user/desire/.claude/hooks/session-start.sh"}]}]}}
 EOF
 ```
-
-**Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
