@@ -49,7 +49,12 @@ fi
 
 command -v gh >/dev/null 2>&1 && log "$(gh --version | head -1)" || true
 
-git config --global --unset-all commit.gpgsign 2>/dev/null || true
+cleared=yes
+for key in commit.gpgsign user.signingkey gpg.format gpg.ssh.program; do
+  git config --global --unset-all "$key" 2>/dev/null
+  case $? in 0 | 5) ;; *) cleared=no ;; esac
+done
+[ "$cleared" = yes ] || log "could NOT clear the signing config — commits may sign through stale settings"
 if [ -n "${AGENTS_SIGNING_KEY:-}" ] && ! command -v ssh-keygen >/dev/null 2>&1; then
   log "AGENTS_SIGNING_KEY set but ssh-keygen unavailable — commits stay unsigned"
 elif [ -n "${AGENTS_SIGNING_KEY:-}" ]; then
@@ -59,6 +64,8 @@ elif [ -n "${AGENTS_SIGNING_KEY:-}" ]; then
   chmod 600 "$key"
   if ssh-keygen -y -P '' -f "$key" > "$key.pub" 2>/dev/null; then
     git config --global gpg.format ssh
+    # the environment ships a global gpg.ssh.program of its own — pin ours
+    git config --global --replace-all gpg.ssh.program ssh-keygen
     git config --global user.signingkey "$key"
     git config --global commit.gpgsign true
     log "commit signing on ($(ssh-keygen -lf "$key.pub" | awk '{print $2}'))"
