@@ -149,6 +149,14 @@ Commits carry that same identity, AGENT and AGENT_EMAIL, set on every clone
 before the first commit of a turn. Check the branch before pushing,
 `git log --format='%an <%ae>' origin/main..HEAD`.
 
+Commits are signed when the environment provides `AGENTS_SIGNING_KEY`: an SSH
+private key, passphrase-free, whose public half is registered on AGENT's
+account as a **signing key** — never an authentication key, since environment
+variables are readable by every session. The SessionStart hook writes it to
+disk and sets `commit.gpgsign`, so pushed commits show Verified; a session
+without the variable commits unsigned rather than failing. Leaked, the key can
+only forge the badge: revoke by deleting the public half from AGENT's account.
+
 ## Turmoil
 When the rules are unclear or conflicting never silently pick a side: tell USER
 directly if it's an interactive session or open an issue on DESIRE_REPO otherwise.

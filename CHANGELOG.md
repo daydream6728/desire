@@ -3,6 +3,14 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-21
+
+**Commits are signed** ([#97](https://github.com/toumix/desire/pull/97), closes
+[#96](https://github.com/toumix/desire/issues/96)) — the SessionStart hook turns
+`AGENTS_SIGNING_KEY`, an SSH key registered on AGENT's account as signing-only, into
+`commit.gpgsign`, so commits show Verified; a session without the key commits unsigned.
+Extends the commits-authored-by-AGENT entry of 2026-08-20 below.
+
 ## 2026-08-20
 
 **Commits are authored by AGENT and AGENT_EMAIL** ([#93](https://github.com/toumix/desire/pull/93),
