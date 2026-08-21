@@ -1,16 +1,34 @@
 #!/bin/bash
-# SessionStart hook — install the GitHub CLI (and jq) for the scheduled routines,
-# and turn on commit signing when the environment carries the signing key.
-# Best-effort: it must NEVER block session start.
-#
-# Installs from Ubuntu's own apt repo (gh lives in noble universe) — the agent proxy
-# allows archive.ubuntu.com but 403s github.com / cli.github.com release downloads.
-set -uo pipefail   # deliberately no -e — an install failure must not abort the hook
+set -uo pipefail
 
-# web / remote sessions only (the routines); do nothing on a local dev machine
 [ "${CLAUDE_CODE_REMOTE:-}" = "true" ] || exit 0
 
 log() { echo "session-start: $*" >&2; }
+
+config="$(cd "$(dirname "$0")/../.." && pwd)/config.env"
+agent="$(sed -n 's/^AGENT=//p' "$config" 2>/dev/null | tail -1)"
+agent_email="$(sed -n 's/^AGENT_EMAIL=//p' "$config" 2>/dev/null | tail -1)"
+if [ -n "$agent" ] && [ -n "$agent_email" ]; then
+  git config --global --replace-all user.name "$agent"
+  git config --global --replace-all user.email "$agent_email"
+  log "git identity: $(git config --global user.name) <$(git config --global user.email)>"
+else
+  if [ ! -r "$config" ]; then
+    log "config.env is unreadable"
+  else
+    [ -n "$agent" ] || log "config.env sets no AGENT"
+    [ -n "$agent_email" ] || log "config.env sets no AGENT_EMAIL"
+  fi
+  cleared=yes
+  for key in user.name user.email; do
+    git config --global --unset-all "$key"
+    case $? in 0 | 5) ;; *) cleared=no ;; esac
+  done
+  log "git identity NOT set (see above) — fix config.env before committing"
+  [ "$cleared" = yes ] || log "could NOT clear the global identity: commits may" \
+    "still be authored as $(git config --global user.name)" \
+    "<$(git config --global user.email)> — clear it by hand"
+fi
 
 pkgs=()
 command -v jq >/dev/null 2>&1 || pkgs+=(jq)
@@ -28,7 +46,6 @@ if [ ${#pkgs[@]} -gt 0 ]; then
   fi
 fi
 
-# gh reads GH_TOKEN / GITHUB_TOKEN automatically (both are set in this environment)
 [ -n "${GH_TOKEN:-}${GITHUB_TOKEN:-}" ] || log "note: no GH_TOKEN/GITHUB_TOKEN in env — gh will be unauthenticated"
 
 command -v gh >/dev/null 2>&1 && log "$(gh --version | head -1)" || true

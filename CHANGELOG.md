@@ -13,6 +13,14 @@ Extends the commits-authored-by-AGENT entry of 2026-08-20 below.
 
 ## 2026-08-20
 
+**The config lives in `config.env`** ([#94](https://github.com/toumix/desire/pull/94)) — `USER`,
+`AGENT`, `AGENT_EMAIL`, `WORK_REPOS`, `MEMORY_REPO`, `DESIRE_REPO`, `APPROVE_EMOJI`, `REVIEWER`,
+`AGENT_FOOTER` and `ADOPTED_PRS` are set there, one `KEY=value` per line, `CLAUDE.md` imports it
+into every session, and `AGENTS.md`'s Config section points at it rather than naming them.
+`session-start.sh` reads it to set `user.name` and `user.email` globally on every remote session,
+before the first commit of a turn; `sweep.py`'s `config()` parses it. Replaces the Config block
+of `AGENTS.md`.
+
 **Commits are authored by AGENT and AGENT_EMAIL** ([#93](https://github.com/toumix/desire/pull/93),
 closes [#92](https://github.com/toumix/desire/issues/92)) — `AGENT_EMAIL` joins the Config, set with
 `AGENT` on every clone before a turn's first commit. New rule, replaces nothing.
