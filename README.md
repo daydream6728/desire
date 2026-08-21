@@ -28,3 +28,28 @@ session. Some guiding principles:
 3) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
 
 **Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
+
+## Verified commits
+
+**Optional** — everything above works without this. What it buys: every commit the agents push
+is authored by `AGENT` rather than a default identity, and signed so it shows the **Verified**
+badge — one glance tells a real agent commit from anything else. The SessionStart hook does
+both; wiring it up, on Claude Code on the web:
+
+1) Generate a passphrase-free SSH key: `ssh-keygen -t ed25519 -f ~/.ssh/agents_signing -N ''` —
+   under `~/.ssh`, never in a checkout, where a broad `git add` could commit it.
+2) Register `~/.ssh/agents_signing.pub` on `AGENT`'s account as a **signing key** — not an
+   authentication key: leaked, it can only forge the badge, revoked by deleting the public half.
+3) Paste the private key into `AGENTS_SIGNING_KEY` in the environment's variables; a session
+   without it commits unsigned rather than failing.
+4) Paste this into the environment's startup script. A multi-repo session opens in the parent
+   directory of its clones, so no repo is the project directory, `desire/.claude/settings.json`
+   never loads, and the hook silently does not run — no identity, no signing. A workspace-level
+   settings file wires it by absolute path, so it pins where the `desire` clone lands:
+
+```sh
+mkdir -p /home/user/.claude
+cat > /home/user/.claude/settings.json <<'EOF'
+{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"/home/user/desire/.claude/hooks/session-start.sh"}]}]}}
+EOF
+```
