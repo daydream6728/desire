@@ -34,8 +34,9 @@ session. Some guiding principles:
 The SessionStart hook sets `AGENT`'s git identity on every remote session and signs its commits,
 so they show Verified. Wiring it up, on Claude Code on the web:
 
-1) Generate a passphrase-free SSH key: `ssh-keygen -t ed25519 -f agents_signing -N ''`.
-2) Register `agents_signing.pub` on `AGENT`'s account as a **signing key** — not an
+1) Generate a passphrase-free SSH key: `ssh-keygen -t ed25519 -f ~/.ssh/agents_signing -N ''` —
+   under `~/.ssh`, never in a checkout, where a broad `git add` could commit it.
+2) Register `~/.ssh/agents_signing.pub` on `AGENT`'s account as a **signing key** — not an
    authentication key: leaked, it can only forge the badge, revoked by deleting the public half.
 3) Paste the private key into `AGENTS_SIGNING_KEY` in the environment's variables; a session
    without it commits unsigned rather than failing.
