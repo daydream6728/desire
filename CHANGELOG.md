@@ -3,6 +3,16 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-22
+
+**Agents delete their own `TODO.md` once every point is done**
+([#108](https://github.com/toumix/desire/pull/108), closes
+[#107](https://github.com/toumix/desire/issues/107)) — `RULES.md` point 1 replaces "never delete
+it" with: once every point is `[x]` or filed as an issue, the agent deletes `TODO.md` itself,
+clearing the merge gate and taking the pull request out of draft, where the style reviewer
+([discopy#608](https://github.com/discopy/discopy/pull/608)) gives it a first pass. The
+never-alter-the-verbatim-prompt clause stays; same edit on discopy's copy in discopy#608.
+
 ## 2026-08-21
 
 **The VM startup script wires the hook for multi-repo sessions**
