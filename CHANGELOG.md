@@ -9,9 +9,10 @@ Entries state the changes, no explanation of why.
 ([#108](https://github.com/toumix/desire/pull/108), closes
 [#107](https://github.com/toumix/desire/issues/107)) — `RULES.md` point 1 replaces "never delete
 it" with: once every point is `[x]` or filed as an issue, the agent deletes `TODO.md` itself,
-clearing the merge gate and taking the pull request out of draft. The
-never-alter-the-verbatim-prompt clause stays; same edit on discopy's copy in
-[discopy#608](https://github.com/discopy/discopy/pull/608).
+clearing the merge gate and taking the pull request out of draft; a round of review feedback —
+bot or human — starts a fresh one, the feedback quoted at the top and the fixes as boxes,
+deleted again when the round is done. The never-alter-the-verbatim-prompt clause stays; same
+edit on discopy's copy in [discopy#608](https://github.com/discopy/discopy/pull/608).
 
 ## 2026-08-21
 
