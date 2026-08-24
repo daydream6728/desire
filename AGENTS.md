@@ -6,7 +6,7 @@
 
 ## Config
 The values (USER, AGENT, AGENT_EMAIL, WORK_REPOS, MEMORY_REPO, DESIRE_REPO,
-APPROVE_EMOJI, REVIEWER, AGENT_FOOTER, ADOPTED_PRS) live in
+APPROVE_EMOJI, AGENT_FOOTER, ADOPTED_PRS) live in
 [`config.env`](config.env), the one file that names them — nothing here
 duplicates it. `session-start.sh` reads it before the first commit of a turn,
 `sweep.py`'s `config()` before every sweep. A config.env that cannot be read
@@ -133,9 +133,6 @@ the same line as its reference: what merging closes is read from
 Answer a thread once the change has landed, then resolve it if your job is done.
 Watch PRs by webhook events only: never schedule timed self check-ins,
 every scheduled fire notifies USER for nothing.
-
-Every AGENT-owned pull request tags REVIEWER once its `TODO.md` is done and
-again after a substantial rebuild.
 
 Every write to GitHub — pull requests, comments, reviews, reactions — goes
 through the MCP tools, and `GITHUB_TOKEN` is for reads only: the two

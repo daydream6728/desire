@@ -3,6 +3,29 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-24
+
+**Agents delete their own `TODO.md` once every point is done**
+([#108](https://github.com/toumix/desire/pull/108), closes
+[#107](https://github.com/toumix/desire/issues/107)) — the `TODO.md` rule of `RULES.md` is split
+in two: creation stays point 1, deletion becomes point 2, which replaces "never delete
+it" with: once every point is `[x]` or filed as an issue, the agent deletes `TODO.md` itself,
+clearing the merge gate and taking the pull request out of draft; a round of review feedback —
+bot or human — starts a fresh one, the feedback quoted at the top and the fixes as boxes,
+deleted again when the round is done; nitpicks are just fixed, pushed and resolved. The
+never-alter-the-verbatim-prompt clause stays; same edit on discopy's copy in
+[discopy#608](https://github.com/discopy/discopy/pull/608).
+
+**Rule 4 is removed** (same PR) — only-talk-when-prompted and never-reply-unless-USER-replied-
+or-🚀 are gone from `RULES.md`; `AGENTS.md`'s trusted-instructions section still binds the
+routines. Same removal on discopy's copy in discopy#608.
+
+**REVIEWER leaves the rules and the config** (same PR) — the tag-REVIEWER-once-done rule is
+removed from `AGENTS.md` and `REVIEWER` from `config.env`; the summon now lives in
+[discopy#608](https://github.com/discopy/discopy/pull/608)'s workflow. Supersedes the
+public-repos-only scoping of [#86](https://github.com/toumix/desire/issues/86) built as
+[#89](https://github.com/toumix/desire/pull/89).
+
 ## 2026-08-21
 
 **The VM startup script wires the hook for multi-repo sessions**
