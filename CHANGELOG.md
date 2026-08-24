@@ -21,9 +21,8 @@ or-🚀 are gone from `RULES.md`; `AGENTS.md`'s trusted-instructions section sti
 routines. Same removal on discopy's copy in discopy#608.
 
 **REVIEWER leaves the rules and the config** (same PR) — the tag-REVIEWER-once-done rule is
-removed from `AGENTS.md` and `REVIEWER` from `config.env`: discopy's style-review workflow calls
-the correctness reviewer itself when a pull request leaves draft
-([discopy#608](https://github.com/discopy/discopy/pull/608)). Supersedes the
+removed from `AGENTS.md` and `REVIEWER` from `config.env`; the summon now lives in
+[discopy#608](https://github.com/discopy/discopy/pull/608)'s workflow. Supersedes the
 public-repos-only scoping of [#86](https://github.com/toumix/desire/issues/86) built as
 [#89](https://github.com/toumix/desire/pull/89).
 
