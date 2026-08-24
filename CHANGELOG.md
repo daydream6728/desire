@@ -7,7 +7,8 @@ Entries state the changes, no explanation of why.
 
 **Agents delete their own `TODO.md` once every point is done**
 ([#108](https://github.com/toumix/desire/pull/108), closes
-[#107](https://github.com/toumix/desire/issues/107)) — `RULES.md` point 1 replaces "never delete
+[#107](https://github.com/toumix/desire/issues/107)) — the `TODO.md` rule of `RULES.md` is split
+in two: creation stays point 1, deletion becomes point 2, which replaces "never delete
 it" with: once every point is `[x]` or filed as an issue, the agent deletes `TODO.md` itself,
 clearing the merge gate and taking the pull request out of draft; a round of review feedback —
 bot or human — starts a fresh one, the feedback quoted at the top and the fixes as boxes,
