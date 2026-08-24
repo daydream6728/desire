@@ -3,7 +3,7 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
-## 2026-08-22
+## 2026-08-24
 
 **Agents delete their own `TODO.md` once every point is done**
 ([#108](https://github.com/toumix/desire/pull/108), closes
