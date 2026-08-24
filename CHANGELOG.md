@@ -11,8 +11,13 @@ Entries state the changes, no explanation of why.
 it" with: once every point is `[x]` or filed as an issue, the agent deletes `TODO.md` itself,
 clearing the merge gate and taking the pull request out of draft; a round of review feedback —
 bot or human — starts a fresh one, the feedback quoted at the top and the fixes as boxes,
-deleted again when the round is done. The never-alter-the-verbatim-prompt clause stays; same
-edit on discopy's copy in [discopy#608](https://github.com/discopy/discopy/pull/608).
+deleted again when the round is done; nitpicks are just fixed, pushed and resolved. The
+never-alter-the-verbatim-prompt clause stays; same edit on discopy's copy in
+[discopy#608](https://github.com/discopy/discopy/pull/608).
+
+**Rule 4 is removed** (same PR) — only-talk-when-prompted and never-reply-unless-USER-replied-
+or-🚀 are gone from `RULES.md`; `AGENTS.md`'s trusted-instructions section still binds the
+routines. Same removal on discopy's copy in discopy#608.
 
 ## 2026-08-21
 
