@@ -180,7 +180,7 @@ def contents(repo, path, ref):
 
 def claimed(box):
     """When a `[WIP]` box was claimed, `None` when it carries no readable date.
-    Rule 2 stamps `@<SessionID>-<yyyy-MM-dd HH:mm>`, in practice with an offset
+    Rule 3 stamps `@<SessionID>-<yyyy-MM-dd HH:mm>`, in practice with an offset
     or a `Z` and sometimes a range, so the first date on the line wins and a
     naive one is read as UTC."""
     stamp = CLAIM.search(box)
@@ -233,7 +233,7 @@ def todo(repo, number, body, setup, cache):
     merge gate, so it is the one file that says whether a pull request is
     finished and nothing else in the sweep reads it. Open boxes are printed
     the way MEMORY_REPO's PR count is — work left is the normal state of a
-    branch, not a finding — while a claim past Rule 2's twelve hours and a
+    branch, not a finding — while a claim past Rule 3's twelve hours and a
     branch that never carried the file are reported."""
     if not owned(repo, number, body, setup):
         return []
