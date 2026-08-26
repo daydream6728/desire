@@ -16,9 +16,12 @@ merge in place of "at most one is allowed — push to the oldest and close the r
 stops being a table and links the board instead.
 
 **An unanswered USER comment is reported until it is answered** (same PR, closes
-[#111](https://github.com/toumix/desire/issues/111)) — `sweep.py`'s two unanswered branches drop
-their `created_at >= since` window; `closed_since` keeps its own. Reverses the windowing
-[#90](https://github.com/toumix/desire/issues/90) introduced on the body branch.
+[#111](https://github.com/toumix/desire/issues/111)) — `sweep.py`'s two unanswered branches ask
+the new `asking` instead of their `created_at >= since` window: a question of USER's is reported
+whatever its age unless the pipeline 👀'd it and it predates the window, and a sweep with no
+`--since` reports every one. `closed_since` keeps its window. Reverses the windowing
+[#90](https://github.com/toumix/desire/issues/90) introduced on the body branch. `AGENTS.md` says
+what a 👀 now buys.
 
 ## 2026-08-24
 

@@ -11,8 +11,8 @@ lands.
 
 ## Work
 
-- [ ] `sweep.py`: one place deciding whether USER is still asking, used by both branches
-- [ ] `sweep.py`: the usage line says what `--since` windows now
-- [ ] `AGENTS.md`: a 👀 quiets an old question, which is what makes the sweep readable
-- [ ] `CHANGELOG.md`: fold into the entry, it has not landed yet
+- [x] `sweep.py`: one place deciding whether USER is still asking, used by both branches
+- [x] `sweep.py`: the usage line says what `--since` windows now
+- [x] `AGENTS.md`: a 👀 quiets an old question, which is what makes the sweep readable
+- [x] `CHANGELOG.md`: fold into the entry, it has not landed yet
 - [ ] measure the discopy sweep again and put the new number on the PR

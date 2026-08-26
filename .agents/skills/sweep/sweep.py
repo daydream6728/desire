@@ -8,7 +8,8 @@ and the emoji; AGENTS.md's rules say what to do with a finding.
 
 Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
                 [number...]
-       # no numbers: every open PR and issue; --since windows the closes only
+       # no numbers: every open PR and issue; --since windows the closes
+       # and quiets a question the pipeline already 👀'd
 Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding. Open
 `TODO.md` boxes are printed as context and do not make the sweep dirty.
 """
@@ -142,6 +143,19 @@ def answered(comment, setup):
             in ((comment["body"] or "").strip().splitlines() or [""])[-1])
 
 
+def asking(repo, kind, target, setup, since, cache):
+    """The 👀 flag when `target` is a question of USER's still waiting on us,
+    `None` when it is not: either somebody answered it, or the pipeline reacted
+    👀 to say it is in hand and `since` puts it before the window. Unanswered is
+    a condition rather than an event, so the window never hides one on its own —
+    a sweep with no `--since` reports every last question, and a 👀 is what
+    quiets an old one."""
+    if answered(target, setup):
+        return None
+    flag = seen(repo, kind, target, setup, cache)
+    return None if flag and target["created_at"] < since else flag
+
+
 def memory(repo, setup):
     """MEMORY_REPO holds one open PR per day, checked whatever the window since
     it is an invariant rather than a delta. Every one but the newest is a past
@@ -269,19 +283,15 @@ def todo(repo, number, body, setup, cache):
     return findings
 
 
-def item(repo, number, setup, cache):
+def item(repo, number, setup, since, cache):
     """The findings on one PR or issue: USER's APPROVE_EMOJI on the body or on
     any comment, and every thread where USER spoke last. GitHub splits comments
     across two endpoints, review comments threaded by in_reply_to_id and the
     conversation tab flat; both are swept, and so are the bodies. A body USER
     wrote is the thread when nothing else was said on it, which is the shape a
     standing order arrives in; once anyone comments, that thread's last word
-    answers for it and the body would only report it twice.
-
-    No `since` on either: unanswered is a condition rather than an event, so a
-    window hides a question that is still open as readily as an answered one,
-    and one turn sweeping past a comment loses it for good. `answered` is what
-    makes the finding go quiet, and anyone replying is enough."""
+    answers for it and the body would only report it twice. `asking` decides
+    which of the two are still waiting on us."""
     findings, threads, body = [], {}, get(repo, f"issues/{number}")
     kind = f"issues/{number}/reactions"
     if approved(repo, kind, body, setup, cache):
@@ -303,16 +313,18 @@ def item(repo, number, setup, cache):
     for (endpoint, _), thread in threads.items():
         asked = thread[-1]  # both endpoints list oldest first
         kind = f"{endpoint}/comments/{asked['id']}/reactions"
-        if not answered(asked, setup):
+        flag = asking(repo, kind, asked, setup, since, cache)
+        if flag is not None:
             findings.append(
                 f"#{number} unanswered {setup['USER']} comment:"
-                f" {asked['html_url']}" + seen(repo, kind, asked, setup, cache))
+                f" {asked['html_url']}" + flag)
     kind = f"issues/{number}/reactions"
-    if not threads and not answered(body, setup):
+    flag = None if threads else asking(repo, kind, body, setup, since, cache)
+    if flag is not None:
         findings.append(
             f"#{number} unanswered {setup['USER']}"
             f" {'pull request' if 'pull_request' in body else 'issue'}:"
-            f" {body['html_url']}" + seen(repo, kind, body, setup, cache))
+            f" {body['html_url']}" + flag)
     return findings + todo(repo, number, body, setup, cache)
 
 
@@ -326,7 +338,7 @@ def sweep(repo, numbers, since, setup):
         numbers = sorted({
             issue["number"] for issue in get(repo, "issues?state=open")})
     for number in numbers:
-        findings += item(repo, number, setup, cache)
+        findings += item(repo, number, setup, since, cache)
     return findings
 
 

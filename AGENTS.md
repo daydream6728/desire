@@ -65,12 +65,16 @@ comments as a delta rather than re-triaging the whole pile; widen the window aft
 late or dies. It also lists the issues closed inside the window, with `state_reason` and who
 closed them: closing an issue is an answer and it leaves no thread to read. Reacts ignore it: a 🚀
 has no answered state, so it is reported whatever its age, until the thing it sits on closes.
+A question of USER's that nobody has answered is reported whatever its age too, unless the
+pipeline 👀'd it and it predates the window — so a question landing between two sweeps is never
+lost, an old one goes quiet once a turn says it received it, and a sweep with no `--since` still
+reports the whole backlog.
 It also reads [`RULES.md`](RULES.md)'s `TODO.md` off every AGENT-owned head in WORK_REPOS: open
 boxes as context, a claim past its twelve hours and a branch that never carried one as findings.
 
 **React 👀 the moment you pick something up**, before doing the work: an instruction carrying no
-react was never received, one carrying 👀 is in progress. React on the comment or the body itself,
-answer it once the change lands. `add_issue_comment` takes a `reaction` on a body or a
+react was never received, one carrying 👀 is in progress, and it is what takes an old question out
+of the sweep. React on the comment or the body itself, answer it once the change lands. `add_issue_comment` takes a `reaction` on a body or a
 conversation comment, `add_reply_to_pull_request_comment` on a review comment. The sweep marks a
 flag `👀` when anyone but USER has reacted, so a turn can tell a backlog from a queue.
 
