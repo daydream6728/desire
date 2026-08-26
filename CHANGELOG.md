@@ -9,8 +9,9 @@ Entries state the changes, no explanation of why.
 ([#113](https://github.com/toumix/desire/pull/113), closes
 [#112](https://github.com/toumix/desire/issues/112)) — `AGENTS.md`'s "one memory PR open at a
 time" becomes one per day, titled with the day it covers and opened by Birdsong even when the
-previous day's has not merged. `sweep.py`'s open-PR finding names all but the newest as waiting
-on USER's merge in place of "at most one is allowed — push to the oldest and close the rest".
+previous day's has not merged. `sweep.py`'s `memory` stops failing on more than one open PR and
+fails on two sharing a title instead, printing the open PRs either way, in place of "at most one
+is allowed — push to the oldest and close the rest".
 `EVENING.md` gains "writes its turn file and one comment, never that PR's description",
 `BIRDSONG.md` names Birdsong the only routine that writes it. The memory PR template's queue
 stops being a table and links the board instead.

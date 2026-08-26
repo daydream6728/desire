@@ -90,8 +90,9 @@ ready for review rather than draft so USER can merge in one click, and every
 later turn of that day pushes to it and leaves a comment instead of opening
 another. A day's PR is opened even when the previous day's has not merged yet,
 rather than extending that one to cover both days.
-The sweep reports MEMORY_REPO's open-PR count and fails on more than one, which
-is then the ask: every one but the newest is waiting on USER's merge. `git log` is not the
+Several open at once is USER not having merged the past days and no turn
+chases it: the sweep prints MEMORY_REPO's open PRs whatever their number and
+fails only on two under one title, a day written twice. `git log` is not the
 check, since a merged PR of ours says nothing about one another turn opened.
 Feedback happens either as comments on that PR (agents should listen to GitHub
 events) or in interactive chats, recorded as agent comments with verbatim quotes.

@@ -156,18 +156,22 @@ def asking(repo, kind, target, setup, since, cache):
     return None if flag and target["created_at"] < since else flag
 
 
-def memory(repo, setup):
+def memory(repo):
     """MEMORY_REPO holds one open PR per day, checked whatever the window since
-    it is an invariant rather than a delta. Every one but the newest is a past
-    day waiting on USER's merge, which is an ask rather than something to tidy
-    away."""
+    it is an invariant rather than a delta. Several open at once is USER not
+    having merged the past days, which is theirs and no finding of ours; two
+    under one title is a day written twice, which is ours. The count and the
+    URLs are printed either way, so a turn sees what is waiting to be merged
+    without the sweep calling it dirty."""
     open_prs = get(repo, "pulls?state=open")
     print(f"{repo}: {len(open_prs)} open PR(s)"
           + "".join("\n  " + pr["html_url"] for pr in open_prs), file=sys.stderr)
-    return [] if len(open_prs) < 2 else [
-        f"{repo}: {len(open_prs)} open PRs, one a day is the rule — all but the"
-        f" newest are waiting on {setup['USER']}'s merge, ask for them and push"
-        " the day's work to the newest"]
+    days = {}
+    for pull in open_prs:
+        days.setdefault(pull["title"], []).append(pull["html_url"])
+    return [f"{repo}: {len(urls)} open PRs titled {title!r}, one a day is the"
+            " rule — push to one and close the rest: " + ", ".join(urls)
+            for title, urls in days.items() if len(urls) > 1]
 
 
 def heads(repo, cache):
@@ -332,7 +336,7 @@ def sweep(repo, numbers, since, setup):
     """One line per finding, empty when the sweep is clean."""
     cache, findings = {}, []
     if repo == setup["MEMORY_REPO"] and not numbers:
-        findings += memory(repo, setup)
+        findings += memory(repo)
     if not numbers:
         findings += closed_since(repo, since)
         numbers = sorted({
