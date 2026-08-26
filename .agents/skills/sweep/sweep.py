@@ -143,14 +143,16 @@ def answered(comment, setup):
 
 
 def memory(repo, setup):
-    """MEMORY_REPO holds one open PR, checked whatever the window since it is an
-    invariant rather than a delta."""
+    """MEMORY_REPO holds one open PR per day, checked whatever the window since
+    it is an invariant rather than a delta. Two are the previous day's waiting on
+    USER's merge, which is an ask rather than something to tidy away."""
     open_prs = get(repo, "pulls?state=open")
     print(f"{repo}: {len(open_prs)} open PR(s)"
           + "".join("\n  " + pr["html_url"] for pr in open_prs), file=sys.stderr)
     return [] if len(open_prs) < 2 else [
-        f"{repo}: {len(open_prs)} open PRs, at most one is allowed — push to the"
-        " oldest and close the rest, don't open another"]
+        f"{repo}: {len(open_prs)} open PRs, one a day is the rule — the oldest"
+        f" is waiting on {setup['USER']}'s merge, ask for it and push the day's"
+        " work to the newest"]
 
 
 def heads(repo, cache):

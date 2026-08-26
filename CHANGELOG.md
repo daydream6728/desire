@@ -9,15 +9,15 @@ Entries state the changes, no explanation of why.
 ([#113](https://github.com/toumix/desire/pull/113), closes
 [#112](https://github.com/toumix/desire/issues/112)) — `AGENTS.md`'s "one memory PR open at a
 time" becomes one per day, titled with the day it covers and opened by Birdsong even when the
-previous day's has not merged; the sweep's open-PR count failing on more than one is then the
-ask. `EVENING.md` gains "writes its turn file and one comment, never that PR's description",
+previous day's has not merged. `sweep.py`'s open-PR finding names the oldest as waiting on USER's
+merge in place of "at most one is allowed — push to the oldest and close the rest".
+`EVENING.md` gains "writes its turn file and one comment, never that PR's description",
 `BIRDSONG.md` names Birdsong the only routine that writes it. The memory PR template's queue
 stops being a table and links the board instead.
 
 **An unanswered USER comment is reported until it is answered** (same PR, closes
 [#111](https://github.com/toumix/desire/issues/111)) — `sweep.py`'s two unanswered branches drop
-their `created_at >= since` window, so a comment that lands between two sweeps is no longer
-invisible for good. `closed_since` keeps its window. Reverses the windowing
+their `created_at >= since` window; `closed_since` keeps its own. Reverses the windowing
 [#90](https://github.com/toumix/desire/issues/90) introduced on the body branch.
 
 ## 2026-08-24
