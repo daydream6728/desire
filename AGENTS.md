@@ -81,35 +81,39 @@ MEMORY_REPO holds the agents' long-term memory in its `main` branch:
 
 A turn that stays within one workstream records itself on its dedicated work PR
 and leaves MEMORY_REPO untouched. Only changes that affect other PRs land there.
-One memory PR open at a time: if one is already open, push to it and leave a
-comment on the PR instead of opening another; only open a new one when none is
-open, ready for review rather than draft so USER can merge in one click.
-The sweep reports MEMORY_REPO's open-PR count and fails on more than one —
-`git log` is not the check, since a merged PR of ours says nothing about one
-another turn opened.
+One memory PR per day, titled with the day it covers: 🐦 Birdsong opens it,
+ready for review rather than draft so USER can merge in one click, and every
+later turn of that day pushes to it and leaves a comment instead of opening
+another. A day's PR is opened even when the previous day's has not merged yet,
+rather than extending that one to cover both days.
+The sweep reports MEMORY_REPO's open-PR count and fails on more than one, which
+is then the ask: yesterday's is waiting on USER's merge. `git log` is not the
+check, since a merged PR of ours says nothing about one another turn opened.
 Feedback happens either as comments on that PR (agents should listen to GitHub
 events) or in interactive chats, recorded as agent comments with verbatim quotes.
 
 Branch names carry nothing: use the branch you were assigned or open a new one.
-In MEMORY_REPO the open PR's branch wins over the assigned one, since only one
-memory PR is open at a time.
+In MEMORY_REPO the day's PR branch wins over the assigned one.
 
 **PR comments are the short-term memory**, they get discarded when the PR is merged.
 **Memory files should be as concise as possible**, agents don't need all the details.
 
 ## Memory PR Template
+🐦 Birdsong writes it and nobody else, as short as it can be said:
+
 ```
-# <period>
+# <date>
 ## 🚀 Waiting on you       always first, nothing above it. One bullet per decision:
                            name the thing, the question in one line, the options,
                            what answering unblocks. "nothing" if empty.
-## Ready for your review   the queue as a table — named, cheapest first, churn split
-                           by changes-existing vs new, what merging closes. No prose.
-## What changed since <last merged memory PR>     merged / arrived / fixed, one line each.
+## Ready for your review   which heads are ready and what reading them costs,
+                           linking the board's table rather than repeating it.
+## What changed today      merged / arrived / fixed, one line each.
 ## Agent proposals         ideas wanting a yes or no but blocking nothing, 🚀-able.
 ## Detail                  links to the board and the turn file, nothing else.
 ```
 
+The board is where a table lives: repeating it here is what goes stale first.
 No agent narration in the description — "the sweep is clean", "re-merged the
 queue" are turn-file material; a proposal is a bullet under `Agent proposals`,
 never buried mid-paragraph.

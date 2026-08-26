@@ -3,6 +3,23 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-26
+
+**One memory PR per day, written by 🐦 Birdsong alone**
+([#113](https://github.com/toumix/desire/pull/113), closes
+[#112](https://github.com/toumix/desire/issues/112)) — `AGENTS.md`'s "one memory PR open at a
+time" becomes one per day, titled with the day it covers and opened by Birdsong even when the
+previous day's has not merged; the sweep's open-PR count failing on more than one is then the
+ask. `EVENING.md` gains "writes its turn file and one comment, never that PR's description",
+`BIRDSONG.md` names Birdsong the only routine that writes it. The memory PR template's queue
+stops being a table and links the board instead.
+
+**An unanswered USER comment is reported until it is answered** (same PR, closes
+[#111](https://github.com/toumix/desire/issues/111)) — `sweep.py`'s two unanswered branches drop
+their `created_at >= since` window, so a comment that lands between two sweeps is no longer
+invisible for good. `closed_since` keeps its window. Reverses the windowing
+[#90](https://github.com/toumix/desire/issues/90) introduced on the body branch.
+
 ## 2026-08-24
 
 **Agents delete their own `TODO.md` once every point is done**

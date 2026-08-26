@@ -8,7 +8,7 @@ and the emoji; AGENTS.md's rules say what to do with a finding.
 
 Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
                 [number...]
-       # no numbers: every open PR and issue; --since windows comments and closes
+       # no numbers: every open PR and issue; --since windows the closes only
 Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding. Open
 `TODO.md` boxes are printed as context and do not make the sweep dirty.
 """
@@ -266,14 +266,19 @@ def todo(repo, number, body, setup, cache):
     return findings
 
 
-def item(repo, number, setup, since, cache):
+def item(repo, number, setup, cache):
     """The findings on one PR or issue: USER's APPROVE_EMOJI on the body or on
     any comment, and every thread where USER spoke last. GitHub splits comments
     across two endpoints, review comments threaded by in_reply_to_id and the
     conversation tab flat; both are swept, and so are the bodies. A body USER
     wrote is the thread when nothing else was said on it, which is the shape a
     standing order arrives in; once anyone comments, that thread's last word
-    answers for it and the body would only report it twice."""
+    answers for it and the body would only report it twice.
+
+    No `since` on either: unanswered is a condition rather than an event, so a
+    window hides a question that is still open as readily as an answered one,
+    and one turn sweeping past a comment loses it for good. `answered` is what
+    makes the finding go quiet, and anyone replying is enough."""
     findings, threads, body = [], {}, get(repo, f"issues/{number}")
     kind = f"issues/{number}/reactions"
     if approved(repo, kind, body, setup, cache):
@@ -295,13 +300,12 @@ def item(repo, number, setup, since, cache):
     for (endpoint, _), thread in threads.items():
         asked = thread[-1]  # both endpoints list oldest first
         kind = f"{endpoint}/comments/{asked['id']}/reactions"
-        if not answered(asked, setup) and asked["created_at"] >= since:
+        if not answered(asked, setup):
             findings.append(
                 f"#{number} unanswered {setup['USER']} comment:"
                 f" {asked['html_url']}" + seen(repo, kind, asked, setup, cache))
     kind = f"issues/{number}/reactions"
-    if not threads and not answered(body, setup) \
-            and body["created_at"] >= since:
+    if not threads and not answered(body, setup):
         findings.append(
             f"#{number} unanswered {setup['USER']}"
             f" {'pull request' if 'pull_request' in body else 'issue'}:"
@@ -319,7 +323,7 @@ def sweep(repo, numbers, since, setup):
         numbers = sorted({
             issue["number"] for issue in get(repo, "issues?state=open")})
     for number in numbers:
-        findings += item(repo, number, setup, since, cache)
+        findings += item(repo, number, setup, cache)
     return findings
 
 

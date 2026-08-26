@@ -15,10 +15,10 @@ USER, live session, 2026-08-26, verbatim:
 
 ## Work
 
-- [ ] file the two rulings as open issues on DESIRE_REPO, closed by this PR
-- [ ] `sweep.py`: an unanswered USER comment is a condition, not an event — drop `>= since` from both unanswered branches
-- [ ] `AGENTS.md`: one memory PR per day, not one at a time
-- [ ] `AGENTS.md`: the memory PR template stops carrying the queue as a table
-- [ ] `EVENING.md`: Evening writes its turn file and a PR comment, never the description
-- [ ] `BIRDSONG.md`: Birdsong owns the description, as concise as it can be, tables live in the board
-- [ ] `CHANGELOG.md` entry for both
+- [x] file the two rulings as open issues on DESIRE_REPO, closed by this PR
+- [x] `sweep.py`: an unanswered USER comment is a condition, not an event — drop `>= since` from both unanswered branches
+- [x] `AGENTS.md`: one memory PR per day, not one at a time
+- [x] `AGENTS.md`: the memory PR template stops carrying the queue as a table
+- [x] `EVENING.md`: Evening writes its turn file and a PR comment, never the description
+- [x] `BIRDSONG.md`: Birdsong owns the description, as concise as it can be, tables live in the board
+- [x] `CHANGELOG.md` entry for both
