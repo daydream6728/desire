@@ -109,8 +109,13 @@ suspects the board drifted — an event missed, a token that was not yet there �
 - **Every turn that touches an item appends its conversation**, one line under `## Conversations`
   in the body: `- <date> 🌙 <session URL>`. The Action copies the last one into the *Claude
   conversation* field, so the project links the newest turn and the body keeps the whole thread.
-- **A blocker is a 🚀-able comment on the item**, a `blocked` label beside it — not a `status:`
-  one, the item keeps its column while it waits: a label asks nobody.
+- **The assignee says whose move it is**, and the project shows it without the Action: USER when
+  the item waits on them — a 🚀, an answer, a merge — AGENT when the agents move it next, nobody
+  when nobody has picked it up. A turn that starts on an item assigns itself to AGENT and a turn
+  that hands one over reassigns it, in the same edit that asks.
+- **A blocker is a 🚀-able comment on the item**, assigned to USER: a label asks nobody, and the
+  item keeps its column while it waits. `blocked` beside it says it cannot move at all — an
+  upstream head, a run that has not finished — whoever it sits on.
 
 `README.md` and `TURNS/<date>.md` stay in MEMORY_REPO as reflections, not as state — the journal,
 one file per day, and a standing README saying what the setup is and where things live. **Neither
