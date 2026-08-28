@@ -5,6 +5,15 @@ Entries state the changes, no explanation of why.
 
 ## 2026-08-28
 
+**The assignee says whose move it is** (closes
+[#8](https://github.com/daydream6728/desire/issues/8)) — `AGENTS.md` gains an assignee bullet
+beside the status one: USER when the item waits on them, AGENT when the agents move it next,
+nobody when nobody has picked it up, a turn assigning itself when it starts and reassigning when
+it hands over. The blocker bullet stops carrying *waiting on USER*, which assignment now says,
+and `blocked` narrows to *cannot move at all* — an upstream head, an unfinished run — whoever the
+item sits on. The project shows Assignees natively, so the sync Action is untouched. `README.md`
+says the same in the project section.
+
 **The project is the memory** (closes [#5](https://github.com/daydream6728/desire/issues/5)) —
 `AGENTS.md`'s Memory section is rewritten around `PROJECT`, a new key of `config.env`: every unit
 of work is one item on the project, an issue of MEMORY_REPO or, for the day's PR alone, a pull

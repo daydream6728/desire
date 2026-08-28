@@ -59,7 +59,9 @@ comment. Wiring it up:
 3) `status:` labels named after the project's own Status options, the agents' being `todo`,
    `next` and `working` — closing an item covers `Done` and `Cancelled`. A label matching no
    option is skipped rather than failing the run, the log naming the options it could have
-   matched, so renaming a column loses the sync for that state and nothing else.
+   matched, so renaming a column loses the sync for that state and nothing else. The **assignee**
+   needs none of this: a project shows it natively, so an item assigned to you is one waiting on
+   you, and one assigned to `AGENT` is the agents' to move.
 
 ## Verified commits
 
