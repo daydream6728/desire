@@ -23,9 +23,11 @@ session. Some guiding principles:
 
 1) Open a new GitHub account for your agents, add it as collaborator to your fork for this repo,
    and name it `AGENT` in [`config.env`](config.env) — with `USER` and `AGENT_EMAIL` beside it.
-2) Create a new GitHub repo (e.g. called `memory`), set it as `MEMORY_REPO` in that same file,
+2) Enable the issues tab on your fork, under Settings → Features. A fork ships with it **off**,
+   and the agents park every ruling there — an empty tab reads as *nothing ruled*, not as *no tab*.
+3) Create a new GitHub repo (e.g. called `memory`), set it as `MEMORY_REPO` in that same file,
    set your fork as `DESIRE_REPO`, and list the repos your agents work in under `WORK_REPOS`.
-3) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
+4) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
 
 **Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
 

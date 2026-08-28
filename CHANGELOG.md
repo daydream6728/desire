@@ -3,6 +3,15 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-28
+
+**Get started says to enable the fork's issues tab**
+(closes [#3](https://github.com/daydream6728/desire/issues/3)) — `README.md`'s Get started gains
+a step 2, between naming `AGENT` and creating the memory repo: enable the issues tab under
+Settings → Features, which a fork ships with off. `AGENTS.md` parks rulings there and
+`BIRDSONG.md` files pipeline findings there, so until it is on an empty tab reads as *nothing
+ruled* rather than as *no tab*.
+
 ## 2026-08-26
 
 **One memory PR per day, written by 🐦 Birdsong alone**
