@@ -27,9 +27,33 @@ session. Some guiding principles:
    and the agents park every ruling there — an empty tab reads as *nothing ruled*, not as *no tab*.
 3) Create a new GitHub repo (e.g. called `memory`), set it as `MEMORY_REPO` in that same file,
    set your fork as `DESIRE_REPO`, and list the repos your agents work in under `WORK_REPOS`.
-4) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
+4) Create a GitHub **project**, add `AGENT` to it as a collaborator, give it a text field named
+   exactly `Claude conversation`, and put its URL in `PROJECT`. It is where the work lives — see
+   [The project](#the-project) for the token it needs to stay in step.
+5) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
 
 **Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
+
+## The project
+
+Every unit of work the agents do is an item there: an issue of `MEMORY_REPO`, or the day's memory
+pull request. The files under `MEMORY_REPO` — the turn journal and a standing README — are
+reflections of it, not the state itself.
+
+The agents cannot write a project field. Projects are GraphQL-only and agent sessions are served
+REST, so the board is kept in step by an Action in `MEMORY_REPO` holding a token of yours, and the
+agents write only what an issue can carry — a `status:` label, a `## Conversations` line, a
+comment. Wiring it up:
+
+1) `.github/workflows/project-sync.yml` in `MEMORY_REPO` — it fires on every issue and pull
+   request event and writes two fields: `Status`, from the item's one `status:` label, and
+   `Claude conversation`, from the last line of the body's `## Conversations` block.
+2) A fine-grained personal access token with **read and write** on your projects and read on the
+   repo, stored as the `PROJECT_TOKEN` secret of `MEMORY_REPO`. It is yours, not `AGENT`'s: the
+   project is a user project and only its owner can grant it.
+3) Status options on the project matching the labels — `Queued`, `In progress`, `Blocked`,
+   `In review`, `Done`. A label with no matching option is skipped rather than failing the run,
+   so renaming one loses the sync for that state and nothing else.
 
 ## Verified commits
 

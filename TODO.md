@@ -14,11 +14,11 @@ USER's answers, this session:
 - *"the daily memory PR is just another task in the project, except that its a PR and
   not an issue. otherwise works exactly the same"*
 
-- [ ] `AGENTS.md`: Memory becomes the board — one item per unit of work, the
+- [x] `AGENTS.md`: Memory becomes the board — one item per unit of work, the
       agent-writable surface, the status labels, the conversation log
-- [ ] `BIRDSONG.md` / `DAYLIGHT.md` / `EVENING.md`: each phase said in items
-- [ ] `config.env`: `PROJECT`, so nothing hard-codes the board's URL
-- [ ] `README.md`: Get started gains the project, the field, the PAT and the Action
-- [ ] `CHANGELOG.md`: what this replaces
+- [x] `BIRDSONG.md` / `DAYLIGHT.md` / `EVENING.md`: each phase said in items
+- [x] `config.env`: `PROJECT`, so nothing hard-codes the board's URL
+- [x] `README.md`: Get started gains the project, the field, the PAT and the Action
+- [x] `CHANGELOG.md`: what this replaces
 - [ ] MEMORY_REPO: the sync Action, its `AGENTS.md` and an issue template — its own PR
-- [ ] the ruling as an open issue on DESIRE_REPO, closed by this PR
+- [x] the ruling as an open issue on DESIRE_REPO, closed by this PR

@@ -5,6 +5,18 @@ Entries state the changes, no explanation of why.
 
 ## 2026-08-28
 
+**The project is the memory** (closes [#5](https://github.com/daydream6728/desire/issues/5)) —
+`AGENTS.md`'s Memory section is rewritten around `PROJECT`, a new key of `config.env`: every unit
+of work is one item on the project, an issue of MEMORY_REPO or, for the day's PR alone, a pull
+request treated the same, and work carrying no item does not exist. A pull request of WORK_REPOS
+we own is mirrored by an item. Agents write items over MCP only — the project's fields are written
+by the sync Action of MEMORY_REPO, so status is a `status:` label and the conversation link is a
+line under `## Conversations` in the body. `README.md` and `TURNS/<date>.md` become reflections:
+the README stops being the board and stops being rewritten every turn, in place of "the live
+board, rewritten every turn" of 2026-08-04. The three phase files each say their part in items,
+and the README's Get started gains the project, its `Claude conversation` field and the
+`PROJECT_TOKEN` the Action holds.
+
 **Get started says to enable the fork's issues tab**
 (closes [#3](https://github.com/daydream6728/desire/issues/3)) — `README.md`'s Get started gains
 a step 2, between naming `AGENT` and creating the memory repo: enable the issues tab under
