@@ -16,7 +16,6 @@ Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding. Open
 import base64
 import datetime
 import json
-import os
 import pathlib
 import re
 import sys
@@ -58,8 +57,9 @@ def get(repo, path):
     """A GitHub REST resource, every page of a listing. A page holds 100 and
     `discopy/discopy` had 153 open items the day this stopped reading one page:
     the tail is the oldest, so a 🚀 on an old issue was invisible for good.
-    Unauthenticated GETs work on public repos but are rate-limited to 60/hr;
-    GITHUB_TOKEN or GH_TOKEN is used when set."""
+    No token: the session's proxy authenticates the repos it is scoped to, the
+    private ones included, and a repo outside that scope is refused whatever
+    the caller carries."""
     results, page = [], 1
     while True:
         request = urllib.request.Request(
@@ -67,9 +67,6 @@ def get(repo, path):
             + ("&" if "?" in path else "?") + f"per_page=100&page={page}",
             headers={"User-Agent": "sweep",
                      "Accept": "application/vnd.github+json"})
-        token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
-        if token:
-            request.add_header("Authorization", f"Bearer {token}")
         with urllib.request.urlopen(request) as response:
             items = json.load(response)
         if not isinstance(items, list):  # a single issue, comment or user

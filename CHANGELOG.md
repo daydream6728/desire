@@ -3,6 +3,43 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-28
+
+**The assignee says whose move it is** (closes
+[#8](https://github.com/daydream6728/desire/issues/8)) — `AGENTS.md` gains an assignee bullet
+beside the status one: USER when the item waits on them, AGENT when the agents move it next,
+nobody when nobody has picked it up, a turn assigning itself when it starts and reassigning when
+it hands over. The blocker bullet stops carrying *waiting on USER*, which assignment now says,
+and `blocked` narrows to *cannot move at all* — an upstream head, an unfinished run — whoever the
+item sits on. The project shows Assignees natively, so the sync Action is untouched. `README.md`
+says the same in the project section.
+
+**The project is the memory** (closes [#5](https://github.com/daydream6728/desire/issues/5)) —
+`AGENTS.md`'s Memory section is rewritten around `PROJECT`, a new key of `config.env`: every unit
+of work is one item on the project, an issue of MEMORY_REPO or, for the day's PR alone, a pull
+request treated the same, and work carrying no item does not exist. A pull request of WORK_REPOS
+we own is mirrored by an item. Agents write items over MCP only — the project's fields are written
+by the sync Action of MEMORY_REPO, so status is a `status:` label and the conversation link is a
+line under `## Conversations` in the body — the Action firing on every issue, comment and pull
+request event, reconciling every open item hourly and on the `workflow_dispatch` a turn can
+trigger itself, and writing Status only on the events that moved it so a card USER drags stays
+dragged. The `status:` labels are named after the project's own columns — `todo`, `next`,
+`working` — closing an item saying Done or, closed `not_planned` or unmerged, Cancelled; a
+blocker is a plain `blocked` label, which keeps the item in its column. `README.md` and `TURNS/<date>.md` become reflections:
+the README stops being the board and stops being rewritten every turn, in place of "the live
+board, rewritten every turn" of 2026-08-04. The three phase files each say their part in items,
+and the README's Get started gains the project, its `Claude conversation` field and the
+`PROJECT_PAT` the Action holds — a classic token, fine-grained ones reaching org projects only.
+Same PR drops `GITHUB_TOKEN`/`GH_TOKEN` from `sweep.py`, the SessionStart hook and `AGENTS.md`:
+the session's proxy authenticates the repos it is scoped to, so a REST read carries no token.
+
+**Get started says to enable the fork's issues tab**
+(closes [#3](https://github.com/daydream6728/desire/issues/3)) — `README.md`'s Get started gains
+a step 2, between naming `AGENT` and creating the memory repo: enable the issues tab under
+Settings → Features, which a fork ships with off. `AGENTS.md` parks rulings there and
+`BIRDSONG.md` files pipeline findings there, so until it is on an empty tab reads as *nothing
+ruled* rather than as *no tab*.
+
 ## 2026-08-26
 
 **One memory PR per day, written by 🐦 Birdsong alone**
