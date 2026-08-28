@@ -45,9 +45,11 @@ REST, so the board is kept in step by an Action in `MEMORY_REPO` holding a token
 agents write only what an issue can carry — a `status:` label, a `## Conversations` line, a
 comment. Wiring it up:
 
-1) `.github/workflows/project-sync.yml` in `MEMORY_REPO` — it fires on every issue and pull
-   request event and writes two fields: `Status`, from the item's one `status:` label, and
-   `Claude conversation`, from the last line of the body's `## Conversations` block.
+1) `.github/workflows/project-sync.yml` in `MEMORY_REPO` — it fires on every issue, comment and
+   pull request event and writes two fields: `Status`, from the item's one `status:` label, and
+   `Claude conversation`, from the last line of the body's `## Conversations` block. Hourly and
+   on `workflow_dispatch` it reconciles every open item instead, which is the repair for a
+   missed event and the pass an agent can trigger itself.
 2) A fine-grained personal access token with **read and write** on your projects and read on the
    repo, stored as the `PROJECT_TOKEN` secret of `MEMORY_REPO`. It is yours, not `AGENT`'s: the
    project is a user project and only its owner can grant it.

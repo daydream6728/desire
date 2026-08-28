@@ -11,7 +11,9 @@ of work is one item on the project, an issue of MEMORY_REPO or, for the day's PR
 request treated the same, and work carrying no item does not exist. A pull request of WORK_REPOS
 we own is mirrored by an item. Agents write items over MCP only — the project's fields are written
 by the sync Action of MEMORY_REPO, so status is a `status:` label and the conversation link is a
-line under `## Conversations` in the body. `README.md` and `TURNS/<date>.md` become reflections:
+line under `## Conversations` in the body — the Action firing on every issue, comment and pull
+request event, reconciling every open item hourly and on the `workflow_dispatch` a turn can
+trigger itself. `README.md` and `TURNS/<date>.md` become reflections:
 the README stops being the board and stops being rewritten every turn, in place of "the live
 board, rewritten every turn" of 2026-08-04. The three phase files each say their part in items,
 and the README's Get started gains the project, its `Claude conversation` field and the

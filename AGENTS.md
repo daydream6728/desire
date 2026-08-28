@@ -94,7 +94,10 @@ Agents write items over the MCP tools only — title, body, labels, assignees, s
 reactions, sub-issues. **The project's own fields are written by nobody but the sync Action**
 (`.github/workflows/project-sync.yml` in MEMORY_REPO, holding USER's PAT): the GraphQL API a
 project needs is closed to agent sessions, so an agent that means to set a field sets a label
-and the Action projects it. A field written by hand is USER's.
+and the Action projects it, within the minute. A field written by hand is USER's.
+The Action also reconciles every open item hourly and on `workflow_dispatch`, so a turn that
+suspects the board drifted — an event missed, a token that was not yet there — dispatches
+`project sync` over MCP rather than editing items to provoke it.
 
 - **Status is one `status:` label** and the Action writes the option matching it: `status:queued`
   nothing started, `status:in-progress` a turn is on it, `status:blocked` waiting on USER,
