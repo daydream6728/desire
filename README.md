@@ -49,7 +49,9 @@ comment. Wiring it up:
    pull request event and writes two fields: `Status`, from the item's one `status:` label, and
    `Claude conversation`, from the last line of the body's `## Conversations` block. Hourly and
    on `workflow_dispatch` it reconciles every open item instead, which is the repair for a
-   missed event and the pass an agent can trigger itself.
+   missed event and the pass an agent can trigger itself. `Status` is written only by the events
+   that moved it, never by an edit or a reconcile: a card you drag stays where you dragged it,
+   and the label is what an agent changes to move one.
 2) A fine-grained personal access token with **read and write** on your projects and read on the
    repo, stored as the `PROJECT_TOKEN` secret of `MEMORY_REPO`. It is yours, not `AGENT`'s: the
    project is a user project and only its owner can grant it.

@@ -102,6 +102,8 @@ suspects the board drifted — an event missed, a token that was not yet there �
 - **Status is one `status:` label** and the Action writes the option matching it: `status:queued`
   nothing started, `status:in-progress` a turn is on it, `status:blocked` waiting on USER,
   `status:in-review` a head ready to read. Closing the item is Done, nothing else says done.
+  The Action writes Status only on the events that moved it — a label changed, an item opened,
+  closed or reopened — so a card USER drags on the board stays where they dragged it.
 - **Every turn that touches an item appends its conversation**, one line under `## Conversations`
   in the body: `- <date> 🌙 <session URL>`. The Action copies the last one into the *Claude
   conversation* field, so the project links the newest turn and the body keeps the whole thread.
