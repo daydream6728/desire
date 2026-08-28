@@ -56,9 +56,10 @@ comment. Wiring it up:
    secret of `MEMORY_REPO` — add `repo` if the run cannot resolve a private repo's items. It is
    yours, not `AGENT`'s, and classic because a fine-grained token cannot reach a user project at
    all: GitHub grants Projects to fine-grained tokens for organizations only.
-3) Status options on the project matching the labels — `Queued`, `In progress`, `Blocked`,
-   `In review`, `Done`. A label with no matching option is skipped rather than failing the run,
-   so renaming one loses the sync for that state and nothing else.
+3) `status:` labels named after the project's own Status options, the agents' being `todo`,
+   `next` and `working` — closing an item covers `Done` and `Cancelled`. A label matching no
+   option is skipped rather than failing the run, the log naming the options it could have
+   matched, so renaming a column loses the sync for that state and nothing else.
 
 ## Verified commits
 

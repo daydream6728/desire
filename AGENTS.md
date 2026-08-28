@@ -99,15 +99,18 @@ The Action also reconciles every open item hourly and on `workflow_dispatch`, so
 suspects the board drifted — an event missed, a token that was not yet there — dispatches
 `project sync` over MCP rather than editing items to provoke it.
 
-- **Status is one `status:` label** and the Action writes the option matching it: `status:queued`
-  nothing started, `status:in-progress` a turn is on it, `status:blocked` waiting on USER,
-  `status:in-review` a head ready to read. Closing the item is Done, nothing else says done.
+- **Status is one `status:` label** naming a column of the project, and the Action writes the
+  option matching it: `status:todo` nothing started, `status:next` picked for the coming turn,
+  `status:working` a turn is on it. Closing the item says the rest — Done, or Cancelled when it
+  is closed `not_planned` or its pull request is closed unmerged — and nothing else says either.
+  A label matching no option is skipped, the run naming the ones it could have matched.
   The Action writes Status only on the events that moved it — a label changed, an item opened,
   closed or reopened — so a card USER drags on the board stays where they dragged it.
 - **Every turn that touches an item appends its conversation**, one line under `## Conversations`
   in the body: `- <date> 🌙 <session URL>`. The Action copies the last one into the *Claude
   conversation* field, so the project links the newest turn and the body keeps the whole thread.
-- **A blocker is a 🚀-able comment on the item**, `status:blocked` beside it: a label asks nobody.
+- **A blocker is a 🚀-able comment on the item**, a `blocked` label beside it — not a `status:`
+  one, the item keeps its column while it waits: a label asks nobody.
 
 `README.md` and `TURNS/<date>.md` stay in MEMORY_REPO as reflections, not as state — the journal,
 one file per day, and a standing README saying what the setup is and where things live. **Neither

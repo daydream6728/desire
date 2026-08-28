@@ -14,7 +14,9 @@ by the sync Action of MEMORY_REPO, so status is a `status:` label and the conver
 line under `## Conversations` in the body — the Action firing on every issue, comment and pull
 request event, reconciling every open item hourly and on the `workflow_dispatch` a turn can
 trigger itself, and writing Status only on the events that moved it so a card USER drags stays
-dragged. `README.md` and `TURNS/<date>.md` become reflections:
+dragged. The `status:` labels are named after the project's own columns — `todo`, `next`,
+`working` — closing an item saying Done or, closed `not_planned` or unmerged, Cancelled; a
+blocker is a plain `blocked` label, which keeps the item in its column. `README.md` and `TURNS/<date>.md` become reflections:
 the README stops being the board and stops being rewritten every turn, in place of "the live
 board, rewritten every turn" of 2026-08-04. The three phase files each say their part in items,
 and the README's Get started gains the project, its `Claude conversation` field and the
