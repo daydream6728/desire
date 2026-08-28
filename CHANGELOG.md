@@ -18,7 +18,9 @@ dragged. `README.md` and `TURNS/<date>.md` become reflections:
 the README stops being the board and stops being rewritten every turn, in place of "the live
 board, rewritten every turn" of 2026-08-04. The three phase files each say their part in items,
 and the README's Get started gains the project, its `Claude conversation` field and the
-`PROJECT_TOKEN` the Action holds.
+`PROJECT_PAT` the Action holds — a classic token, fine-grained ones reaching org projects only.
+Same PR drops `GITHUB_TOKEN`/`GH_TOKEN` from `sweep.py`, the SessionStart hook and `AGENTS.md`:
+the session's proxy authenticates the repos it is scoped to, so a REST read carries no token.
 
 **Get started says to enable the fork's issues tab**
 (closes [#3](https://github.com/daydream6728/desire/issues/3)) — `README.md`'s Get started gains

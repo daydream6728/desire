@@ -52,9 +52,10 @@ comment. Wiring it up:
    missed event and the pass an agent can trigger itself. `Status` is written only by the events
    that moved it, never by an edit or a reconcile: a card you drag stays where you dragged it,
    and the label is what an agent changes to move one.
-2) A fine-grained personal access token with **read and write** on your projects and read on the
-   repo, stored as the `PROJECT_TOKEN` secret of `MEMORY_REPO`. It is yours, not `AGENT`'s: the
-   project is a user project and only its owner can grant it.
+2) A **classic** personal access token with the `project` scope, stored as the `PROJECT_PAT`
+   secret of `MEMORY_REPO` — add `repo` if the run cannot resolve a private repo's items. It is
+   yours, not `AGENT`'s, and classic because a fine-grained token cannot reach a user project at
+   all: GitHub grants Projects to fine-grained tokens for organizations only.
 3) Status options on the project matching the labels — `Queued`, `In progress`, `Blocked`,
    `In review`, `Done`. A label with no matching option is skipped rather than failing the run,
    so renaming one loses the sync for that state and nothing else.

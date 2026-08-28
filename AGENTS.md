@@ -173,9 +173,9 @@ Watch PRs by webhook events only: never schedule timed self check-ins,
 every scheduled fire notifies USER for nothing.
 
 Every write to GitHub — pull requests, comments, reviews, reactions — goes
-through the MCP tools, and `GITHUB_TOKEN` is for reads only: the two
-authenticate as different accounts. Assert it before the first write of a turn,
-`mcp__github__get_me` must be AGENT.
+through the MCP tools; plain REST reads carry no token, the session's proxy
+authenticating the repos it is scoped to. Assert the identity before the first
+write of a turn, `mcp__github__get_me` must be AGENT.
 
 Commits carry that same identity, AGENT and AGENT_EMAIL, set on every clone
 before the first commit of a turn. Check the branch before pushing,
