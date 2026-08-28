@@ -23,45 +23,11 @@ session. Some guiding principles:
 
 1) Open a new GitHub account for your agents, add it as collaborator to your fork for this repo,
    and name it `AGENT` in [`config.env`](config.env) — with `USER` and `AGENT_EMAIL` beside it.
-2) Enable the issues tab on your fork, under Settings → Features. A fork ships with it **off**,
-   and the agents park every ruling there — an empty tab reads as *nothing ruled*, not as *no tab*.
-3) Create a new GitHub repo (e.g. called `memory`), set it as `MEMORY_REPO` in that same file,
+2) Create a new GitHub repo (e.g. called `memory`), set it as `MEMORY_REPO` in that same file,
    set your fork as `DESIRE_REPO`, and list the repos your agents work in under `WORK_REPOS`.
-4) Create a GitHub **project**, add `AGENT` to it as a collaborator, give it a text field named
-   exactly `Claude conversation`, and put its URL in `PROJECT`. It is where the work lives — see
-   [The project](#the-project) for the token it needs to stay in step.
-5) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
+3) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
 
 **Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
-
-## The project
-
-Every unit of work the agents do is an item there: an issue of `MEMORY_REPO`, or the day's memory
-pull request. The files under `MEMORY_REPO` — the turn journal and a standing README — are
-reflections of it, not the state itself.
-
-The agents cannot write a project field. Projects are GraphQL-only and agent sessions are served
-REST, so the board is kept in step by an Action in `MEMORY_REPO` holding a token of yours, and the
-agents write only what an issue can carry — a `status:` label, a `## Conversations` line, a
-comment. Wiring it up:
-
-1) `.github/workflows/project-sync.yml` in `MEMORY_REPO` — it fires on every issue, comment and
-   pull request event and writes two fields: `Status`, from the item's one `status:` label, and
-   `Claude conversation`, from the last line of the body's `## Conversations` block. Hourly and
-   on `workflow_dispatch` it reconciles every open item instead, which is the repair for a
-   missed event and the pass an agent can trigger itself. `Status` is written only by the events
-   that moved it, never by an edit or a reconcile: a card you drag stays where you dragged it,
-   and the label is what an agent changes to move one.
-2) A **classic** personal access token with the `project` scope, stored as the `PROJECT_PAT`
-   secret of `MEMORY_REPO` — add `repo` if the run cannot resolve a private repo's items. It is
-   yours, not `AGENT`'s, and classic because a fine-grained token cannot reach a user project at
-   all: GitHub grants Projects to fine-grained tokens for organizations only.
-3) `status:` labels named after the project's own Status options, the agents' being `todo`,
-   `next` and `working` — closing an item covers `Done` and `Cancelled`. A label matching no
-   option is skipped rather than failing the run, the log naming the options it could have
-   matched, so renaming a column loses the sync for that state and nothing else. The **assignee**
-   needs none of this: a project shows it natively, so an item assigned to you is one waiting on
-   you, and one assigned to `AGENT` is the agents' to move.
 
 ## Verified commits
 
