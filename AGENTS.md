@@ -6,7 +6,7 @@
 
 ## Config
 The values (USER, AGENT, AGENT_EMAIL, WORK_REPOS, MEMORY_REPO, DESIRE_REPO,
-APPROVE_EMOJI, AGENT_FOOTER, ADOPTED_PRS) live in
+APPROVE_EMOJI, AGENT_FOOTER, AGENT_FOOTER_ALIASES, ADOPTED_PRS) live in
 [`config.env`](config.env), the one file that names them — nothing here
 duplicates it. `session-start.sh` reads it before the first commit of a turn,
 `sweep.py`'s `config()` before every sweep. A config.env that cannot be read
@@ -55,8 +55,18 @@ No GitHub MCP tool says *who* reacted — comment listings carry the counts only
 [sweep.py](.agents/skills/sweep/sweep.py) `[--since <ISO8601>] <owner/repo> [number...]`, which
 flags every APPROVE_EMOJI react from USER on a body or a comment, both endpoints, and every
 thread where USER spoke last. A thread is answered when **anyone other than USER** has replied
-since; which agent closed it does not matter, and a reply ending on AGENT_FOOTER counts as an
-agent's even when it was posted from USER's own account, which is how the adopted PRs read.
+since; which agent closed it does not matter. A reply from USER counts as an agent's when its
+last line is exactly AGENT_FOOTER or a Markdown link labelled AGENT_FOOTER to a verified HTTPS
+session snapshot. A historical last line carrying a token in AGENT_FOOTER_ALIASES also counts,
+but aliases are detection-only and are never used to sign new posts. This is how the adopted
+PRs read.
+
+A new agent-authored GitHub issue, pull request, review or comment ends with AGENT_FOOTER on its
+own line. When the client supplies a shareable Codex session snapshot, the agent may instead
+link that label to the copied URL after opening and reviewing the shared view; otherwise it uses
+the plain footer. Internal session and thread IDs are not URLs and must never be used to invent
+one.
+
 A turn runs it with no numbers, covering every open PR and issue of every repo in play,
 before planning: no turn concludes "no unblocked work" without a clean sweep —
 checkboxes, CI and behind-counts are all state the agents wrote themselves.

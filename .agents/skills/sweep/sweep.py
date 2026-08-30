@@ -36,7 +36,9 @@ def config(path):
     after the first `=`; WORK_REPOS is a comma-separated list and ADOPTED_PRS
     space-separated `repo:number,number` entries. A line carrying no `=`
     raises rather than parsing to a key nothing will look up, and a key the
-    file does not set is absent, so a caller reading it raises too."""
+    file does not set is absent, so a caller reading it raises too.
+    AGENT_FOOTER_ALIASES is a comma-separated list of historical detection
+    tokens which new posts never use."""
     setup = {}
     for line in path.read_text().splitlines():
         key, separator, value = line.partition("=")
@@ -46,6 +48,10 @@ def config(path):
             setup[key.strip()] = value.strip()
     if "WORK_REPOS" in setup:
         setup["WORK_REPOS"] = setup["WORK_REPOS"].split(",")
+    if "AGENT_FOOTER_ALIASES" in setup:
+        setup["AGENT_FOOTER_ALIASES"] = [
+            alias for alias in setup["AGENT_FOOTER_ALIASES"].split(",")
+            if alias]
     if "ADOPTED_PRS" in setup:
         setup["ADOPTED_PRS"] = {
             repo: [int(number) for number in numbers.split(",") if number]
@@ -134,13 +140,32 @@ def seen(repo, kind, target, setup, cache):
         for reaction in reactors(repo, kind, target, "eyes", cache)) else ""
 
 
+def agent_footer(body, setup):
+    """Whether `body` ends with the current footer or a historical token.
+
+    The current marker is either the whole final line or the exact label of an
+    HTTPS Markdown link. Historical aliases retain their former substring
+    semantics so changing the display footer does not reopen old threads.
+    Empty markers never match.
+    """
+    line = ((body or "").strip().splitlines() or [""])[-1]
+    marker = setup["AGENT_FOOTER"]
+    current = bool(marker) and (
+        line == marker
+        or re.fullmatch(
+            rf"\[{re.escape(marker)}\]\(https://[^\s)]+\)", line)
+        is not None)
+    legacy = any(
+        alias and alias in line
+        for alias in setup.get("AGENT_FOOTER_ALIASES", []))
+    return current or legacy
+
+
 def answered(comment, setup):
-    """Whether anyone but USER wrote this, AGENT_FOOTER deciding for the ones an
-    agent posted from USER's account. Bodies are read for that line only, and
-    an issue opened with no description has `None` for one."""
+    """Whether anyone but USER wrote this, the footer deciding for an agent
+    post from USER's account. An issue with no description has a `None` body."""
     return (comment["user"]["login"] != setup["USER"]
-            or setup["AGENT_FOOTER"]
-            in ((comment["body"] or "").strip().splitlines() or [""])[-1])
+            or agent_footer(comment["body"], setup))
 
 
 def asking(repo, kind, target, setup, since, cache):
