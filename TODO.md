@@ -10,4 +10,4 @@ Prompt, from [memory#9](https://github.com/daydream6728/memory/issues/9), verbat
 > - an open item carrying no `status:` label, or more than one
 > - a stale mirror is an item whose head merged or closed and which is still open
 
-- [WIP] @fl5143-2026-08-30 01:45 implement the three checks in `sweep.py`, run on the MEMORY_REPO sweep
+- [x] implement the three checks in `sweep.py`, run on the MEMORY_REPO sweep
