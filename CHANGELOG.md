@@ -5,7 +5,7 @@ Entries state the changes, no explanation of why.
 
 ## 2026-08-31
 
-**`config.env` moves to MEMORY_REPO** (PR_LINK, closes
+**`config.env` moves to MEMORY_REPO** ([#131](https://github.com/toumix/desire/pull/131), closes
 [#130](https://github.com/toumix/desire/issues/130)) — the file leaves this public repo for the
 root of MEMORY_REPO, `CLAUDE.md` here stops importing it and MEMORY_REPO's `CLAUDE.md` imports
 it. `session-start.sh` and `sweep.py` stop deriving its path from their own clone: both take the
