@@ -4,7 +4,8 @@ bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
 issues closed inside the window, MEMORY_REPO's open-PR count and the state of
 each AGENT-owned `TODO.md`. A finding is marked 👀 when the pipeline has reacted
 to say it received it. config.env is the ground truth for USER, the repos
-and the emoji; AGENTS.md's rules say what to do with a finding.
+and the emoji, read from MEMORY_REPO's clone; AGENTS.md's rules say what to
+do with a finding.
 
 Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
                 [number...]
@@ -23,11 +24,30 @@ import sys
 import urllib.error
 import urllib.request
 
-CONFIG = pathlib.Path(__file__).parents[3] / "config.env"
 BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
 CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
                    r"(?:Z|[+-]\d{2}:?\d{2})?)?")
 STALE = datetime.timedelta(hours=12)
+
+
+def find_config(here=pathlib.Path(__file__)):
+    """config.env lives at the root of MEMORY_REPO's clone, beside this one:
+    the prompts are public and the repos the agents work in are not. A session
+    opens in the parent of its clones, so the file is one directory down from
+    there — and it is the one that names itself, i.e. whose MEMORY_REPO is a
+    repo called after the directory holding it, so that a `config.env` some
+    work repo happens to ship is not mistaken for ours. AGENTS_CONFIG
+    overrides, for a layout that is neither."""
+    if os.environ.get("AGENTS_CONFIG"):
+        return pathlib.Path(os.environ["AGENTS_CONFIG"])
+    for candidate in sorted(here.parents[4].glob("*/config.env")):
+        named = re.search(
+            r"^MEMORY_REPO=.*/(.*)$", candidate.read_text(), re.MULTILINE)
+        if named and named.group(1).strip() == candidate.parent.name:
+            return candidate
+    raise FileNotFoundError(
+        f"no config.env naming its own clone under {here.parents[4]}:"
+        " clone MEMORY_REPO beside this one or set AGENTS_CONFIG")
 
 
 def config(path):
@@ -351,7 +371,7 @@ def main(arguments):
     if arguments and arguments[0] == "--since":
         _, since, *arguments = arguments
     findings = sweep(arguments[0], [int(n) for n in arguments[1:]], since,
-                     config(CONFIG))
+                     config(find_config()))
     print("\n".join(findings) if findings else "clean", file=sys.stderr)
     return 1 if findings else 0
 

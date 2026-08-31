@@ -5,16 +5,41 @@ set -uo pipefail
 
 log() { echo "session-start: $*" >&2; }
 
-config="$(cd "$(dirname "$0")/../.." && pwd)/config.env"
-agent="$(sed -n 's/^AGENT=//p' "$config" 2>/dev/null | tail -1)"
-agent_email="$(sed -n 's/^AGENT_EMAIL=//p' "$config" 2>/dev/null | tail -1)"
+# config.env lives at the root of MEMORY_REPO's clone, beside this one: the
+# prompts are public and the repos the agents work in are not. A session opens
+# in the parent of its clones, so the file is one directory down from there —
+# and it is the one that names itself, i.e. whose MEMORY_REPO is a repo called
+# after the directory holding it, so that a config.env some work repo happens
+# to ship is not mistaken for ours. AGENTS_CONFIG overrides.
+find_config() {
+  local clones candidate
+  clones="$(cd "$(dirname "$0")/../../.." && pwd)"
+  for candidate in "$clones"/*/config.env; do
+    [ -r "$candidate" ] || continue
+    [ "$(sed -n 's|^MEMORY_REPO=.*/||p' "$candidate" | tail -1 | tr -d '[:space:]')" \
+      = "$(basename "$(dirname "$candidate")")" ] || continue
+    printf '%s\n' "$candidate"
+    return 0
+  done
+}
+
+config="${AGENTS_CONFIG:-$(find_config)}"
+if [ -r "$config" ]; then
+  agent="$(sed -n 's/^AGENT=//p' "$config" | tail -1)"
+  agent_email="$(sed -n 's/^AGENT_EMAIL=//p' "$config" | tail -1)"
+else
+  agent="" agent_email=""
+fi
 if [ -n "$agent" ] && [ -n "$agent_email" ]; then
   git config --global --replace-all user.name "$agent"
   git config --global --replace-all user.email "$agent_email"
-  log "git identity: $(git config --global user.name) <$(git config --global user.email)>"
+  log "git identity: $(git config --global user.name) <$(git config --global user.email)> (from $config)"
 else
-  if [ ! -r "$config" ]; then
-    log "config.env is unreadable"
+  if [ -z "$config" ]; then
+    log "no config.env naming its own clone beside this one:" \
+      "clone MEMORY_REPO there or set AGENTS_CONFIG"
+  elif [ ! -r "$config" ]; then
+    log "config.env is unreadable: $config"
   else
     [ -n "$agent" ] || log "config.env sets no AGENT"
     [ -n "$agent_email" ] || log "config.env sets no AGENT_EMAIL"

@@ -3,6 +3,22 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-08-31
+
+**`config.env` moves to MEMORY_REPO** (PR_LINK, closes
+[#130](https://github.com/toumix/desire/issues/130)) — the file leaves this public repo for the
+root of MEMORY_REPO, `CLAUDE.md` here stops importing it and MEMORY_REPO's `CLAUDE.md` imports
+it. `session-start.sh` and `sweep.py` stop deriving its path from their own clone: both take the
+`config.env` at the root of the clone its own `MEMORY_REPO` names, with `AGENTS_CONFIG`
+overriding, and `sweep.py`'s `CONFIG` constant becomes `find_config()`. `AGENTS.md`'s Config
+section and the README's Get started say where it lives and how it is found. Supersedes
+[#94](https://github.com/toumix/desire/pull/94), which made `config.env` the one file naming the
+values, here.
+
+**`rel-int/quantum-reservoir` joins WORK_REPOS** (same ruling) — the routines scan three work
+repos, not two. The line lands in the moved `config.env`, so it is not visible from this repo.
+Extends the `rel-int/wiki` entry of 2026-07-29 below.
+
 ## 2026-08-26
 
 **One memory PR per day, written by 🐦 Birdsong alone**

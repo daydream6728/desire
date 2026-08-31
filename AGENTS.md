@@ -6,12 +6,15 @@
 
 ## Config
 The values (USER, AGENT, AGENT_EMAIL, WORK_REPOS, MEMORY_REPO, DESIRE_REPO,
-APPROVE_EMOJI, AGENT_FOOTER, ADOPTED_PRS) live in
-[`config.env`](config.env), the one file that names them — nothing here
-duplicates it. `session-start.sh` reads it before the first commit of a turn,
-`sweep.py`'s `config()` before every sweep. A config.env that cannot be read
-clears the global git identity rather than set a stale one: committing fails
-loudly, and the hook warns when the clearing itself fails.
+APPROVE_EMOJI, AGENT_FOOTER, ADOPTED_PRS) live in `config.env` at the root of
+MEMORY_REPO's clone, the one file that names them — nothing here duplicates
+it. This repo is public and they are not rules: WORK_REPOS and ADOPTED_PRS
+name private repos, so they live where the work does. `session-start.sh` reads
+it before the first commit of a turn, `sweep.py`'s `config()` before every
+sweep; both take the `config.env` sitting at the root of the clone its own
+MEMORY_REPO names, `AGENTS_CONFIG` overriding. A config.env that cannot be
+read clears the global git identity rather than set a stale one: committing
+fails loudly, and the hook warns when the clearing itself fails.
 
 ADOPTED_PRS maps each repo to pull requests the routines treat as AGENT-owned
 wherever authorship decides — sweeps, scans and the board. Adopting a pull
