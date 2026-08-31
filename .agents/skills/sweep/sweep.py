@@ -41,8 +41,11 @@ def find_config(here=pathlib.Path(__file__)):
     if os.environ.get("AGENTS_CONFIG"):
         return pathlib.Path(os.environ["AGENTS_CONFIG"])
     for candidate in sorted(here.parents[4].glob("*/config.env")):
-        named = re.search(
-            r"^MEMORY_REPO=.*/(.*)$", candidate.read_text(), re.MULTILINE)
+        try:  # a clone we cannot read is not ours and not fatal either
+            text = candidate.read_text()
+        except (OSError, UnicodeError):
+            continue
+        named = re.search(r"^MEMORY_REPO=.*/(.*)$", text, re.MULTILINE)
         if named and named.group(1).strip() == candidate.parent.name:
             return candidate
     raise FileNotFoundError(

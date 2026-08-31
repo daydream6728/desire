@@ -12,12 +12,11 @@ it. `session-start.sh` and `sweep.py` stop deriving its path from their own clon
 `config.env` at the root of the clone its own `MEMORY_REPO` names, with `AGENTS_CONFIG`
 overriding, and `sweep.py`'s `CONFIG` constant becomes `find_config()`. `AGENTS.md`'s Config
 section and the README's Get started say where it lives and how it is found. Supersedes
-[#94](https://github.com/toumix/desire/pull/94), which made `config.env` the one file naming the
-values, here.
+[#94](https://github.com/toumix/desire/pull/94), which gathered the values into one `config.env`
+in this repo.
 
 **`rel-int/quantum-reservoir` joins WORK_REPOS** (same ruling) — the routines scan three work
-repos, not two. The line lands in the moved `config.env`, so it is not visible from this repo.
-Extends the `rel-int/wiki` entry of 2026-07-29 below.
+repos, not two. Extends the `rel-int/wiki` entry of 2026-07-29 below.
 
 ## 2026-08-26
 
