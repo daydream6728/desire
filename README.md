@@ -22,10 +22,17 @@ session. Some guiding principles:
 ## Get started
 
 1) Open a new GitHub account for your agents, add it as collaborator to your fork for this repo,
-   and name it `AGENT` in [`config.env`](config.env) — with `USER` and `AGENT_EMAIL` beside it.
-2) Create a new GitHub repo (e.g. called `memory`), set it as `MEMORY_REPO` in that same file,
-   set your fork as `DESIRE_REPO`, and list the repos your agents work in under `WORK_REPOS`.
+   and name it `AGENT` in `config.env` — with `USER` and `AGENT_EMAIL` beside it.
+2) Create a new **private** GitHub repo (e.g. called `memory`) and seed it from
+   [`template/`](template/): the board, the standing note each pull request gets, the day PR's
+   shape, and a `config.env` in which every value is a placeholder. Set it as `MEMORY_REPO`, your
+   fork as `DESIRE_REPO`, and list the repos your agents work in under `WORK_REPOS`.
 3) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
+
+`config.env` is the only file here that names you — your login, your agent's, and the repos they
+work in — and [#131](https://github.com/toumix/desire/pull/131) moves it out to your memory clone,
+where it belongs, with `template/memory/config.env` as the copy it lands as. Until that merges it
+is read from this repo's own root, so that is the one to fill. Everything else here is the rules.
 
 **Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
 
