@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""What `sweep.py` claims about footers and `PRS/` notes, as tests rather than
+"""What `sweep.py` claims about footers and `WORK/` notes, as tests rather than
 as prose.
 
 Run: python3 -m unittest discover -s .agents/skills/sweep -p 'test_*.py'
@@ -85,17 +85,56 @@ class Footer(unittest.TestCase):
             self.comment("what did Evening do?"), self.setup))
 
 
+class Stale(unittest.TestCase):
+    """A note carries the date it was read, so staleness is arithmetic rather
+    than discipline — the drift no amount of "remember to check" ever fixed."""
+
+    def test_a_note_read_after_its_item_moved_is_current(self):
+        self.assertEqual(sweep.stale({489: "2026-09-01"},
+                                     {489: "2026-08-30T12:00:00Z"}), [])
+
+    def test_same_day_is_current_whatever_the_hour(self):
+        self.assertEqual(sweep.stale({489: "2026-09-01"},
+                                     {489: "2026-09-01T23:59:59Z"}), [])
+
+    def test_an_item_that_moved_a_day_later_is_stale(self):
+        self.assertEqual(sweep.stale({489: "2026-08-31"},
+                                     {489: "2026-09-01T00:00:01Z"}), [489])
+
+    def test_a_note_with_no_readable_date_cannot_say_when_it_was_true(self):
+        self.assertEqual(sweep.stale({489: None},
+                                     {489: "2026-09-01T00:00:00Z"}), [489])
+
+    def test_a_note_whose_item_is_not_open_is_not_stale_but_orphan(self):
+        self.assertEqual(sweep.stale({676: "2020-01-01"}, {}), [])
+
+
+class Cited(unittest.TestCase):
+    """Forming a view on one item pulls in what it references: that is how an
+    issue earns a note without a human deciding it has."""
+
+    def test_numbers_are_read_out_of_prose(self):
+        self.assertEqual(sweep.cited(["waits on #625, blocks #443"]),
+                         {625, 443})
+
+    def test_every_note_contributes(self):
+        self.assertEqual(sweep.cited(["#1", "#2 and #1"]), {1, 2})
+
+    def test_a_note_citing_nothing_pulls_in_nothing(self):
+        self.assertEqual(sweep.cited(["no numbers here"]), set())
+
+
 class Notes(unittest.TestCase):
-    """`notes` is the whole rule: one file per open AGENT-owned head, deleted
-    when the head is not open any more."""
+    """`notes` is the whole rule: one file per open item, deleted when the
+    item is not open any more."""
 
     def test_agreement_is_silent(self):
         self.assertEqual(sweep.notes({489, 443}, {443, 489}), ([], []))
 
-    def test_a_head_with_no_note_is_missing(self):
+    def test_an_item_with_no_note_is_missing(self):
         self.assertEqual(sweep.notes({489}, {489, 443}), ([443], []))
 
-    def test_a_note_with_no_head_is_an_orphan(self):
+    def test_a_note_with_no_open_item_is_an_orphan(self):
         self.assertEqual(sweep.notes({489, 676}, {489}), ([], [676]))
 
     def test_both_at_once_and_sorted(self):
@@ -107,7 +146,7 @@ class Notes(unittest.TestCase):
 
 class MemoryClone(unittest.TestCase):
     """A sweep run without the memory clone beside it says so, rather than
-    reporting every open head as missing its note."""
+    reporting every open item as missing its note."""
 
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
@@ -119,12 +158,12 @@ class MemoryClone(unittest.TestCase):
         os.environ["AGENTS_MEMORY"] = str(path)
         self.addCleanup(os.environ.pop, "AGENTS_MEMORY", None)
 
-    def test_a_clone_carrying_PRS_is_found(self):
-        (self.root / "PRS").mkdir()
+    def test_a_clone_carrying_WORK_is_found(self):
+        (self.root / "WORK").mkdir()
         self.override(self.root)
         self.assertEqual(sweep.memory_clone(self.setup), self.root)
 
-    def test_a_directory_without_PRS_is_not_a_memory_clone(self):
+    def test_a_directory_without_WORK_is_not_a_memory_clone(self):
         self.override(self.root)
         self.assertIsNone(sweep.memory_clone(self.setup))
 

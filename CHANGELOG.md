@@ -5,18 +5,31 @@ Entries state the changes, no explanation of why.
 
 ## 2026-09-01
 
-**One memory file per pull request, replacing the board's queue**
+**One memory file per open item, replacing the board's queue**
 ([#133](https://github.com/toumix/desire/pull/133), closes
-[#124](https://github.com/toumix/desire/issues/124)) — `PRS/<repo>/<number>.md` in MEMORY_REPO is
-one standing note per open pull request, rewritten by whichever session touched that head and
-deleted when it merges or closes. `AGENTS.md` gains the file kind, its lifetime and its shape;
-"a turn that stays within one workstream leaves MEMORY_REPO untouched" is reversed — every turn
-writes the note of every head it touched. The board becomes cross-cutting state only. `sweep.py`
-gains `notes`, `memory_clone` and `uncharted`, reporting a head with no note and a note with no
-head, and `test_sweep.py` covers them.
+[#124](https://github.com/toumix/desire/issues/124)) — `WORK/<repo>/<number>.md` in MEMORY_REPO is
+one standing note per open item of a WORK_REPO, rewritten by whichever session touched it and
+deleted when it merges or closes. It covers the whole repository rather than AGENT-owned heads:
+ownership is a field in the note, not a condition on it existing. A note is required for every
+open pull request and for every open issue an existing note cites; every other open issue is
+printed as context. `AGENTS.md` gains the file kind, its lifetime and its shape; "a turn that
+stays within one workstream leaves MEMORY_REPO untouched" is reversed — every turn writes the note
+of every item it touched. The board becomes cross-cutting state only. `sweep.py` gains `notes`,
+`stale`, `cited`, `memory_clone` and `uncharted`, reporting an item with no note, a note with no
+open item and a note older than the item it describes, and `test_sweep.py` covers them.
+
+**One memory pull request per day for the day's work, one per standing file's first write**
+(same PR) — `AGENTS.md` replaces "every later turn of that day pushes to it instead of opening
+another" with the distinction that produced two failures: a collaborator review folded into the day
+PR because two were already open, and a turn file pushed onto a review branch because no day PR
+was. A `REVIEWS/<person>.md` first write opens its own PR; later edits to it go to the day PR; a
+turn that finds no day PR open opens one.
+
+**An agent merges freely into its own branches** (same PR) — `RULES.md` rule 4 says so explicitly,
+since only the protected branch is gated on the human's review.
 
 **🌤️ Daylight implements** (same PR) — `DAYLIGHT.md`'s "it designs and queues, never implements"
-is struck, and Daylight writes the `PRS/` file of every head it touched before the session ends.
+is struck, and Daylight writes the `WORK/` file of every item it touched before the session ends.
 
 **🌙 Evening finishes one head before taking another** (same PR, from
 [#128](https://github.com/toumix/desire/issues/128)) — `EVENING.md` replaces queue-wide `TODO.md`
@@ -24,7 +37,7 @@ churn with one head driven to a terminal handoff: merged, closed, ready with `TO
 every expected check passed, or blocked on one named external action asked for on the work PR.
 Scans, re-merges, review triggers and board repair are support work, not outcomes. A check that
 was never created is pending and a failed query is unknown, neither of them green. 🐦 Birdsong
-reads `PRS/` rather than re-deriving the queue.
+reads `WORK/` rather than re-deriving the queue.
 
 **The sweep exits 2 when GitHub cannot be read** (same PR, from #128) — an incomplete sweep is
 neither clean nor a finding. `review_comments` stops swallowing a 403 as an empty comment list,
@@ -33,7 +46,7 @@ skips blank lines and `#` comments.
 
 **A `template/` directory seeds a fresh MEMORY_REPO** (same PR) — `template/memory/` carries
 `AGENTS.md`, an empty board, an empty `USER_TODO.md`, `config.env` with every value a placeholder,
-the day PR's body template and the `PRS`/`REVIEWS`/`TURNS` shapes. The README's Get started points
+the day PR's body template and the `WORK`/`REVIEWS`/`TURNS` shapes. The README's Get started points
 at it.
 
 **The memory PR template drops "Waiting on you", gains "Since last time"** (same PR, closes

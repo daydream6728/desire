@@ -1,6 +1,6 @@
-# `PRS/<repo>/<number>.md`
+# `WORK/<repo>/<number>.md`
 
-One file per open pull request, named by the repository and the number: `PRS/discopy/489.md`.
+One file per open pull request, named by the repository and the number: `WORK/discopy/489.md`.
 Whichever session touches the head rewrites it before the session ends — 🌤️ Daylight included,
 even when the work never leaves that one pull request. The turn that sees it merged or closed
 deletes the file.

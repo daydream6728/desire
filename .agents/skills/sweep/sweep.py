@@ -2,8 +2,8 @@
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
 bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
 issues closed inside the window, MEMORY_REPO's open-PR count, the state of
-each AGENT-owned `TODO.md` and whether every AGENT-owned head has its
-`PRS/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
+each AGENT-owned `TODO.md` and whether every open item of a WORK_REPO has
+its `WORK/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
 pipeline has reacted to say it received it. config.env is the ground truth for
 USER, the repos and the emoji; AGENTS.md's rules say what to do with a finding.
 
@@ -376,11 +376,35 @@ def item(repo, number, setup, since, cache):
 
 
 def notes(have, want):
-    """The two ways `PRS/` and the live open heads disagree: a head nobody
-    wrote a note for, and a note whose head is merged, closed or never ours.
-    Pure, because it is the whole rule — the board's queue drifted for a week
-    precisely because no test could be written against a paragraph of prose."""
+    """The two ways `WORK/` and the live open items disagree: an item nobody
+    wrote a note for, and a note whose item is merged or closed. Pure, because
+    it is the whole rule — the board's queue drifted for a week precisely
+    because no test could be written against a paragraph of prose."""
     return sorted(want - have), sorted(have - want)
+
+
+def stale(read, updated):
+    """The notes whose item moved after the note was last read, by whole days:
+    a note read on the morning its head is pushed to is current, one carrying
+    last week's date over a head that moved yesterday is not. `read` maps a
+    number to the date its note states, `updated` to the item's `updated_at`.
+    A note with no readable date is stale by construction — it cannot say when
+    it was true."""
+    return sorted(number for number, day in read.items()
+                  if number in updated
+                  and (day is None or day < updated[number][:10]))
+
+
+READ = re.compile(r"\bread (\d{4}-\d{2}-\d{2})")
+
+
+def cited(texts):
+    """Every `#<number>` an existing note mentions. Forming a view on one item
+    pulls in what it references, which is how an issue earns a note without a
+    human deciding it has: a note that says a head waits on a ruling names the
+    issue, and that issue is then in play."""
+    return {int(number) for text in texts
+            for number in re.findall(r"#(\d+)", text)}
 
 
 def memory_clone(setup):
@@ -392,36 +416,58 @@ def memory_clone(setup):
     override = os.environ.get("AGENTS_MEMORY")
     root = (pathlib.Path(override) if override
             else CLONE.parent / setup["MEMORY_REPO"].split("/")[-1])
-    return root if (root / "PRS").is_dir() else None
+    return root if (root / "WORK").is_dir() else None
 
 
 def uncharted(repo, setup, cache):
-    """One finding per AGENT-owned head with no `PRS/<repo>/<number>.md`, and
-    one per note whose head is not an open AGENT-owned pull request any more —
-    merged, closed, or never ours. Every session writes the note of every head
-    it touched, so a missing one is a turn that left no trace and an orphan is
-    a merge nobody swept up."""
+    """What `WORK/<repo>/` and the repo's open items say about each other.
+
+    The notes cover the whole repository, not our own slice of it: someone
+    else's pull request collides with ours, and an issue nobody answered is
+    the reason a head is stuck. Ownership is a field inside the note, not a
+    condition on it existing.
+
+    A note is **required** for every open pull request, and for every open
+    issue an existing note cites — forming a view on one item is what pulls in
+    what it references. Every other open issue is printed as context and does
+    not make the sweep dirty: a note that only restated GitHub would be the
+    board's queue again, one file per row instead of one table.
+
+    Three findings: an item with no note, a note whose item is closed, and a
+    note older than the item it describes."""
     if repo not in setup["WORK_REPOS"]:
         return []  # the rule binds where the work happens
     root = memory_clone(setup)
     if root is None:
-        print(f"{repo}: no MEMORY_REPO clone beside this one, PRS/ unchecked",
+        print(f"{repo}: no MEMORY_REPO clone beside this one, WORK/ unchecked",
               file=sys.stderr)
         return []
-    directory = root / "PRS" / repo.split("/")[-1]
-    have = {int(note.stem) for note in directory.glob("*.md")
-            if note.stem.isdigit()} if directory.is_dir() else set()
-    want = {number for number, pull in heads(repo, cache).items()
-            if pull["user"]["login"] == setup["AGENT"]
-            or number in setup.get("ADOPTED_PRS", {}).get(repo, [])}
-    missing, orphan = notes(have, want)
-    return [f"{repo}#{number} has no PRS/{repo.split('/')[-1]}/{number}.md,"
-            " so nothing says where it stands:"
-            f" https://github.com/{repo}/pull/{number}" for number in missing
-            ] + [f"{repo}: PRS/{repo.split('/')[-1]}/{number}.md has no open"
-                 " AGENT-owned pull request, delete it:"
-                 f" https://github.com/{repo}/pull/{number}"
-                 for number in orphan]
+    name = repo.split("/")[-1]
+    directory = root / "WORK" / name
+    files = {int(note.stem): note for note in directory.glob("*.md")
+             if note.stem.isdigit()} if directory.is_dir() else {}
+    texts = {number: note.read_text() for number, note in files.items()}
+    read = {number: (READ.search(text).group(1) if READ.search(text) else None)
+            for number, text in texts.items()}
+    items = get(repo, "issues?state=open")
+    updated = {item["number"]: item["updated_at"] for item in items}
+    pulls = {item["number"] for item in items if "pull_request" in item}
+    want = pulls | (cited(texts.values()) & set(updated))
+    unread = sorted(set(updated) - want - set(files))
+    if unread:
+        print(f"{repo}: {len(unread)} open issue(s) nobody has a note on, none"
+              " of them cited by one: "
+              + ", ".join(f"#{number}" for number in unread), file=sys.stderr)
+    missing, _ = notes(set(files), want)
+    _, orphan = notes(set(files), set(updated))  # open at all, not required
+    link = f"https://github.com/{repo}/issues/"
+    return [f"{repo}#{number} has no WORK/{name}/{number}.md, so nothing says"
+            f" where it stands: {link}{number}" for number in missing
+            ] + [f"{repo}: WORK/{name}/{number}.md outlived its item, which is"
+                 f" closed — delete it: {link}{number}" for number in orphan
+            ] + [f"{repo}: WORK/{name}/{number}.md was read {read[number]} and"
+                 f" {number} moved since, so it may be stale: {link}{number}"
+                 for number in stale(read, updated)]
 
 
 def sweep(repo, numbers, since, setup):

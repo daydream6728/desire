@@ -7,11 +7,11 @@ USER, AGENT and the repos, and both the prompts and the tooling read it from her
 
 Five kinds of file, each with exactly **one lifetime**:
 
-- [`PRS/<repo>/<number>.md`](PRS) — one standing note per open pull request, **rewritten by
+- [`WORK/<repo>/<number>.md`](WORK) — one standing note per open pull request, **rewritten by
   whichever session touches that head**, deleted by the turn that sees it merged or closed. Every
   session writes the file of every head it touched, even when the work never left that pull
   request: it is how an interactive turn is visible to the next morning's plan. Shape in
-  [`PRS/TEMPLATE.md`](PRS/TEMPLATE.md).
+  [`WORK/TEMPLATE.md`](WORK/TEMPLATE.md).
 - [`README.md`](README.md) — the board, **rewritten every turn**: cross-cutting state only. What
   collides with what, what merge order is forced, what has been ruled. A fact about one head goes
   in that head's own file. **It stays under 200 lines**: a turn that would push it over drops the

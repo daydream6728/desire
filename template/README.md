@@ -26,6 +26,6 @@ copy that takes over.
 What you get is empty on purpose. `README.md` is a board with no state on it yet, `USER_TODO.md`
 a list with nothing on it, and the three `TEMPLATE.md` files are shapes rather than content — the
 first turn writes the real thing. Leave the templates in place: they are what an agent reads when
-it writes its first `PRS/` file, and deleting them costs you the shape.
+it writes its first `WORK/` file, and deleting them costs you the shape.
 
 `memory/.github/PULL_REQUEST_TEMPLATE.md` is the day PR's shape, the one 🐦 Birdsong writes.

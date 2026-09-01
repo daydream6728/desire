@@ -15,5 +15,5 @@ it. -->
 <!-- Ideas wanting a yes or no but blocking nothing, each its own bullet so it can be reacted to. -->
 
 ## Detail
-<!-- Links to USER_TODO.md, the board, the PRS/ files that changed, and the turn file. Nothing
+<!-- Links to USER_TODO.md, the board, the WORK/ files that changed, and the turn file. Nothing
 else. -->
