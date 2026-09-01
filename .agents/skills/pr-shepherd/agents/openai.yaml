@@ -1,0 +1,7 @@
+interface:
+  display_name: "PR Shepherd"
+  short_description: "Resume PR-owning tasks when feedback arrives"
+  default_prompt: "Use $pr-shepherd to keep this pull request owned through merge."
+
+policy:
+  allow_implicit_invocation: true

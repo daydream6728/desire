@@ -29,6 +29,20 @@ session. Some guiding principles:
 
 **Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
 
+## Keep Codex pull requests listening
+
+Install the personal PR shepherd once from this checkout:
+
+```sh
+python3 .agents/skills/pr-shepherd/scripts/pr_shepherd.py install
+```
+
+Codex can then register any PR it opens, in any repository, against the task that opened it. One
+central schedule checks the registry at 08:00, 10:00, 12:00, 14:00, 16:00, 18:00, 20:00 and
+22:00 on weekdays in the machine's local time. It uses cron, with a native LaunchAgent fallback
+when macOS denies crontab writes. Quiet checks only read GitHub; Codex is resumed when your
+comments or reviews change, and merged or closed PRs remove themselves from the registry.
+
 ## Verified commits
 
 **Optional** — everything above works without this. What it buys: every commit the agents push

@@ -3,6 +3,16 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-09-01
+
+**A Codex-owned pull request keeps its originating task through merge** (closes
+[#134](https://github.com/toumix/desire/issues/134)) — the webhook-only rule becomes a fallback:
+when a runtime cannot receive PR events, `pr-shepherd` stores the PR, task and worktree in one
+user-level registry. One central weekday schedule checks it eight times a day, wakes the task only
+when USER's comments or reviews change, and removes merged or closed PRs. Replaces the ban on
+timed self check-ins; per-repository watchers, per-PR schedules and empty model runs remain
+forbidden.
+
 ## 2026-08-26
 
 **One memory PR per day, written by 🐦 Birdsong alone**
