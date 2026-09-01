@@ -2,10 +2,11 @@
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
 bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
 issues closed inside the window, MEMORY_REPO's open-PR count, the state of
-each AGENT-owned `TODO.md` and whether every open item of a WORK_REPO has
-its `WORK/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
+each AGENT-owned `TODO.md` and whether every open item of a WORK_REPO has its
+`WORK/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
 pipeline has reacted to say it received it. config.env is the ground truth for
-USER, the repos and the emoji; AGENTS.md's rules say what to do with a finding.
+USER, the repos and the emoji, and it sits at the root of this clone;
+AGENTS.md's rules say what to do with a finding.
 
 Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
                 [number...]
@@ -26,13 +27,21 @@ import sys
 import urllib.error
 import urllib.request
 
-CLONE = pathlib.Path(__file__).parents[3]
-CONFIG = CLONE / "config.env"
 BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
 CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
                    r"(?:Z|[+-]\d{2}:?\d{2})?)?")
 STALE = datetime.timedelta(hours=12)
+CONFIG = pathlib.Path(__file__).parents[3] / "config.env"
 FOOTER_LINK = re.compile(r"\[[^\]]*\]\((https://[^\s)]+)\)")
+
+
+def find_config():
+    """`config.env` at the root of the clone this file lives in. This script
+    is in MEMORY_REPO because the config is, so there is nothing to search
+    for: one is three directories up from the other, in the live repo and in
+    the template alike. AGENTS_CONFIG overrides, which is how the tests point
+    at one of their own."""
+    return pathlib.Path(os.environ.get("AGENTS_CONFIG") or CONFIG)
 
 
 def config(path):
@@ -407,15 +416,13 @@ def cited(texts):
             for number in re.findall(r"#(\d+)", text)}
 
 
-def memory_clone(setup):
-    """Where MEMORY_REPO is checked out: `AGENTS_MEMORY` when set, else the
-    sibling of this clone named after MEMORY_REPO, which is the layout every
-    session opens in. `None` when it is not there — a sweep run without the
-    memory clone still sweeps, it just cannot check the notes, and says so
-    rather than reporting every head as missing one."""
-    override = os.environ.get("AGENTS_MEMORY")
-    root = (pathlib.Path(override) if override
-            else CLONE.parent / setup["MEMORY_REPO"].split("/")[-1])
+def memory_clone():
+    """Where MEMORY_REPO is checked out: the directory holding the `config.env`
+    we are configured by, since that file lives at its root — normally the
+    clone this script is in. `None` when it carries no `WORK/`, so a sweep run
+    against a memory repo that has no notes yet still sweeps, cannot check
+    them, and says so rather than reporting every item as missing one."""
+    root = find_config().parent
     return root if (root / "WORK").is_dir() else None
 
 
@@ -437,9 +444,9 @@ def uncharted(repo, setup, cache):
     note older than the item it describes."""
     if repo not in setup["WORK_REPOS"]:
         return []  # the rule binds where the work happens
-    root = memory_clone(setup)
+    root = memory_clone()
     if root is None:
-        print(f"{repo}: no MEMORY_REPO clone beside this one, WORK/ unchecked",
+        print(f"{repo}: MEMORY_REPO carries no WORK/, notes unchecked",
               file=sys.stderr)
         return []
     name = repo.split("/")[-1]
@@ -491,7 +498,7 @@ def main(arguments):
         _, since, *arguments = arguments
     try:
         findings = sweep(arguments[0], [int(n) for n in arguments[1:]], since,
-                         config(CONFIG))
+                         config(find_config()))
     except (urllib.error.URLError, TimeoutError) as error:
         print(f"{arguments[0]}: GitHub unreadable, the sweep is incomplete and"
               f" says nothing about this repo: {error}", file=sys.stderr)

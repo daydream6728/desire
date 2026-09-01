@@ -67,6 +67,28 @@ as that link's label and never in prose; `answered` reads it. `AGENTS.md` says a
 own runtime's marker, that a marker is retired only when that runtime is gone, and that an internal
 session or thread ID never becomes a link. Replaces the attribution-footer entry of 2026-08-16.
 
+## 2026-08-31
+
+**`config.env` moves to MEMORY_REPO** ([#131](https://github.com/toumix/desire/pull/131), closes
+[#130](https://github.com/toumix/desire/issues/130)) — the file leaves this public repo for the
+root of MEMORY_REPO, `CLAUDE.md` here stops importing it and MEMORY_REPO's `CLAUDE.md` imports
+it. **Both readers move with it** — `sweep.py` and `test_sweep.py` out of `.agents/skills/`,
+`session-start.sh` and `settings.json` out of `.claude/` — into MEMORY_REPO beside the file they
+read, with the copies under `template/memory/` the public ones; `.agents/skills/` keeps `bob`
+alone and `.claude/skills/` its symlink to it. Each reaches the config by a fixed relative path:
+`sweep.py`'s `CONFIG` constant is three directories up, unchanged from before the move, the hook's
+is two, and `AGENTS_CONFIG` overrides both. The sibling-clone search, its self-naming check and
+its unreadable-candidate skip are removed from both. `memory_clone()` reads the config file's own
+directory. The startup-script snippet in the README's Verified commits points at
+`memory/.claude/hooks/session-start.sh`, and `AGENTS.md`'s Config section, the README's Get
+started and `template/README.md` say where each lives and that the copies move together.
+Supersedes
+[#94](https://github.com/toumix/desire/pull/94), which gathered the values into one `config.env`
+in this repo.
+
+**`rel-int/quantum-reservoir` joins WORK_REPOS** (same ruling) — the routines scan three work
+repos, not two. Extends the `rel-int/wiki` entry of 2026-07-29 below.
+
 ## 2026-08-26
 
 **One memory PR per day, written by 🐦 Birdsong alone**

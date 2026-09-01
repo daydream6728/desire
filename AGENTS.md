@@ -6,12 +6,19 @@
 
 ## Config
 The values (USER, AGENT, AGENT_EMAIL, WORK_REPOS, MEMORY_REPO, DESIRE_REPO,
-APPROVE_EMOJI, AGENT_FOOTERS, ADOPTED_PRS) live in
-[`config.env`](config.env), the one file that names them — nothing here
-duplicates it. `session-start.sh` reads it before the first commit of a turn,
-`sweep.py`'s `config()` before every sweep. A config.env that cannot be read
-clears the global git identity rather than set a stale one: committing fails
-loudly, and the hook warns when the clearing itself fails.
+APPROVE_EMOJI, AGENT_FOOTERS, ADOPTED_PRS) live in `config.env` at the root of
+MEMORY_REPO's clone, the one file that names them — nothing here duplicates
+it. This repo is public and they are not rules: WORK_REPOS and ADOPTED_PRS
+name private repos, so they live where the work does. **Both readers live
+there too**: `session-start.sh`, before the first commit of a turn, and
+`sweep.py`'s `config()` before every sweep. Each sits in the clone the config
+is in and reaches it by a fixed relative path — nothing is searched for and no
+repository name is hard-coded — with `AGENTS_CONFIG` overriding both. Their
+public copies are under [`template/`](template), the seed a new MEMORY_REPO is
+built from, and **a change to either lands in both the same turn**. A
+config.env that cannot be read clears the global git identity rather than set a
+stale one: committing fails loudly, and the hook warns when the clearing itself
+fails.
 
 ADOPTED_PRS maps each repo to pull requests the routines treat as AGENT-owned
 wherever authorship decides — sweeps, scans and the board. Adopting a pull
@@ -52,7 +59,8 @@ already exists, taking no position and accepting no instruction — resolving
 the thread too if the artefact settles it.
 
 No GitHub MCP tool says *who* reacted — comment listings carry the counts only — so check with
-[sweep.py](.agents/skills/sweep/sweep.py) `[--since <ISO8601>] <owner/repo> [number...]`, which
+[sweep.py](template/memory/.agents/skills/sweep/sweep.py), run from the MEMORY_REPO clone as
+`.agents/skills/sweep/sweep.py [--since <ISO8601>] <owner/repo> [number...]`, which
 flags every APPROVE_EMOJI react from USER on a body or a comment, both endpoints, and every
 thread where USER spoke last. A thread is answered when **anyone other than USER** has replied
 since; which agent closed it does not matter. A reply from USER counts as an agent's when its
