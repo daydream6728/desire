@@ -35,8 +35,8 @@ An example, so the density is not a guess:
 - **touches** `closed.py`, `biclosed.py`, `test/closed.py` — collides with #442 and #511 on `closed.py`
 - **blocks** #443's last box, which wants the `trace(0)` fix this carries
 
-- **2026-09-01 🌙 Evening** merged `main`, resolved 19 review threads — 8 fixed, #693 and #694
-  filed for two, 4 design questions left for a human — full suite green, deleted `TODO.md`
+- **2026-09-01 🌙 Evening** resolved 19 review threads — 8 fixed, #693 and #694 filed for two,
+  4 design questions left for a human — full suite green, deleted `TODO.md`
 - **2026-08-27 🌤️ Daylight** designed the `let` encoding with USER, wrote the `TODO.md`
 ```
 
