@@ -5,6 +5,11 @@ Entries state the changes, no explanation of why.
 
 ## 2026-09-01
 
+**`REVIEWS/` becomes `OTHERS/`, written on every review of somebody else's work**
+([#133](https://github.com/toumix/desire/pull/133)) — `AGENTS.md` says a session reviewing a pull
+request that is not ours writes `OTHERS/<person>.md` as well as that item's `WORK/` note. The
+`Memory` section drops the file-kind list that MEMORY_REPO's own `AGENTS.md` already carries.
+
 **One memory file per open item, replacing the board's queue**
 ([#133](https://github.com/toumix/desire/pull/133), closes
 [#124](https://github.com/toumix/desire/issues/124)) — `WORK/<repo>/<number>.md` in MEMORY_REPO is
@@ -20,7 +25,7 @@ open item and a note older than the item it describes, and `test_sweep.py` cover
 
 **One memory pull request per day for the day's work, one per standing file's first write**
 (same PR) — `AGENTS.md` replaces "every later turn of that day pushes to it instead of opening
-another". A `REVIEWS/<person>.md` first write opens its own pull request, titled for the file; every
+another". A `OTHERS/<person>.md` first write opens its own pull request, titled for the file; every
 later edit to it goes to the day PR; a turn that finds no day PR open opens one.
 
 **An agent merges freely into its own branches** (same PR) — `RULES.md` rule 4 permits folding one
@@ -44,7 +49,7 @@ skips blank lines and `#` comments.
 
 **A `template/` directory seeds a fresh MEMORY_REPO** (same PR) — `template/memory/` carries
 `AGENTS.md`, an empty board, an empty `USER_TODO.md`, `config.env` with every value a placeholder,
-the day PR's body template and the `WORK`/`REVIEWS`/`TURNS` shapes. The README's Get started points
+the day PR's body template and the `WORK`/`OTHERS`/`TURNS` shapes. The README's Get started points
 at it.
 
 **The memory PR template drops "Waiting on you", gains "Since last time"** (same PR, closes
@@ -52,7 +57,7 @@ at it.
 [#127](https://github.com/toumix/desire/pull/127)) — replaced by a summary of activity since the
 previous memory PR, split by source, required to say plainly when a round did nothing or did not
 run. `What changed today` is folded into it. The `Memory` section gains `USER_TODO.md` and
-`REVIEWS/<person>.md`.
+`OTHERS/<person>.md`.
 
 **Agent-authored posts are recognised by any of AGENT_FOOTERS**
 ([#123](https://github.com/toumix/desire/pull/123), closes

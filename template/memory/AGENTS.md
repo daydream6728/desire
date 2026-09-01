@@ -24,8 +24,8 @@ Five kinds of file, each with exactly **one lifetime**:
   **Yours**, then what waits on USER — one react, one merge or one word each — grouped by whose
   work it unblocks. A turn ticks a box only on evidence, never one under **Yours**, and drops the
   line on the next rewrite.
-- [`REVIEWS/<person>.md`](REVIEWS) — one standing note per collaborator, **rewritten when
-  re-read**, not per turn. Shape in [`REVIEWS/TEMPLATE.md`](REVIEWS/TEMPLATE.md).
+- [`OTHERS/<person>.md`](OTHERS) — one standing note per collaborator, **rewritten when
+  re-read**, not per turn. Shape in [`OTHERS/TEMPLATE.md`](OTHERS/TEMPLATE.md).
 
 One pull request per day, titled with that day, shared by all three routines — a routine name in
 the title is wrong. Its **description is the day's executive summary and 🐦 Birdsong alone writes

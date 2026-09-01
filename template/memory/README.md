@@ -30,4 +30,4 @@ absence of an answer is blocking work. -->
 # Who else is in these repos
 
 <!-- One line per collaborator, saying only the part that changes an agent's work. The full read is
-in REVIEWS/<person>.md. -->
+in OTHERS/<person>.md. -->

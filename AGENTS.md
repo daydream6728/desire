@@ -101,23 +101,25 @@ conversation comment, `add_reply_to_pull_request_comment` on a review comment. T
 flag `👀` when anyone but USER has reacted, so a turn can tell a backlog from a queue.
 
 ## Memory
-MEMORY_REPO holds the agents' long-term memory in its `main` branch:
-- `README.md` is the board, cross-cutting state only — what collides with what, what merge order
-  is forced, what is ruled. A fact about one head lives in that head's own file, not here
-- `WORK/<repo>/<number>.md` is the standing note of one open item of a WORK_REPO, below
-- `TURNS/<date>.md` are summaries of daily work
-- `USER_TODO.md` is USER's own standing list — what only USER can do, and what else waits on
-  them — rewritten every turn as checkboxes, never appended to
-- `REVIEWS/<person>.md` is one standing note per collaborator, rewritten when re-read
+MEMORY_REPO holds the agents' long-term memory in its `main` branch, and its own `AGENTS.md` says
+what each kind of file there is for and how long it lives — read that, it is not repeated here.
+What follows is only what binds a turn in *this* repo's rules.
 
 Every turn writes to MEMORY_REPO, whatever else it did: the `WORK/` file of every item it touched,
 always, even when the work never left that one pull request. Anything that affects *other* heads
 goes to the board or the day PR besides.
 
+**A review of somebody else's work is recorded in `OTHERS/<person>.md`.** Every time 🌤️ Daylight is
+charged with reviewing a pull request that is not ours, it writes what it found there as well as in
+that item's `WORK/` note (USER, 2026-09-01): the note is what the item is, and `OTHERS/` is what
+working with that person has been like — what they own, what they have landed, what of theirs
+touches our lanes, what they are waiting on. One is per item and dies with it; the other outlives
+every one of their pull requests.
+
 **One pull request per day for the day's work; a standing file's first write gets its own.** The
 day PR carries everything whose lifetime is the day — the turn file, the board, `USER_TODO.md`,
 `WORK/` notes — and every turn of that day pushes there. A file that is a substantial read in its
-own right, `REVIEWS/<person>.md` above all, opens its own pull request the first time it is
+own right, `OTHERS/<person>.md` above all, opens its own pull request the first time it is
 written, titled for the file rather than the day, so USER can merge it on its own schedule instead
 of that decision riding on the day's churn. **Once the file exists, every later edit to it is
 ordinary turn work and goes to the day PR.** Counting open pull requests is the wrong test and
