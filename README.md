@@ -50,14 +50,15 @@ both; wiring it up, on Claude Code on the web:
 3) Paste the private key into `AGENTS_SIGNING_KEY` in the environment's variables; a session
    without it commits unsigned rather than failing.
 4) Paste this into the environment's startup script. A multi-repo session opens in the parent
-   directory of its clones, so no repo is the project directory, `desire/.claude/settings.json`
+   directory of its clones, so no repo is the project directory, `memory/.claude/settings.json`
    never loads, and the hook silently does not run — no identity, no signing. A workspace-level
-   settings file wires it by absolute path, so it pins where the `desire` clone lands; the
-   `memory` clone has to be in the session too, since that is where the hook reads `config.env`:
+   settings file wires it by absolute path, so it pins where the `memory` clone lands. The hook
+   ships with the seed and reads the `config.env` beside it, so both are in the one repo that
+   names you:
 
 ```sh
 mkdir -p /home/user/.claude
 cat > /home/user/.claude/settings.json <<'EOF'
-{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"/home/user/desire/.claude/hooks/session-start.sh"}]}]}}
+{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"/home/user/memory/.claude/hooks/session-start.sh"}]}]}}
 EOF
 ```
