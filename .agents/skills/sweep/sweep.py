@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
 bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
-issues closed inside the window, MEMORY_REPO's open-PR count and the state of
-each AGENT-owned `TODO.md`. A finding is marked 👀 when the pipeline has reacted
-to say it received it. config.env is the ground truth for USER, the repos
-and the emoji; AGENTS.md's rules say what to do with a finding.
+issues closed inside the window, MEMORY_REPO's open-PR count, the state of
+each AGENT-owned `TODO.md` and whether every open item of a WORK_REPO has
+its `WORK/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
+pipeline has reacted to say it received it. config.env is the ground truth for
+USER, the repos and the emoji; AGENTS.md's rules say what to do with a finding.
 
 Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
                 [number...]
        # no numbers: every open PR and issue; --since windows the closes
        # and quiets a question the pipeline already 👀'd
-Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding. Open
+Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding, exit 2
+when GitHub could not be read — an incomplete sweep is neither clean nor a
+finding, and reading it as clean is how a live 🚀 goes unanswered. Open
 `TODO.md` boxes are printed as context and do not make the sweep dirty.
 """
 import base64
@@ -23,29 +26,40 @@ import sys
 import urllib.error
 import urllib.request
 
-CONFIG = pathlib.Path(__file__).parents[3] / "config.env"
+CLONE = pathlib.Path(__file__).parents[3]
+CONFIG = CLONE / "config.env"
 BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
 CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
                    r"(?:Z|[+-]\d{2}:?\d{2})?)?")
 STALE = datetime.timedelta(hours=12)
+FOOTER_LINK = re.compile(r"\[[^\]]*\]\((https://[^\s)]+)\)")
 
 
 def config(path):
     """config.env as a dict, so that the pipeline is configured in one place
     and this script hard-codes no repo and no agent. A value is everything
     after the first `=`; WORK_REPOS is a comma-separated list and ADOPTED_PRS
-    space-separated `repo:number,number` entries. A line carrying no `=`
-    raises rather than parsing to a key nothing will look up, and a key the
-    file does not set is absent, so a caller reading it raises too."""
+    space-separated `repo:number,number` entries; AGENT_FOOTERS a
+    comma-separated list of the markers that identify an agent-authored post,
+    each one current. Blank lines and `#` comments are skipped — the file is
+    written by hand and the seed ships commented — while any other line
+    carrying no `=` raises rather than parsing to a key nothing will look up,
+    and a key the file does not set is absent, so a caller reading it raises
+    too."""
     setup = {}
     for line in path.read_text().splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
         key, separator, value = line.partition("=")
-        if line.strip() and (not separator or not key.strip()):
+        if not separator or not key.strip():
             raise ValueError(f"config.env: no key in {line!r}")
-        if line.strip():
-            setup[key.strip()] = value.strip()
+        setup[key.strip()] = value.strip()
     if "WORK_REPOS" in setup:
         setup["WORK_REPOS"] = setup["WORK_REPOS"].split(",")
+    if "AGENT_FOOTERS" in setup:
+        setup["AGENT_FOOTERS"] = [
+            marker.strip() for marker in setup["AGENT_FOOTERS"].split(",")
+            if marker.strip()]
     if "ADOPTED_PRS" in setup:
         setup["ADOPTED_PRS"] = {
             repo: [int(number) for number in numbers.split(",") if number]
@@ -81,11 +95,15 @@ def get(repo, path):
 
 
 def review_comments(repo, number):
-    """The pulls/ endpoints reject plain issues, which the sweep also covers."""
+    """The pulls/ endpoints reject plain issues, which the sweep also covers:
+    a 404 here is an issue rather than a pull request. Everything else is
+    raised, a 403 included — rate-limited or forbidden is a listing nobody
+    read, and swallowing it as no comments is what makes an unreadable thread
+    look answered."""
     try:
         return get(repo, f"pulls/{number}/comments")
     except urllib.error.HTTPError as error:
-        if error.code in (403, 404):
+        if error.code == 404:
             return []
         raise
 
@@ -134,13 +152,38 @@ def seen(repo, kind, target, setup, cache):
         for reaction in reactors(repo, kind, target, "eyes", cache)) else ""
 
 
+def agent_footer(body, setup):
+    """Whether `body`'s last line is one of AGENT_FOOTERS.
+
+    There is no single signature and there cannot be: the marker is whatever
+    each agent's own runtime appends, which the agent does not choose. Claude
+    Code emits `_Generated by [Claude Code](https://claude.ai/code)_` on every
+    post it makes, Codex emits its own line, and both mean the same thing —
+    AGENT posted this from USER's handle. So every marker in the list is
+    current, none is historical, and retiring one is what would make our own
+    replies read as USER's unanswered questions.
+
+    A marker counts two ways and no others: as the whole final line, or inside
+    the HTTPS target of a Markdown link on that line — which is how a URL token
+    matches the footer wrapping it. A link's *label* never counts, however
+    exactly it reads: `[Generated by Codex](https://anywhere-at-all)` would
+    otherwise let any destination silence a thread, and the label is the half a
+    human types. A runtime that wants its linked footer recognised puts the URL
+    token in this list, the way `claude.ai/code` already is. Nor does a marker
+    count in prose: a line merely mentioning one is a human writing about the
+    convention, not an agent following it.
+    """
+    line = ((body or "").strip().splitlines() or [""])[-1].strip().strip("_*")
+    targets = FOOTER_LINK.findall(line)
+    return any(line == marker or any(marker in target for target in targets)
+               for marker in setup.get("AGENT_FOOTERS", []) if marker)
+
+
 def answered(comment, setup):
-    """Whether anyone but USER wrote this, AGENT_FOOTER deciding for the ones an
-    agent posted from USER's account. Bodies are read for that line only, and
-    an issue opened with no description has `None` for one."""
+    """Whether anyone but USER wrote this, the footer deciding for an agent
+    post from USER's account. An issue with no description has a `None` body."""
     return (comment["user"]["login"] != setup["USER"]
-            or setup["AGENT_FOOTER"]
-            in ((comment["body"] or "").strip().splitlines() or [""])[-1])
+            or agent_footer(comment["body"], setup))
 
 
 def asking(repo, kind, target, setup, since, cache):
@@ -332,12 +375,108 @@ def item(repo, number, setup, since, cache):
     return findings + todo(repo, number, body, setup, cache)
 
 
+def notes(have, want):
+    """The two ways `WORK/` and the live open items disagree: an item nobody
+    wrote a note for, and a note whose item is merged or closed. Pure, because
+    it is the whole rule — the board's queue drifted for a week precisely
+    because no test could be written against a paragraph of prose."""
+    return sorted(want - have), sorted(have - want)
+
+
+def stale(read, updated):
+    """The notes whose item moved after the note was last read, by whole days:
+    a note read on the morning its head is pushed to is current, one carrying
+    last week's date over a head that moved yesterday is not. `read` maps a
+    number to the date its note states, `updated` to the item's `updated_at`.
+    A note with no readable date is stale by construction — it cannot say when
+    it was true."""
+    return sorted(number for number, day in read.items()
+                  if number in updated
+                  and (day is None or day < updated[number][:10]))
+
+
+READ = re.compile(r"\bread (\d{4}-\d{2}-\d{2})")
+
+
+def cited(texts):
+    """Every `#<number>` an existing note mentions. Forming a view on one item
+    pulls in what it references, which is how an issue earns a note without a
+    human deciding it has: a note that says a head waits on a ruling names the
+    issue, and that issue is then in play."""
+    return {int(number) for text in texts
+            for number in re.findall(r"#(\d+)", text)}
+
+
+def memory_clone(setup):
+    """Where MEMORY_REPO is checked out: `AGENTS_MEMORY` when set, else the
+    sibling of this clone named after MEMORY_REPO, which is the layout every
+    session opens in. `None` when it is not there — a sweep run without the
+    memory clone still sweeps, it just cannot check the notes, and says so
+    rather than reporting every head as missing one."""
+    override = os.environ.get("AGENTS_MEMORY")
+    root = (pathlib.Path(override) if override
+            else CLONE.parent / setup["MEMORY_REPO"].split("/")[-1])
+    return root if (root / "WORK").is_dir() else None
+
+
+def uncharted(repo, setup, cache):
+    """What `WORK/<repo>/` and the repo's open items say about each other.
+
+    The notes cover the whole repository, not our own slice of it: someone
+    else's pull request collides with ours, and an issue nobody answered is
+    the reason a head is stuck. Ownership is a field inside the note, not a
+    condition on it existing.
+
+    A note is **required** for every open pull request, and for every open
+    issue an existing note cites — forming a view on one item is what pulls in
+    what it references. Every other open issue is printed as context and does
+    not make the sweep dirty: a note that only restated GitHub would be the
+    board's queue again, one file per row instead of one table.
+
+    Three findings: an item with no note, a note whose item is closed, and a
+    note older than the item it describes."""
+    if repo not in setup["WORK_REPOS"]:
+        return []  # the rule binds where the work happens
+    root = memory_clone(setup)
+    if root is None:
+        print(f"{repo}: no MEMORY_REPO clone beside this one, WORK/ unchecked",
+              file=sys.stderr)
+        return []
+    name = repo.split("/")[-1]
+    directory = root / "WORK" / name
+    files = {int(note.stem): note for note in directory.glob("*.md")
+             if note.stem.isdigit()} if directory.is_dir() else {}
+    texts = {number: note.read_text() for number, note in files.items()}
+    read = {number: (READ.search(text).group(1) if READ.search(text) else None)
+            for number, text in texts.items()}
+    items = get(repo, "issues?state=open")
+    updated = {item["number"]: item["updated_at"] for item in items}
+    pulls = {item["number"] for item in items if "pull_request" in item}
+    want = pulls | (cited(texts.values()) & set(updated))
+    unread = sorted(set(updated) - want - set(files))
+    if unread:
+        print(f"{repo}: {len(unread)} open issue(s) nobody has a note on, none"
+              " of them cited by one: "
+              + ", ".join(f"#{number}" for number in unread), file=sys.stderr)
+    missing, _ = notes(set(files), want)
+    _, orphan = notes(set(files), set(updated))  # open at all, not required
+    link = f"https://github.com/{repo}/issues/"
+    return [f"{repo}#{number} has no WORK/{name}/{number}.md, so nothing says"
+            f" where it stands: {link}{number}" for number in missing
+            ] + [f"{repo}: WORK/{name}/{number}.md outlived its item, which is"
+                 f" closed — delete it: {link}{number}" for number in orphan
+            ] + [f"{repo}: WORK/{name}/{number}.md was read {read[number]} and"
+                 f" {number} moved since, so it may be stale: {link}{number}"
+                 for number in stale(read, updated)]
+
+
 def sweep(repo, numbers, since, setup):
     """One line per finding, empty when the sweep is clean."""
     cache, findings = {}, []
     if repo == setup["MEMORY_REPO"] and not numbers:
         findings += memory(repo)
     if not numbers:
+        findings += uncharted(repo, setup, cache)
         findings += closed_since(repo, since)
         numbers = sorted({
             issue["number"] for issue in get(repo, "issues?state=open")})
@@ -350,8 +489,13 @@ def main(arguments):
     since = ""  # ISO 8601 UTC sorts lexicographically, so "" is the epoch
     if arguments and arguments[0] == "--since":
         _, since, *arguments = arguments
-    findings = sweep(arguments[0], [int(n) for n in arguments[1:]], since,
-                     config(CONFIG))
+    try:
+        findings = sweep(arguments[0], [int(n) for n in arguments[1:]], since,
+                         config(CONFIG))
+    except (urllib.error.URLError, TimeoutError) as error:
+        print(f"{arguments[0]}: GitHub unreadable, the sweep is incomplete and"
+              f" says nothing about this repo: {error}", file=sys.stderr)
+        return 2
     print("\n".join(findings) if findings else "clean", file=sys.stderr)
     return 1 if findings else 0
 
