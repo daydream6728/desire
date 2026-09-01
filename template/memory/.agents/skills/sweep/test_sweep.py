@@ -8,6 +8,7 @@ import os
 import pathlib
 import tempfile
 import unittest
+import urllib.error
 
 import sweep
 
@@ -224,6 +225,35 @@ class Config(unittest.TestCase):
     def test_a_line_with_no_key_raises(self):
         with self.assertRaises(ValueError):
             self.parse("USER=toumix\nnot a setting\n")
+
+
+class ReviewComments(unittest.TestCase):
+    """Whether an item has review comments is read off the item, not guessed
+    from a status code: GitHub numbers issues and pulls in one space, and only
+    a pull carries `pull_request`."""
+
+    def setUp(self):
+        self.asked = []
+        original = sweep.get
+        sweep.get = lambda repo, path: self.asked.append(path) or []
+        self.addCleanup(setattr, sweep, "get", original)
+
+    def test_an_issue_is_never_asked_about_on_the_pulls_endpoint(self):
+        self.assertEqual(sweep.review_comments("a/b", 87, {}), [])
+        self.assertEqual(self.asked, [])
+
+    def test_a_pull_request_is(self):
+        sweep.review_comments("a/b", 136, {"pull_request": {}})
+        self.assertEqual(self.asked, ["pulls/136/comments"])
+
+    def test_a_forbidden_listing_is_raised_not_read_as_an_issue(self):
+        """A gateway answers 403 where GitHub answers 404, so a listing
+        nobody read must never pass for one with no comments in it."""
+        def forbidden(repo, path):
+            raise urllib.error.HTTPError(path, 403, "Forbidden", {}, None)
+        sweep.get = forbidden
+        with self.assertRaises(urllib.error.HTTPError):
+            sweep.review_comments("a/b", 136, {"pull_request": {}})
 
 
 if __name__ == "__main__":

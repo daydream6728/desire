@@ -103,18 +103,23 @@ def get(repo, path):
         page += 1
 
 
-def review_comments(repo, number):
-    """The pulls/ endpoints reject plain issues, which the sweep also covers:
-    a 404 here is an issue rather than a pull request. Everything else is
-    raised, a 403 included — rate-limited or forbidden is a listing nobody
-    read, and swallowing it as no comments is what makes an unreadable thread
-    look answered."""
-    try:
-        return get(repo, f"pulls/{number}/comments")
-    except urllib.error.HTTPError as error:
-        if error.code == 404:
-            return []
-        raise
+def review_comments(repo, number, body):
+    """An issue has no review comments, and the item itself says so: GitHub
+    numbers issues and pull requests in one space and puts a `pull_request`
+    key on the ones that are pulls, which `item` has already read. So the
+    pulls/ endpoint is never asked about an issue at all, rather than asked
+    and forgiven a 404.
+
+    That distinction used to be the status code, and it is not ours to
+    rely on: behind a gateway the same request answers 403, which this
+    raises — rate-limited or forbidden is a listing nobody read, and
+    swallowing it as no comments is what makes an unreadable thread look
+    answered. Reading it as "not a pull request" instead would be the same
+    bug wearing the other mask. Asking one fewer request per issue is the
+    smaller half of the reason."""
+    if "pull_request" not in body:
+        return []
+    return get(repo, f"pulls/{number}/comments")
 
 
 def reactors(repo, kind, target, emoji, cache):
@@ -355,7 +360,7 @@ def item(repo, number, setup, since, cache):
             f"#{number} {setup['APPROVE_EMOJI']} from {setup['USER']} on the"
             f" body: {body['html_url']}" + seen(repo, kind, body, setup, cache))
     comments = [(comment, comment.get("in_reply_to_id", comment["id"]), "pulls")
-                for comment in review_comments(repo, number)]
+                for comment in review_comments(repo, number, body)]
     comments += [(comment, number, "issues")
                  for comment in get(repo, f"issues/{number}/comments")]
     for comment, thread, endpoint in comments:
