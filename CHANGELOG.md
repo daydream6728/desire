@@ -6,7 +6,7 @@ Entries state the changes, no explanation of why.
 ## 2026-09-01
 
 **One memory file per pull request, replacing the board's queue**
-([#REPLACE](https://github.com/toumix/desire/pull/REPLACE), closes
+([#133](https://github.com/toumix/desire/pull/133), closes
 [#124](https://github.com/toumix/desire/issues/124)) — `PRS/<repo>/<number>.md` in MEMORY_REPO is
 one standing note per open pull request, rewritten by whichever session touched that head and
 deleted when it merges or closes. `AGENTS.md` gains the file kind, its lifetime and its shape;
