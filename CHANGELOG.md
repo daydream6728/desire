@@ -5,6 +5,18 @@ Entries state the changes, no explanation of why.
 
 ## 2026-08-28
 
+**The project is not the memory after all — the three entries below are reverted** (closes
+[#15](https://github.com/daydream6728/desire/issues/15)) — every prompt file, `config.env`,
+`sweep.py` and the SessionStart hook go back to their state before the project work, so the fork
+differs from `toumix/desire` only in `config.env`, one Get started step and this file. MEMORY_REPO
+loses the sync Action, the item template and the issue-shaped conventions; `README.md` there is
+the live board again, rewritten every turn, and `TURNS/<date>.md` the journal. The items opened
+on the project are closed: they were never the memory. `PROJECT` leaves `config.env` and
+`GITHUB_TOKEN`/`GH_TOKEN` come back to `sweep.py`, the hook and `AGENTS.md` — unset in the
+sessions that run today, where the proxy authenticates the repos it is scoped to, and one line
+closer to upstream. Also reverted, unentered below: the board-gap findings `sweep.py` gained in
+[#10](https://github.com/daydream6728/desire/pull/10).
+
 **The assignee says whose move it is** (closes
 [#8](https://github.com/daydream6728/desire/issues/8)) — `AGENTS.md` gains an assignee bullet
 beside the status one: USER when the item waits on them, AGENT when the agents move it next,

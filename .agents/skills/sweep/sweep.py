@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
 bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
-issues closed inside the window, MEMORY_REPO's open-PR count, the state of
-each AGENT-owned `TODO.md` and the gaps of the board: owned heads no item
-mirrors, items without exactly one `status:` label, mirrors whose head is
-merged or closed. A finding is marked 👀 when the pipeline has reacted
+issues closed inside the window, MEMORY_REPO's open-PR count and the state of
+each AGENT-owned `TODO.md`. A finding is marked 👀 when the pipeline has reacted
 to say it received it. config.env is the ground truth for USER, the repos
 and the emoji; AGENTS.md's rules say what to do with a finding.
 
@@ -18,6 +16,7 @@ Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding. Open
 import base64
 import datetime
 import json
+import os
 import pathlib
 import re
 import sys
@@ -26,8 +25,6 @@ import urllib.request
 
 CONFIG = pathlib.Path(__file__).parents[3] / "config.env"
 BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
-HEAD = re.compile(r"^\*\*Head:\*\*(.*)$", re.IGNORECASE | re.MULTILINE)
-PULL = re.compile(r"https://github\.com/([^/\s]+/[^/\s)]+)/pull/(\d+)")
 CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
                    r"(?:Z|[+-]\d{2}:?\d{2})?)?")
 STALE = datetime.timedelta(hours=12)
@@ -61,9 +58,8 @@ def get(repo, path):
     """A GitHub REST resource, every page of a listing. A page holds 100 and
     `discopy/discopy` had 153 open items the day this stopped reading one page:
     the tail is the oldest, so a 🚀 on an old issue was invisible for good.
-    No token: the session's proxy authenticates the repos it is scoped to, the
-    private ones included, and a repo outside that scope is refused whatever
-    the caller carries."""
+    Unauthenticated GETs work on public repos but are rate-limited to 60/hr;
+    GITHUB_TOKEN or GH_TOKEN is used when set."""
     results, page = [], 1
     while True:
         request = urllib.request.Request(
@@ -71,6 +67,9 @@ def get(repo, path):
             + ("&" if "?" in path else "?") + f"per_page=100&page={page}",
             headers={"User-Agent": "sweep",
                      "Accept": "application/vnd.github+json"})
+        token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+        if token:
+            request.add_header("Authorization", f"Bearer {token}")
         with urllib.request.urlopen(request) as response:
             items = json.load(response)
         if not isinstance(items, list):  # a single issue, comment or user
@@ -239,13 +238,13 @@ def elapsed(age):
     return f"{hours // 24} days" if hours >= 48 else f"{hours} hours"
 
 
-def owned(repo, number, author, setup):
+def owned(repo, number, body, setup):
     """Whether the pipeline is answerable for this pull request: AGENT opened
     it or ADOPTED_PRS lists it, the same test the board and the scans use.
     Nobody else's branch owes us a `TODO.md`, and neither does one in
     DESIRE_REPO or MEMORY_REPO — the rule binds where the work happens."""
-    return repo in setup["WORK_REPOS"] and (
-        author == setup["AGENT"]
+    return "pull_request" in body and repo in setup["WORK_REPOS"] and (
+        body["user"]["login"] == setup["AGENT"]
         or number in setup.get("ADOPTED_PRS", {}).get(repo, []))
 
 
@@ -257,8 +256,7 @@ def todo(repo, number, body, setup, cache):
     the way MEMORY_REPO's PR count is — work left is the normal state of a
     branch, not a finding — while a claim past Rule 3's twelve hours and a
     branch that never carried the file are reported."""
-    if "pull_request" not in body or not owned(
-            repo, number, body["user"]["login"], setup):
+    if not owned(repo, number, body, setup):
         return []
     head = (heads(repo, cache).get(number)
             or get(repo, f"pulls/{number}"))["head"]["sha"]
@@ -287,50 +285,6 @@ def todo(repo, number, body, setup, cache):
                f"{when:%Y-%m-%d} ({elapsed(age)} old)")
             + ", reclaim it: " + body["html_url"])
     return findings
-
-
-def mirrored(candidate):
-    """The work-repo pull requests an item mirrors: the ones its `**Head:**`
-    line names. The rest of a body cites pull requests incidentally — a day's
-    PR lists what merged — so only the declared head binds."""
-    line = HEAD.search(candidate["body"] or "")
-    return [(repo, int(number))
-            for repo, number in PULL.findall(line.group(1))] if line else []
-
-
-def board(items, setup, findings):
-    """The board has no gaps (memory#9): every AGENT-owned open head in
-    WORK_REPOS is mirrored by an open item's `**Head:**` line, every open
-    item carries exactly one `status:` label, and an item whose declared
-    head is merged or closed is stale. A work repo the proxy refuses is
-    reported and skipped rather than aborting the sweep of the others."""
-    for candidate in items:
-        statuses = [label["name"] for label in candidate["labels"]
-                    if label["name"].startswith("status:")]
-        if len(statuses) != 1:
-            findings.append(
-                f"#{candidate['number']} carries {len(statuses)} status:"
-                " labels, exactly one is the rule: " + candidate["html_url"])
-    linked = {target for candidate in items for target in mirrored(candidate)}
-    for repo in setup["WORK_REPOS"]:
-        try:
-            pulls = heads(repo, {})
-        except urllib.error.HTTPError as error:
-            findings.append(f"{repo}: unreadable over REST ({error.code}),"
-                            " board checks skipped")
-            continue
-        findings += [
-            f"{repo}#{number} is an owned head with no item mirroring it,"
-            " open one: " + pulls[number]["html_url"]
-            for number in sorted(pulls)
-            if owned(repo, number, pulls[number]["user"]["login"], setup)
-            and (repo, number) not in linked]
-        findings += [
-            f"#{candidate['number']} mirrors {repo}#{number} which is merged"
-            " or closed, close or repoint the item: " + candidate["html_url"]
-            for candidate in items
-            for target, number in mirrored(candidate)
-            if target == repo and number not in pulls]
 
 
 def item(repo, number, setup, since, cache):
@@ -381,13 +335,12 @@ def item(repo, number, setup, since, cache):
 def sweep(repo, numbers, since, setup):
     """One line per finding, empty when the sweep is clean."""
     cache, findings = {}, []
+    if repo == setup["MEMORY_REPO"] and not numbers:
+        findings += memory(repo)
     if not numbers:
-        opened = get(repo, "issues?state=open")
-        if repo == setup["MEMORY_REPO"]:
-            findings += memory(repo)
-            board(opened, setup, findings)
         findings += closed_since(repo, since)
-        numbers = sorted(issue["number"] for issue in opened)
+        numbers = sorted({
+            issue["number"] for issue in get(repo, "issues?state=open")})
     for number in numbers:
         findings += item(repo, number, setup, since, cache)
     return findings

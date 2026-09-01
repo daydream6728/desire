@@ -45,6 +45,8 @@ if [ ${#pkgs[@]} -gt 0 ]; then
   fi
 fi
 
+[ -n "${GH_TOKEN:-}${GITHUB_TOKEN:-}" ] || log "note: no GH_TOKEN/GITHUB_TOKEN in env — gh will be unauthenticated"
+
 command -v gh >/dev/null 2>&1 && log "$(gh --version | head -1)" || true
 
 cleared=yes
