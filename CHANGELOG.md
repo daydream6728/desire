@@ -72,11 +72,13 @@ session or thread ID never becomes a link. Replaces the attribution-footer entry
 **`config.env` moves to MEMORY_REPO** ([#131](https://github.com/toumix/desire/pull/131), closes
 [#130](https://github.com/toumix/desire/issues/130)) — the file leaves this public repo for the
 root of MEMORY_REPO, `CLAUDE.md` here stops importing it and MEMORY_REPO's `CLAUDE.md` imports
-it. `session-start.sh` and `sweep.py` stop deriving its path from their own clone: both take the
-`config.env` at the root of the clone its own `MEMORY_REPO` names, with `AGENTS_CONFIG`
-overriding, `sweep.py`'s `CONFIG` constant becomes `find_config()`, and `memory_clone()`
-derives the clone from that file's own directory rather than searching for it a second time. `AGENTS.md`'s Config
-section and the README's Get started say where it lives and how it is found. Supersedes
+it. **`sweep.py` and `test_sweep.py` move with it**, out of `.agents/skills/` and into
+MEMORY_REPO beside the file they read, with the copy under `template/memory/` the public one; the
+`.agents/skills/` left here holds `bob` alone. `session-start.sh` stays and locates that clone by
+the `config.env` naming it, `AGENTS_CONFIG` overriding. `sweep.py`'s `CONFIG` constant is
+unchanged — three directories up is the clone's root from either copy — and `memory_clone()`
+reads that file's own directory. `AGENTS.md`'s Config section, the README's Get started and
+`template/README.md` say where each lives and that the two sweeps move together. Supersedes
 [#94](https://github.com/toumix/desire/pull/94), which gathered the values into one `config.env`
 in this repo.
 

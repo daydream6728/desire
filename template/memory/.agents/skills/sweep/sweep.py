@@ -5,8 +5,8 @@ issues closed inside the window, MEMORY_REPO's open-PR count, the state of
 each AGENT-owned `TODO.md` and whether every open item of a WORK_REPO has its
 `WORK/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
 pipeline has reacted to say it received it. config.env is the ground truth for
-USER, the repos and the emoji, read from MEMORY_REPO's clone; AGENTS.md's
-rules say what to do with a finding.
+USER, the repos and the emoji, and it sits at the root of this clone;
+AGENTS.md's rules say what to do with a finding.
 
 Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
                 [number...]
@@ -31,30 +31,17 @@ BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
 CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
                    r"(?:Z|[+-]\d{2}:?\d{2})?)?")
 STALE = datetime.timedelta(hours=12)
+CONFIG = pathlib.Path(__file__).parents[3] / "config.env"
 FOOTER_LINK = re.compile(r"\[[^\]]*\]\((https://[^\s)]+)\)")
 
 
-def find_config(here=pathlib.Path(__file__)):
-    """config.env lives at the root of MEMORY_REPO's clone, beside this one:
-    the prompts are public and the repos the agents work in are not. A session
-    opens in the parent of its clones, so the file is one directory down from
-    there — and it is the one that names itself, i.e. whose MEMORY_REPO is a
-    repo called after the directory holding it, so that a `config.env` some
-    work repo happens to ship is not mistaken for ours. AGENTS_CONFIG
-    overrides, for a layout that is neither."""
-    if os.environ.get("AGENTS_CONFIG"):
-        return pathlib.Path(os.environ["AGENTS_CONFIG"])
-    for candidate in sorted(here.parents[4].glob("*/config.env")):
-        try:  # a clone we cannot read is not ours and not fatal either
-            text = candidate.read_text()
-        except (OSError, UnicodeError):
-            continue
-        named = re.search(r"^MEMORY_REPO=.*/(.*)$", text, re.MULTILINE)
-        if named and named.group(1).strip() == candidate.parent.name:
-            return candidate
-    raise FileNotFoundError(
-        f"no config.env naming its own clone under {here.parents[4]}:"
-        " clone MEMORY_REPO beside this one or set AGENTS_CONFIG")
+def find_config():
+    """`config.env` at the root of the clone this file lives in. This script
+    is in MEMORY_REPO because the config is, so there is nothing to search
+    for: one is three directories up from the other, in the live repo and in
+    the template alike. AGENTS_CONFIG overrides, which is how the tests point
+    at one of their own."""
+    return pathlib.Path(os.environ.get("AGENTS_CONFIG") or CONFIG)
 
 
 def config(path):
@@ -431,11 +418,10 @@ def cited(texts):
 
 def memory_clone():
     """Where MEMORY_REPO is checked out: the directory holding the `config.env`
-    we are configured by, since that file lives at its root. Nothing is searched
-    for twice and there are not two answers to disagree — one override,
-    `AGENTS_CONFIG`, decides both. `None` when that clone carries no `WORK/`,
-    so a sweep run without it still sweeps, cannot check the notes, and says so
-    rather than reporting every item as missing one."""
+    we are configured by, since that file lives at its root — normally the
+    clone this script is in. `None` when it carries no `WORK/`, so a sweep run
+    against a memory repo that has no notes yet still sweeps, cannot check
+    them, and says so rather than reporting every item as missing one."""
     root = find_config().parent
     return root if (root / "WORK").is_dir() else None
 
@@ -460,7 +446,7 @@ def uncharted(repo, setup, cache):
         return []  # the rule binds where the work happens
     root = memory_clone()
     if root is None:
-        print(f"{repo}: no MEMORY_REPO clone beside this one, WORK/ unchecked",
+        print(f"{repo}: MEMORY_REPO carries no WORK/, notes unchecked",
               file=sys.stderr)
         return []
     name = repo.split("/")[-1]

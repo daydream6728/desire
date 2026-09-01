@@ -147,8 +147,8 @@ class Notes(unittest.TestCase):
 class MemoryClone(unittest.TestCase):
     """The memory clone is wherever the `config.env` we are configured by
     sits, so there is one answer rather than two that can disagree. A sweep
-    run without that clone still sweeps and says so, rather than reporting
-    every open item as missing its note."""
+    against a memory repo carrying no `WORK/` still sweeps and says so, rather
+    than reporting every open item as missing its note."""
 
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()

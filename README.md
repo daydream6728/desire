@@ -24,12 +24,11 @@ line of it is loaded into every session. Some guiding principles:
 1) Open a new GitHub account for your agents, add it as collaborator to your fork for this repo.
 2) Create a new **private** GitHub repo (e.g. called `memory`) and seed it from
    [`template/`](template/): the board, the standing note each open item gets, the day PR's shape,
-   and a `config.env` in which every value is a placeholder. Fill that file in — `AGENT` and
-   `AGENT_EMAIL` for the new account, `USER` for yours, `MEMORY_REPO` for this new repo,
+   the sweep, and a `config.env` in which every value is a placeholder. Fill that file in — `AGENT`
+   and `AGENT_EMAIL` for the new account, `USER` for yours, `MEMORY_REPO` for this new repo,
    `DESIRE_REPO` for your fork, and the repos your agents work in under `WORK_REPOS`. It lives
-   there and not here because this repo is public and the repos you work in need not be; the hook
-   and the sweep take the `config.env` at the root of the clone its own `MEMORY_REPO` names,
-   `AGENTS_CONFIG` overriding.
+   there and not here because this repo is public and the repos you work in need not be, and the
+   sweep is seeded beside it because that is the file it reads.
 3) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
 
 Nothing in this repo names you: your login, your agent's, and the repos you work in are all in that
