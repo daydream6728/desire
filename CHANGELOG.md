@@ -20,13 +20,11 @@ open item and a note older than the item it describes, and `test_sweep.py` cover
 
 **One memory pull request per day for the day's work, one per standing file's first write**
 (same PR) — `AGENTS.md` replaces "every later turn of that day pushes to it instead of opening
-another" with the distinction that produced two failures: a collaborator review folded into the day
-PR because two were already open, and a turn file pushed onto a review branch because no day PR
-was. A `REVIEWS/<person>.md` first write opens its own PR; later edits to it go to the day PR; a
-turn that finds no day PR open opens one.
+another". A `REVIEWS/<person>.md` first write opens its own pull request, titled for the file; every
+later edit to it goes to the day PR; a turn that finds no day PR open opens one.
 
-**An agent merges freely into its own branches** (same PR) — `RULES.md` rule 4 says so explicitly,
-since only the protected branch is gated on the human's review.
+**An agent merges freely into its own branches** (same PR) — `RULES.md` rule 4 permits folding one
+of its pull requests into another and bringing a base in, the protected branch excepted.
 
 **🌤️ Daylight implements** (same PR) — `DAYLIGHT.md`'s "it designs and queues, never implements"
 is struck, and Daylight writes the `WORK/` file of every item it touched before the session ends.
