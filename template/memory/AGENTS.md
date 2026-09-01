@@ -1,5 +1,3 @@
-@README.md
-
 # The memory
 
 This private repo is the MEMORY_REPO of the routines named for the three phases of a turn — 🐦

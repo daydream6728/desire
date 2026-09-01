@@ -29,8 +29,10 @@ session. Some guiding principles:
    fork as `DESIRE_REPO`, and list the repos your agents work in under `WORK_REPOS`.
 3) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
 
-Nothing in this repo names you: your login, your agent's, and the repos you work in are all in that
-one file, in the repo that is yours. What is here is only the rules.
+`config.env` is the only file here that names you — your login, your agent's, and the repos they
+work in — and [#131](https://github.com/toumix/desire/pull/131) moves it out to your memory clone,
+where it belongs, with `template/memory/config.env` as the copy it lands as. Until that merges it
+is read from this repo's own root, so that is the one to fill. Everything else here is the rules.
 
 **Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
 

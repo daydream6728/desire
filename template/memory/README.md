@@ -4,7 +4,7 @@ State only — what is ready, what is blocked on what, what is behind, and only 
 than one head. **Under 200 lines, rewritten every turn, never appended to**: a turn that would push
 it over drops the oldest section instead of adding one.
 
-Three things do not belong here. A fact about a single pull request is that head's own
+Four things do not belong here. A fact about a single pull request is that head's own
 [`PRS/<repo>/<number>.md`](PRS). A convention or a ruling is an open issue on DESIRE_REPO. Turn
 narration — anything carrying a timestamp and an agent name — is [`TURNS/<date>.md`](TURNS). What
 waits on USER, and what USER is working on, is [`USER_TODO.md`](USER_TODO.md).

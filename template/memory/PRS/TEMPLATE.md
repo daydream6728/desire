@@ -47,5 +47,10 @@ not, leaves it.
 
 **The log is the point.** It is what 🐦 Birdsong reads instead of re-deriving the queue from
 GitHub, and the only trace an interactive session leaves of work that stayed on its own PR. One
-line per turn, in the past tense, saying what *changed* — not what was scanned, re-merged or
-looked at. A night that re-merged and finished nothing says exactly that.
+line per turn, in the past tense, saying what *changed* — not what was scanned or read.
+
+A merge of the target branch is the one to get right. It is support work, so it never earns its own
+clause beside real work: a turn that merged `main` and then fixed three review threads logs the
+three threads. But when it is the whole of the turn it is logged, plainly and alone — *"merged
+`main`, nothing else"* — because the head did move and because a night that finished nothing should
+read that way rather than vanish.

@@ -64,7 +64,9 @@ class Config(unittest.TestCase):
     malformed line raises rather than parsing to a key nobody reads."""
 
     def parse(self, text):
-        path = pathlib.Path(tempfile.mkdtemp()) / "config.env"
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        path = pathlib.Path(directory.name) / "config.env"
         path.write_text(text)
         return sweep.config(path)
 
@@ -86,6 +88,17 @@ class Config(unittest.TestCase):
     def test_a_line_with_no_key_raises(self):
         with self.assertRaises(ValueError):
             self.parse("USER=toumix\nnot a setting\n")
+
+    def test_comments_and_blank_lines_are_skipped(self):
+        """The seed in `template/memory/config.env` ships commented, and the
+        file is edited by hand, so a `#` line is not a malformed setting."""
+        self.assertEqual(self.parse(
+            "# what this file is\n\nUSER=toumix\n  # indented\nAGENT=agents\n"),
+            {"USER": "toumix", "AGENT": "agents"})
+
+    def test_a_hash_inside_a_value_is_kept(self):
+        self.assertEqual(self.parse("APPROVE_EMOJI=rocket # not a comment\n")
+                         ["APPROVE_EMOJI"], "rocket # not a comment")
 
 
 if __name__ == "__main__":

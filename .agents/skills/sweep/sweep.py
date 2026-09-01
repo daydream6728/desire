@@ -38,16 +38,19 @@ def config(path):
     """config.env as a dict, so that the pipeline is configured in one place
     and this script hard-codes no repo and no agent. A value is everything
     after the first `=`; WORK_REPOS is a comma-separated list and ADOPTED_PRS
-    space-separated `repo:number,number` entries. A line carrying no `=`
-    raises rather than parsing to a key nothing will look up, and a key the
-    file does not set is absent, so a caller reading it raises too."""
+    space-separated `repo:number,number` entries. Blank lines and `#` comments
+    are skipped — the file is written by hand and the seed ships commented —
+    while any other line carrying no `=` raises rather than parsing to a key
+    nothing will look up, and a key the file does not set is absent, so a
+    caller reading it raises too."""
     setup = {}
     for line in path.read_text().splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
         key, separator, value = line.partition("=")
-        if line.strip() and (not separator or not key.strip()):
+        if not separator or not key.strip():
             raise ValueError(f"config.env: no key in {line!r}")
-        if line.strip():
-            setup[key.strip()] = value.strip()
+        setup[key.strip()] = value.strip()
     if "WORK_REPOS" in setup:
         setup["WORK_REPOS"] = setup["WORK_REPOS"].split(",")
     if "ADOPTED_PRS" in setup:
@@ -85,11 +88,15 @@ def get(repo, path):
 
 
 def review_comments(repo, number):
-    """The pulls/ endpoints reject plain issues, which the sweep also covers."""
+    """The pulls/ endpoints reject plain issues, which the sweep also covers:
+    a 404 here is an issue rather than a pull request. Everything else is
+    raised, a 403 included — rate-limited or forbidden is a listing nobody
+    read, and swallowing it as no comments is what makes an unreadable thread
+    look answered."""
     try:
         return get(repo, f"pulls/{number}/comments")
     except urllib.error.HTTPError as error:
-        if error.code in (403, 404):
+        if error.code == 404:
             return []
         raise
 
@@ -358,13 +365,15 @@ def memory_clone(setup):
 
 def uncharted(repo, setup, cache):
     """One finding per AGENT-owned head with no `PRS/<repo>/<number>.md`, and
-    one per note whose head is no longer open. Every session writes the note of
-    every head it touched, so a missing one is a turn that left no trace and an
-    orphan is a merge nobody swept up."""
+    one per note whose head is not an open AGENT-owned pull request any more —
+    merged, closed, or never ours. Every session writes the note of every head
+    it touched, so a missing one is a turn that left no trace and an orphan is
+    a merge nobody swept up."""
+    if repo not in setup["WORK_REPOS"]:
+        return []  # the rule binds where the work happens
     root = memory_clone(setup)
-    if root is None or repo not in setup["WORK_REPOS"]:
-        print(f"{repo}: no MEMORY_REPO clone beside this one, PRS/ unchecked"
-              if root is None else f"{repo}: not a WORK_REPO, PRS/ unchecked",
+    if root is None:
+        print(f"{repo}: no MEMORY_REPO clone beside this one, PRS/ unchecked",
               file=sys.stderr)
         return []
     directory = root / "PRS" / repo.split("/")[-1]
@@ -377,8 +386,8 @@ def uncharted(repo, setup, cache):
     return [f"{repo}#{number} has no PRS/{repo.split('/')[-1]}/{number}.md,"
             " so nothing says where it stands:"
             f" https://github.com/{repo}/pull/{number}" for number in missing
-            ] + [f"{repo}: PRS/{repo.split('/')[-1]}/{number}.md outlived its"
-                 " pull request, delete it:"
+            ] + [f"{repo}: PRS/{repo.split('/')[-1]}/{number}.md has no open"
+                 " AGENT-owned pull request, delete it:"
                  f" https://github.com/{repo}/pull/{number}"
                  for number in orphan]
 
