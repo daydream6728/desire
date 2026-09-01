@@ -28,9 +28,6 @@ open item and a note older than the item it describes, and `test_sweep.py` cover
 another". A `OTHERS/<person>.md` first write opens its own pull request, titled for the file; every
 later edit to it goes to the day PR; a turn that finds no day PR open opens one.
 
-**An agent merges freely into its own branches** (same PR) — `RULES.md` rule 4 permits folding one
-of its pull requests into another and bringing a base in, the protected branch excepted.
-
 **🌤️ Daylight implements** (same PR) — `DAYLIGHT.md`'s "it designs and queues, never implements"
 is struck, and Daylight writes the `WORK/` file of every item it touched before the session ends.
 
