@@ -3,6 +3,44 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-09-01
+
+**One memory file per pull request, replacing the board's queue**
+([#REPLACE](https://github.com/toumix/desire/pull/REPLACE), closes
+[#124](https://github.com/toumix/desire/issues/124)) — `PRS/<repo>/<number>.md` in MEMORY_REPO is
+one standing note per open pull request, rewritten by whichever session touched that head and
+deleted when it merges or closes. `AGENTS.md` gains the file kind, its lifetime and its shape;
+"a turn that stays within one workstream leaves MEMORY_REPO untouched" is reversed — every turn
+writes the note of every head it touched. The board becomes cross-cutting state only. `sweep.py`
+gains `notes`, `memory_clone` and `uncharted`, reporting a head with no note and a note with no
+head, and `test_sweep.py` covers them.
+
+**🌤️ Daylight implements** (same PR) — `DAYLIGHT.md`'s "it designs and queues, never implements"
+is struck, and Daylight writes the `PRS/` file of every head it touched before the session ends.
+
+**🌙 Evening finishes one head before taking another** (same PR, from
+[#128](https://github.com/toumix/desire/issues/128)) — `EVENING.md` replaces queue-wide `TODO.md`
+churn with one head driven to a terminal handoff: merged, closed, ready with `TODO.md` deleted and
+every expected check passed, or blocked on one named external action asked for on the work PR.
+Scans, re-merges, review triggers and board repair are support work, not outcomes. A check that
+was never created is pending and a failed query is unknown, neither of them green. 🐦 Birdsong
+reads `PRS/` rather than re-deriving the queue.
+
+**The sweep exits 2 when GitHub cannot be read** (same PR, from #128) — an incomplete sweep is
+neither clean nor a finding.
+
+**A `template/` directory seeds a fresh MEMORY_REPO** (same PR) — `template/memory/` carries
+`AGENTS.md`, an empty board, an empty `USER_TODO.md`, `config.env` with every value a placeholder,
+the day PR's body template and the `PRS`/`REVIEWS`/`TURNS` shapes. The README's Get started points
+at it.
+
+**The memory PR template drops "Waiting on you", gains "Since last time"** (same PR, closes
+[#126](https://github.com/toumix/desire/issues/126), the content of
+[#127](https://github.com/toumix/desire/pull/127)) — replaced by a summary of activity since the
+previous memory PR, split by source, required to say plainly when a round did nothing or did not
+run. `What changed today` is folded into it. The `Memory` section gains `USER_TODO.md` and
+`REVIEWS/<person>.md`.
+
 ## 2026-08-26
 
 **One memory PR per day, written by 🐦 Birdsong alone**

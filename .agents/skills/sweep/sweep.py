@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
 bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
-issues closed inside the window, MEMORY_REPO's open-PR count and the state of
-each AGENT-owned `TODO.md`. A finding is marked 👀 when the pipeline has reacted
-to say it received it. config.env is the ground truth for USER, the repos
-and the emoji; AGENTS.md's rules say what to do with a finding.
+issues closed inside the window, MEMORY_REPO's open-PR count, the state of
+each AGENT-owned `TODO.md` and whether every AGENT-owned head has its
+`PRS/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
+pipeline has reacted to say it received it. config.env is the ground truth for
+USER, the repos and the emoji; AGENTS.md's rules say what to do with a finding.
 
 Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
                 [number...]
        # no numbers: every open PR and issue; --since windows the closes
        # and quiets a question the pipeline already 👀'd
-Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding. Open
+Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding, exit 2
+when GitHub could not be read — an incomplete sweep is neither clean nor a
+finding, and reading it as clean is how a live 🚀 goes unanswered. Open
 `TODO.md` boxes are printed as context and do not make the sweep dirty.
 """
 import base64
@@ -23,7 +26,8 @@ import sys
 import urllib.error
 import urllib.request
 
-CONFIG = pathlib.Path(__file__).parents[3] / "config.env"
+CLONE = pathlib.Path(__file__).parents[3]
+CONFIG = CLONE / "config.env"
 BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
 CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
                    r"(?:Z|[+-]\d{2}:?\d{2})?)?")
@@ -332,12 +336,60 @@ def item(repo, number, setup, since, cache):
     return findings + todo(repo, number, body, setup, cache)
 
 
+def notes(have, want):
+    """The two ways `PRS/` and the live open heads disagree: a head nobody
+    wrote a note for, and a note whose head is merged, closed or never ours.
+    Pure, because it is the whole rule — the board's queue drifted for a week
+    precisely because no test could be written against a paragraph of prose."""
+    return sorted(want - have), sorted(have - want)
+
+
+def memory_clone(setup):
+    """Where MEMORY_REPO is checked out: `AGENTS_MEMORY` when set, else the
+    sibling of this clone named after MEMORY_REPO, which is the layout every
+    session opens in. `None` when it is not there — a sweep run without the
+    memory clone still sweeps, it just cannot check the notes, and says so
+    rather than reporting every head as missing one."""
+    override = os.environ.get("AGENTS_MEMORY")
+    root = (pathlib.Path(override) if override
+            else CLONE.parent / setup["MEMORY_REPO"].split("/")[-1])
+    return root if (root / "PRS").is_dir() else None
+
+
+def uncharted(repo, setup, cache):
+    """One finding per AGENT-owned head with no `PRS/<repo>/<number>.md`, and
+    one per note whose head is no longer open. Every session writes the note of
+    every head it touched, so a missing one is a turn that left no trace and an
+    orphan is a merge nobody swept up."""
+    root = memory_clone(setup)
+    if root is None or repo not in setup["WORK_REPOS"]:
+        print(f"{repo}: no MEMORY_REPO clone beside this one, PRS/ unchecked"
+              if root is None else f"{repo}: not a WORK_REPO, PRS/ unchecked",
+              file=sys.stderr)
+        return []
+    directory = root / "PRS" / repo.split("/")[-1]
+    have = {int(note.stem) for note in directory.glob("*.md")
+            if note.stem.isdigit()} if directory.is_dir() else set()
+    want = {number for number, pull in heads(repo, cache).items()
+            if pull["user"]["login"] == setup["AGENT"]
+            or number in setup.get("ADOPTED_PRS", {}).get(repo, [])}
+    missing, orphan = notes(have, want)
+    return [f"{repo}#{number} has no PRS/{repo.split('/')[-1]}/{number}.md,"
+            " so nothing says where it stands:"
+            f" https://github.com/{repo}/pull/{number}" for number in missing
+            ] + [f"{repo}: PRS/{repo.split('/')[-1]}/{number}.md outlived its"
+                 " pull request, delete it:"
+                 f" https://github.com/{repo}/pull/{number}"
+                 for number in orphan]
+
+
 def sweep(repo, numbers, since, setup):
     """One line per finding, empty when the sweep is clean."""
     cache, findings = {}, []
     if repo == setup["MEMORY_REPO"] and not numbers:
         findings += memory(repo)
     if not numbers:
+        findings += uncharted(repo, setup, cache)
         findings += closed_since(repo, since)
         numbers = sorted({
             issue["number"] for issue in get(repo, "issues?state=open")})
@@ -350,8 +402,13 @@ def main(arguments):
     since = ""  # ISO 8601 UTC sorts lexicographically, so "" is the epoch
     if arguments and arguments[0] == "--since":
         _, since, *arguments = arguments
-    findings = sweep(arguments[0], [int(n) for n in arguments[1:]], since,
-                     config(CONFIG))
+    try:
+        findings = sweep(arguments[0], [int(n) for n in arguments[1:]], since,
+                         config(CONFIG))
+    except (urllib.error.URLError, TimeoutError) as error:
+        print(f"{arguments[0]}: GitHub unreadable, the sweep is incomplete and"
+              f" says nothing about this repo: {error}", file=sys.stderr)
+        return 2
     print("\n".join(findings) if findings else "clean", file=sys.stderr)
     return 1 if findings else 0
 
