@@ -5,7 +5,8 @@ Entries state the changes, no explanation of why.
 
 ## 2026-09-01
 
-**A Codex-owned pull request keeps its originating task through merge** (closes
+**A Codex-owned pull request keeps its originating task through merge**
+([#135](https://github.com/toumix/desire/pull/135), closes
 [#134](https://github.com/toumix/desire/issues/134)) — the webhook-only rule becomes a fallback:
 when a runtime cannot receive PR events, `pr-shepherd` stores the PR, task and worktree in one
 user-level registry. One central weekday schedule checks it eight times a day, wakes the task only
