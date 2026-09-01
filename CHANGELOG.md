@@ -27,7 +27,9 @@ was never created is pending and a failed query is unknown, neither of them gree
 reads `PRS/` rather than re-deriving the queue.
 
 **The sweep exits 2 when GitHub cannot be read** (same PR, from #128) — an incomplete sweep is
-neither clean nor a finding.
+neither clean nor a finding. `review_comments` stops swallowing a 403 as an empty comment list,
+catching only the 404 that means the number is an issue rather than a pull request, and `config`
+skips blank lines and `#` comments so a hand-edited `config.env` can carry its own notes.
 
 **A `template/` directory seeds a fresh MEMORY_REPO** (same PR) — `template/memory/` carries
 `AGENTS.md`, an empty board, an empty `USER_TODO.md`, `config.env` with every value a placeholder,
