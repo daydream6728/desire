@@ -56,10 +56,11 @@ No GitHub MCP tool says *who* reacted — comment listings carry the counts only
 flags every APPROVE_EMOJI react from USER on a body or a comment, both endpoints, and every
 thread where USER spoke last. A thread is answered when **anyone other than USER** has replied
 since; which agent closed it does not matter. A reply from USER counts as an agent's when its
-last line is one of AGENT_FOOTERS — as the whole line, as the label of an HTTPS Markdown link, or
-inside that link's target, which is how a URL token matches the footer wrapping it. A marker in
-prose does not count: that is a human writing about the convention. This is how the adopted PRs
-read.
+last line is one of AGENT_FOOTERS — as the whole line, or inside the HTTPS target of a Markdown
+link on it, which is how a URL token matches the footer wrapping it. A link's *label* never counts,
+however exactly it reads: the label is the half a human types, so accepting it would let any
+destination silence a thread. Nor does a marker in prose: that is a human writing about the
+convention. This is how the adopted PRs read.
 
 **AGENT_FOOTERS is a list because there is no one signature and cannot be.** Each runtime appends
 its own marker and the agent does not choose it: a Claude Code session must end every GitHub post
@@ -73,9 +74,10 @@ that emits it is gone, and retiring one makes every post carrying it read as USE
 question.
 
 An agent-authored issue, pull request, review or comment ends with its own runtime's marker on the
-last line. Where that runtime exposes a shareable HTTPS session snapshot the marker may link to it,
-after opening and reviewing the shared view; an internal session or thread ID is not a URL and must
-never be turned into one.
+last line. A runtime whose footer links to a shareable session snapshot puts the URL token in
+AGENT_FOOTERS, the way `claude.ai/code` already is, rather than relying on the label; the snapshot
+is opened and reviewed before it is linked, and an internal session or thread ID is not a URL and
+must never be turned into one.
 
 A turn runs it with no numbers, covering every open PR and issue of every repo in play,
 before planning: no turn concludes "no unblocked work" without a clean sweep —
