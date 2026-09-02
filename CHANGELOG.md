@@ -9,8 +9,7 @@ Entries state the changes, no explanation of why.
 ([#136](https://github.com/toumix/desire/pull/136), closes
 [#134](https://github.com/toumix/desire/issues/134)) — before ending, the task schedules a native
 check of its pull request. Each check handles new USER feedback, stays quiet when nothing changed,
-and deletes itself when the pull request merges or closes. Replaces the webhook-only rule and adds
-no registry, external scheduler or installation.
+and deletes itself when the pull request merges or closes. Replaces the webhook-only rule.
 
 ## 2026-09-01
 
