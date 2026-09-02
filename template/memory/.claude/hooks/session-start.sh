@@ -5,16 +5,23 @@ set -uo pipefail
 
 log() { echo "session-start: $*" >&2; }
 
-config="$(cd "$(dirname "$0")/../.." && pwd)/config.env"
-agent="$(sed -n 's/^AGENT=//p' "$config" 2>/dev/null | tail -1)"
-agent_email="$(sed -n 's/^AGENT_EMAIL=//p' "$config" 2>/dev/null | tail -1)"
+# config.env sits at the root of the clone this hook lives in: this file is in
+# MEMORY_REPO because the config is, the same two directories up as the sweep
+# reads it from, so there is nothing to search for. AGENTS_CONFIG overrides.
+config="${AGENTS_CONFIG:-$(cd "$(dirname "$0")/../.." && pwd)/config.env}"
+if [ -r "$config" ]; then
+  agent="$(sed -n 's/^AGENT=//p' "$config" | tail -1)"
+  agent_email="$(sed -n 's/^AGENT_EMAIL=//p' "$config" | tail -1)"
+else
+  agent="" agent_email=""
+fi
 if [ -n "$agent" ] && [ -n "$agent_email" ]; then
   git config --global --replace-all user.name "$agent"
   git config --global --replace-all user.email "$agent_email"
-  log "git identity: $(git config --global user.name) <$(git config --global user.email)>"
+  log "git identity: $(git config --global user.name) <$(git config --global user.email)> (from $config)"
 else
   if [ ! -r "$config" ]; then
-    log "config.env is unreadable"
+    log "config.env is unreadable: $config"
   else
     [ -n "$agent" ] || log "config.env sets no AGENT"
     [ -n "$agent_email" ] || log "config.env sets no AGENT_EMAIL"
