@@ -36,6 +36,12 @@ one `config.env`, in the repo that is yours. What is here is only the rules.
 
 **Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
 
+## Keep Codex pull requests listening
+
+Each Codex task that opens a pull request schedules its own heartbeat. It checks for your feedback
+and valid in-scope bug or style reports from anyone, acts on them, and deletes itself when the pull
+request merges or closes. No setup.
+
 ## Verified commits
 
 **Optional** — everything above works without this. What it buys: every commit the agents push
