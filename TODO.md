@@ -2,6 +2,6 @@ let's see if Codex can wake up and close this comment
 
 you should also accept any comment that identifies a bug or style issue if implementing it still fits with the user's original prompt
 
-- [WIP] @01a057c7-6b38-7170-b0e8-a2dda90235d7-2026-09-02 10:05 Accept verified bug and style reports that remain within the original trusted prompt
-- [ ] Validate and push the review round
+- [x] Accept verified bug and style reports that remain within the original trusted prompt
+- [x] Validate and push the review round
 - [ ] Answer the wake-up comment, resolve the inline thread, and update memory

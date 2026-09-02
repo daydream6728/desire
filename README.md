@@ -38,8 +38,9 @@ one `config.env`, in the repo that is yours. What is here is only the rules.
 
 ## Keep Codex pull requests listening
 
-Each Codex task that opens a pull request schedules its own heartbeat. It checks for your feedback,
-acts on it, and deletes itself when the pull request merges or closes. No setup.
+Each Codex task that opens a pull request schedules its own heartbeat. It checks for your feedback
+and valid in-scope bug or style reports from anyone, acts on them, and deletes itself when the pull
+request merges or closes. No setup.
 
 ## Verified commits
 

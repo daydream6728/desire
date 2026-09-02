@@ -8,8 +8,9 @@ Entries state the changes, no explanation of why.
 **Each Codex pull request gets a heartbeat in the task that opened it**
 ([#136](https://github.com/toumix/desire/pull/136), closes
 [#134](https://github.com/toumix/desire/issues/134)) — before ending, the task schedules a native
-check of its pull request. Each check handles new USER feedback, stays quiet when nothing changed,
-and deletes itself when the pull request merges or closes. Replaces the webhook-only rule.
+check of its pull request. Each check handles USER feedback and any valid bug or style report whose
+fix stays inside USER's original prompt, stays quiet when nothing changed, and deletes itself when
+the pull request merges or closes. Replaces the webhook-only rule.
 
 ## 2026-09-01
 
