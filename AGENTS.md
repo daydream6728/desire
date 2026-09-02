@@ -237,12 +237,10 @@ A pull request closing an issue uses GitHub's syntax, one keyword per issue on
 the same line as its reference: what merging closes is read from
 `closed_by_pull_requests`, never from our prose.
 Answer a thread once the change has landed, then resolve it if your job is done.
-A PR-owning runtime watches by webhook when it can receive follow-up events. A Codex task that
-cannot receive them registers the PR with
-[`pr-shepherd`](.agents/skills/pr-shepherd/SKILL.md): one user-level weekday schedule checks every
-registered PR eight times a day and resumes its originating task only when USER's comments or
-reviews changed. Never create a per-repository watcher, a per-PR schedule, or a scheduled model
-run that has no new feedback.
+Every Codex task that opens a pull request uses
+[`pr-shepherd`](.agents/skills/pr-shepherd/SKILL.md) to schedule a heartbeat in the same task. It
+checks the pull request, handles USER's new feedback, stays quiet when nothing changed, and deletes
+itself when the pull request merges or closes.
 
 Every write to GitHub — pull requests, comments, reviews, reactions — goes
 through the MCP tools, and `GITHUB_TOKEN` is for reads only: the two

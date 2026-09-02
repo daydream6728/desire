@@ -38,17 +38,8 @@ one `config.env`, in the repo that is yours. What is here is only the rules.
 
 ## Keep Codex pull requests listening
 
-Install the personal PR shepherd once from this checkout:
-
-```sh
-python3 .agents/skills/pr-shepherd/scripts/pr_shepherd.py install
-```
-
-Codex can then register any PR it opens, in any repository, against the task that opened it. One
-central schedule checks the registry at 08:00, 10:00, 12:00, 14:00, 16:00, 18:00, 20:00 and
-22:00 on weekdays in the machine's local time. It uses cron, with a native LaunchAgent fallback
-when macOS denies crontab writes. Quiet checks only read GitHub; Codex is resumed when your
-comments or reviews change, and merged or closed PRs remove themselves from the registry.
+Each Codex task that opens a pull request schedules its own heartbeat. It checks for your feedback,
+acts on it, and deletes itself when the pull request merges or closes. No setup.
 
 ## Verified commits
 

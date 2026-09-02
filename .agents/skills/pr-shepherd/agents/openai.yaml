@@ -1,7 +1,7 @@
 interface:
   display_name: "PR Shepherd"
-  short_description: "Resume PR-owning tasks when feedback arrives"
-  default_prompt: "Use $pr-shepherd to keep this pull request owned through merge."
+  short_description: "Watch this PR until it merges"
+  default_prompt: "Use $pr-shepherd to keep watching this pull request until it merges."
 
 policy:
   allow_implicit_invocation: true
