@@ -6,7 +6,7 @@ Entries state the changes, no explanation of why.
 ## 2026-09-02
 
 **Idle pull-request heartbeats back off to eight times their starting interval**
-([#141](https://github.com/toumix/desire/pull/141), closes
+([#142](https://github.com/toumix/desire/pull/142), closes
 [#140](https://github.com/toumix/desire/issues/140)) — consecutive checks with no pull-request
 change and nothing to do double the interval from its requested or default baseline, capped at
 eight times that baseline; pull-request activity or agent action resets it. Extends #136.
