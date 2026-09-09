@@ -3,7 +3,7 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
-## 2026-09-02
+## 2026-09-09
 
 **Eight conventions graduate out of the holding pen**
 ([#139](https://github.com/toumix/desire/pull/139), closes
@@ -18,6 +18,63 @@ two: the overlap that justifies a re-merge is measured on paths, and the commit-
 the check-run API — a head with no `build` run is a merge conflict, not a slow runner. The rest of
 the pile is dropped, each entry either already carried by the prompts, replaced by
 `WORK/<repo>/<number>.md` and the one-memory-PR-per-day rule, or state rather than convention.
+
+## 2026-09-08
+
+**A new day's PR stacks on the newest still-open one, not on `main`** (`AGENTS.md`,
+`template/memory/.agents/skills/sweep/sweep.py`) — the day-PR paragraph now says a new day's branch
+is cut from the newest still-open day PR's branch whenever a previous day's is unmerged, so the
+per-turn `README.md`/`USER_TODO.md` rewrites fast-forward instead of conflicting. `sweep.py`'s
+`memory()` prints that branch when any day PR is open. Closes
+[#144](https://github.com/toumix/desire/issues/144), the gap that cost three turns a hand-fold
+(09-01, 09-03, 09-07); the "several day PRs open at once is USER not having merged" ruling is
+unchanged — siblings are still not a finding.
+
+## 2026-09-03
+
+**The MEMORY_REPO day-PR-branch rule is standing permission, not a per-turn ask** (`AGENTS.md`) —
+the branch clause is strengthened to say the day PR branch wins over whatever branch a session was
+assigned *without asking USER each time*, and to name the case it kept snagging on: a harness or
+task that pins the session to one branch and forbids pushing elsewhere without permission. USER's
+standing grant is that authorization. Clarifies
+[#45](https://github.com/toumix/desire/pull/45)'s "the open memory PR's branch wins over the
+assigned one" rather than replacing it — it was being read as blocked by the per-session assignment.
+
+**The prompts are slimmed: AGENTS.md keeps the rules, OPERATIONS.md holds the machinery**
+(`AGENTS.md`, `OPERATIONS.md`, `README.md`) — historical justification that this changelog already
+carries is cut from `AGENTS.md`, and the mechanism/recovery detail (config-reader paths, the
+shallow-clone check, the sweep's `--since` semantics, footer matching, the signing-hook setup) moves
+to a new `OPERATIONS.md` that `CLAUDE.md` does not import, so the every-session context is the rules
+alone. No rule's meaning changes. `AGENTS.md` 276→195 lines. The README's "under a hundred lines"
+claim is replaced with the rules-vs-machinery split.
+
+**The webhook-only rule is back, generalized rather than restored verbatim**
+(`AGENTS.md`) — a runtime that can wake on GitHub events watches a PR by webhook and never
+schedules a timed self check-in; #136 dropped this sentence when it added the Codex heartbeat,
+which is now scoped explicitly to runtimes that cannot wake on a webhook, Codex being the
+standing case. Corrects the entry below, from earlier the same day, which wrongly said the old
+rule "never changed."
+
+**Timed self check-ins are denied in settings, not asked for in prose** (`template/memory/`) —
+`.claude/settings.json` carries a `permissions.deny` on `send_later`, `create_trigger`,
+`update_trigger`, `fire_trigger`, `ScheduleWakeup` and `CronCreate`, and `session-start.sh`
+merges the same list into `~/.claude/settings.json` at every start, since the container is
+fresh each time. The harness refuses the call before the model can make it.
+
+## 2026-09-02
+
+**Idle pull-request heartbeats back off to eight times their starting interval**
+([#142](https://github.com/toumix/desire/pull/142), closes
+[#140](https://github.com/toumix/desire/issues/140)) — consecutive checks with no pull-request
+change and nothing to do double the interval from its requested or default baseline, capped at
+eight times that baseline; pull-request activity or agent action resets it. Extends #136.
+
+**Each Codex pull request gets a heartbeat in the task that opened it**
+([#136](https://github.com/toumix/desire/pull/136), closes
+[#134](https://github.com/toumix/desire/issues/134)) — before ending, the task schedules a native
+check of its pull request. Each check handles USER feedback and any valid bug or style report whose
+fix stays inside USER's original prompt, stays quiet when nothing changed, and deletes itself when
+the pull request merges or closes. Replaces the webhook-only rule.
 
 ## 2026-09-01
 

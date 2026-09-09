@@ -84,4 +84,17 @@ else
   log "no AGENTS_SIGNING_KEY in env — commits stay unsigned"
 fi
 
+# Timed self check-ins: denied here per AGENTS.md, see CHANGELOG.md for why.
+deny='["mcp__Claude_Code_Remote__send_later","mcp__Claude_Code_Remote__create_trigger","mcp__Claude_Code_Remote__update_trigger","mcp__Claude_Code_Remote__fire_trigger","ScheduleWakeup","CronCreate"]'
+settings="$HOME/.claude/settings.json"
+mkdir -p "$HOME/.claude"
+[ -s "$settings" ] || echo '{}' > "$settings"
+if jq --argjson deny "$deny" '.permissions.deny = ((.permissions.deny // []) + $deny | unique)' \
+    "$settings" > "$settings.tmp" 2>/dev/null && mv "$settings.tmp" "$settings"; then
+  log "timed check-ins denied: $(jq -c '.permissions.deny' "$settings")"
+else
+  rm -f "$settings.tmp"
+  log "could NOT write the check-in deny to $settings — timed check-ins are NOT blocked"
+fi
+
 exit 0

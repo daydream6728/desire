@@ -12,8 +12,9 @@ Software engineering prompts inspired by the asymmetric board game Root:
 
 [AGENTS.md](AGENTS.md) is the operating base they all follow: the two layers of memory, what
 authorizes a change — with the values it runs on in `config.env`, which lives in your
-MEMORY_REPO. It is deliberately short (under a hundred lines with the phase files) because every
-line of it is loaded into every session. Some guiding principles:
+MEMORY_REPO. It is kept to the rules themselves because every line of it is loaded into every
+session; the machinery behind them, needed only when something misbehaves, lives in
+[OPERATIONS.md](OPERATIONS.md), which is not. Some guiding principles:
 
 - **Asynchronous feedback via GitHub PRs**, you don't need an interactive chat to get stuff done.
 - **Synchronous feedback via chat sessions**, but they start with the bigger picture in mind.
@@ -35,6 +36,12 @@ Nothing in this repo names you: your login, your agent's, and the repos you work
 one `config.env`, in the repo that is yours. What is here is only the rules.
 
 **Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
+
+## Keep Codex pull requests listening
+
+Each Codex task that opens a pull request schedules its own heartbeat. It checks for your feedback
+and valid in-scope bug or style reports from anyone, acts on them, backs off while the pull request
+is idle, and deletes itself when the pull request merges or closes. No setup.
 
 ## Verified commits
 
