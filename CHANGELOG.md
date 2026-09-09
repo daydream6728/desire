@@ -3,6 +3,22 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-09-09
+
+**Eight conventions graduate out of the holding pen**
+([#139](https://github.com/toumix/desire/pull/139), closes
+[#115](https://github.com/toumix/desire/issues/115)) — the 189 lines evicted from the board on
+08-26 are sorted and the pile is emptied. `AGENTS.md` gains four: the gate is USER's review time
+and no turn proposes a batch; trust settles whether to act while evidence settles what is true; a
+claim is measured rather than inferred from a green suite or from a "blocked" someone wrote down;
+and `git merge-tree` with the base on one side is degenerate, so it measures a pair rather than a
+branch against its base. `RULES.md` gains two: rule 1 that a review bot's severity is not evidence
+and that rule 1 outranks it, rule 2 that draft state is not a readiness signal. `EVENING.md` gains
+two: the overlap that justifies a re-merge is measured on paths, and the commit-status API is not
+the check-run API — a head with no `build` run is a merge conflict, not a slow runner. The rest of
+the pile is dropped, each entry either already carried by the prompts, replaced by
+`WORK/<repo>/<number>.md` and the one-memory-PR-per-day rule, or state rather than convention.
+
 ## 2026-09-08
 
 **A new day's PR stacks on the newest still-open one, not on `main`** (`AGENTS.md`,
