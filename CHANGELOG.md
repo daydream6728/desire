@@ -3,6 +3,17 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-09-08
+
+**A new day's PR stacks on the newest still-open one, not on `main`** (`AGENTS.md`,
+`template/memory/.agents/skills/sweep/sweep.py`) — the day-PR paragraph now says a new day's branch
+is cut from the newest still-open day PR's branch whenever a previous day's is unmerged, so the
+per-turn `README.md`/`USER_TODO.md` rewrites fast-forward instead of conflicting. `sweep.py`'s
+`memory()` prints that branch when any day PR is open. Closes
+[#144](https://github.com/toumix/desire/issues/144), the gap that cost three turns a hand-fold
+(09-01, 09-03, 09-07); the "several day PRs open at once is USER not having merged" ruling is
+unchanged — siblings are still not a finding.
+
 ## 2026-09-03
 
 **The MEMORY_REPO day-PR-branch rule is standing permission, not a per-turn ask** (`AGENTS.md`) —

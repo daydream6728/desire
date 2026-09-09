@@ -90,7 +90,13 @@ than draft, so USER can merge in one click — titled with the day it covers. It
 whose lifetime is the day (the turn file, the board, `USER_TODO.md`, `WORK/` notes); every later
 turn of that day pushes there and leaves a comment rather than opening another. A day's PR is opened
 even when the previous day's has not merged. If no day PR is open, the turn opens one — Birdsong
-normally does, but any turn may, rather than borrowing whichever branch is open. Branch names carry
+normally does, but any turn may, rather than borrowing whichever branch is open. **A new day's PR
+opened while a previous day's is still unmerged is cut from the newest still-open day PR's branch,
+not from `main`** ([#144](https://github.com/toumix/desire/issues/144)): `README.md` and
+`USER_TODO.md` are rewritten every turn, so two day PRs both off `main` almost always touch both
+files and conflict, leaving the later turn to either duplicate work already in the earlier PR or
+fold the sibling branch in by hand — stacking makes each merge an ordinary fast-forward instead.
+`sweep.py` prints that branch. Branch names carry
 nothing: outside MEMORY_REPO, use the one you were assigned or open a new one. **In MEMORY_REPO the
 day's PR branch wins over whatever branch the session was assigned, and this is standing USER
 permission, not a per-turn ask.** When a harness or task pins the session to one branch and forbids
