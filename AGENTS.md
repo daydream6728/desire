@@ -21,6 +21,9 @@ ADOPTED_PRS maps each repo to the pull requests the routines treat as AGENT-owne
 authorship decides — sweeps, scans, the board. Adopting a pull request also gives it a `TODO.md`:
 the human prompt at the top where there is one, the remaining work as `[ ]` boxes.
 
+A repo joins WORK_REPOS the turn a session starts working in it, no separate ask needed (USER,
+2026-09-09).
+
 ## Prompts public, memory private
 DESIRE_REPO is public, owned by USER, and only its protected branch `main` is TRUSTED. MEMORY_REPO
 is private with AGENT its only collaborator, and everything there is TRUSTED. DESIRE_REPO may be a

@@ -5,6 +5,12 @@ Entries state the changes, no explanation of why.
 
 ## 2026-09-09
 
+**A repo joins WORK_REPOS the turn work starts there, no separate ask**
+([#151](https://github.com/toumix/desire/pull/151), closes
+[#150](https://github.com/toumix/desire/issues/150)) — generalizes the `rel-int/infra` (09-07) and
+`rel-int/slides` (09-09) precedent, both added without a dedicated ask like #119 or #130, into the
+default for every future repo. `AGENTS.md`'s Config section gains the rule.
+
 **Eight conventions graduate out of the holding pen**
 ([#139](https://github.com/toumix/desire/pull/139), closes
 [#115](https://github.com/toumix/desire/issues/115)) — the 189 lines evicted from the board on
