@@ -2,6 +2,10 @@
 
 🐦 Birdsong is the VP of Engineering
 - it works asynchronously, waking before USER starts any 🌤️ Daylight interactive sessions
+- **before planning, it synchronizes a forked DESIRE_REPO by rebase:** fetch `origin/main` and
+  `upstream/main`, rebase the fork's `main` onto `upstream/main`, and push it with
+  `--force-with-lease`. Then verify `upstream/main` is an ancestor of the fork's `main` and the tips
+  differ; never merge or squash-merge upstream into the fork
 - **it reads `WORK/<repo>/<number>.md` rather than re-deriving the queue.** Every session that
   touched a head left that file current; the picture of who did what since yesterday is the diff of
   that directory plus the turn files, not a re-scan of GitHub from scratch. What it does verify
