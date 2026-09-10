@@ -67,6 +67,30 @@ are all state the agents wrote themselves. Pass `--since` with the time the last
 board records it — so each turn reads the comments as a delta. What it flags, how `--since` windows
 each kind of signal, and its `TODO.md` reading are in [`OPERATIONS.md`](OPERATIONS.md#reading-the-sweep).
 
+**Where the sweep exits 2, sweep that repo by hand over MCP, and say in the turn file that you
+did.** A session's repository scope is fixed when it launches and gated twice: the MCP tools carry
+the session's own allowlist, the egress proxy a narrower one — only repos attached as sources
+answer `api.github.com`, and it refuses before GitHub is ever asked, so a token is not what is
+missing. `add_repo` cannot widen it across owners (*"cross-tier adds are not supported in v1"*),
+and a session that writes MEMORY_REPO holds MEMORY_REPO's owner, so a WORK_REPO under any other
+owner is unreachable over REST from every session that could record what it found
+([#14](https://github.com/daydream6728/desire/issues/14)). That is a standing condition rather than
+an outage, so the hand sweep is the procedure there and not a turn's improvisation. Every point of
+it is a point `sweep.py` would have run:
+- every open pull request and issue, the oldest included — a listing paginates at 100 and the tail
+  is the oldest, which is where a 🚀 hides longest
+- `search_pull_requests` and `search_issues` on `involves:<USER> updated:>=<since>` — the heads we
+  own is where the turn's attention already is, and USER speaking on somebody else's head is found
+  only by asking for it, which is why a question went nineteen hours unread on 2026-09-07
+- every thread where USER spoke last, AGENT_FOOTERS deciding which replies are ours, and the
+  issues closed inside the window with `state_reason` and who closed them
+- reaction counts on every body and comment: no MCP tool says who reacted, so a nonzero
+  APPROVE_EMOJI count is a finding to open and read, never a react to attribute
+- `TODO.md` off every AGENT-owned head, and the `WORK/` notes against the live open items
+
+A sweep with a point skipped is not clean, and neither is one nobody wrote down: name the repos
+swept by hand and what each turned up, the same way an exit 2 would have been named.
+
 **React 👀 the moment you pick something up**, before doing the work: an instruction with no react
 was never received, one with 👀 is in progress, and the react is what takes an old question out of
 the sweep. React on the comment or the body itself, and answer it once the change lands.
