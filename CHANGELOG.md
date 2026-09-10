@@ -14,9 +14,9 @@ fork. Replaces the upstream pull-request-and-merge rule of 2026-08-12.
 ([#25](https://github.com/daydream6728/desire/pull/25)) — `AGENTS.md` names the five points a hand
 sweep covers wherever the sweep exits 2, and the turn file says which repos were swept that way. A
 session's repository scope is fixed at launch and gated twice, the egress proxy serving only the
-repos attached as sources; `add_repo` does not cross owners, so a WORK_REPO under any owner but
-MEMORY_REPO's cannot be read over REST by a session that could record the result. Replaces reading
-an exit 2 there as an outage waiting on a token
+repos attached as sources; `add_repo` adds same-owner repos only, so which WORK_REPOS a routine can
+read over REST is set by its environment's sources. Replaces reading an exit 2 there as an outage
+waiting on a token
 ([#14](https://github.com/daydream6728/desire/issues/14)).
 
 ## 2026-09-09

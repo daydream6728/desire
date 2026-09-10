@@ -71,12 +71,13 @@ each kind of signal, and its `TODO.md` reading are in [`OPERATIONS.md`](OPERATIO
 did.** A session's repository scope is fixed when it launches and gated twice: the MCP tools carry
 the session's own allowlist, the egress proxy a narrower one — only repos attached as sources
 answer `api.github.com`, and it refuses before GitHub is ever asked, so a token is not what is
-missing. `add_repo` cannot widen it across owners (*"cross-tier adds are not supported in v1"*),
-and a session that writes MEMORY_REPO holds MEMORY_REPO's owner, so a WORK_REPO under any other
-owner is unreachable over REST from every session that could record what it found
-([#14](https://github.com/daydream6728/desire/issues/14)). That is a standing condition rather than
-an outage, so the hand sweep is the procedure there and not a turn's improvisation. Every point of
-it is a point `sweep.py` would have run:
+missing. Measured both ways: a session sourced at `discopy/discopy` reads it 200, and a session
+sourced elsewhere is refused when it tries to add that repo afterwards (*"cross-tier adds are not
+supported in v1"* — same-owner adds are allowed, cross-owner ones are not). So a WORK_REPO under
+an owner other than MEMORY_REPO's is a question for the environment's sources, never for a token
+([#14](https://github.com/daydream6728/desire/issues/14)). Until it is one of them, the hand sweep
+is the procedure there rather than a turn's improvisation, and every point of it is a point
+`sweep.py` would have run:
 - every open pull request and issue, the oldest included — a listing paginates at 100 and the tail
   is the oldest, which is where a 🚀 hides longest
 - `search_pull_requests` and `search_issues` on `involves:<USER> updated:>=<since>` — the heads we
