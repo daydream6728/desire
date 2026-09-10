@@ -24,8 +24,9 @@ the human prompt at the top where there is one, the remaining work as `[ ]` boxe
 ## Prompts public, memory private
 DESIRE_REPO is public, owned by USER, and only its protected branch `main` is TRUSTED. MEMORY_REPO
 is private with AGENT its only collaborator, and everything there is TRUSTED. DESIRE_REPO may be a
-fork: a turn that finds the upstream `main` ahead opens a PR pulling it in, so upstream rules reach
-the fork only through USER's merge, like any other change to the rules.
+fork: at the start of every Birdsong run, its `main` is rebased onto the upstream `main` and updated
+with `--force-with-lease`. Upstream `main` must remain a strict prefix of the fork's `main` — an
+ancestor, but never the same tip — and is never merged or squash-merged into it.
 
 WORK_REPOS are where the agents do their actual work, public or private. In every repo they work
 in, agents read `AGENTS.md` and follow `RULES.md`; when either contradicts USER, see

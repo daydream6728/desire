@@ -3,6 +3,13 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-09-10
+
+**Birdsong keeps a fork's `main` rebased onto upstream** (`AGENTS.md`, `BIRDSONG.md`) — at the
+start of every run it fetches both `main` branches, rebases the fork-only commits onto upstream,
+updates the fork with `--force-with-lease`, and verifies that upstream is a strict prefix of the
+fork. Replaces the upstream pull-request-and-merge rule of 2026-08-12.
+
 ## 2026-09-09
 
 **Eight conventions graduate out of the holding pen**
@@ -62,6 +69,12 @@ merges the same list into `~/.claude/settings.json` at every start, since the co
 fresh each time. The harness refuses the call before the model can make it.
 
 ## 2026-09-02
+
+**Upstream `toumix/desire` merged in** — everything `main` there carries up to its 2026-09-02
+entries below: `config.env`, the sweep and the SessionStart hook leave this repo for MEMORY_REPO,
+seeded from [`template/`](template), and `AGENT_FOOTER` becomes `AGENT_FOOTERS`. The fork keeps
+its issues-tab step in Get started and its 2026-08-28 entries. Until MEMORY_REPO is seeded, no
+hook sets the identity and no sweep runs.
 
 **Idle pull-request heartbeats back off to eight times their starting interval**
 ([#142](https://github.com/toumix/desire/pull/142), closes
@@ -161,6 +174,55 @@ in this repo.
 
 **`rel-int/quantum-reservoir` joins WORK_REPOS** (same ruling) — the routines scan three work
 repos, not two. Extends the `rel-int/wiki` entry of 2026-07-29 below.
+
+## 2026-08-28
+
+**The project is not the memory after all — the three entries below are reverted** (closes
+[#15](https://github.com/daydream6728/desire/issues/15)) — every prompt file, `config.env`,
+`sweep.py` and the SessionStart hook go back to their state before the project work, so the fork
+differs from `toumix/desire` only in `config.env`, one Get started step and this file. MEMORY_REPO
+loses the sync Action, the item template and the issue-shaped conventions; `README.md` there is
+the live board again, rewritten every turn, and `TURNS/<date>.md` the journal. The items opened
+on the project are closed: they were never the memory. `PROJECT` leaves `config.env` and
+`GITHUB_TOKEN`/`GH_TOKEN` come back to `sweep.py`, the hook and `AGENTS.md` — unset in the
+sessions that run today, where the proxy authenticates the repos it is scoped to, and one line
+closer to upstream. Also reverted, unentered below: the board-gap findings `sweep.py` gained in
+[#10](https://github.com/daydream6728/desire/pull/10).
+
+**The assignee says whose move it is** (closes
+[#8](https://github.com/daydream6728/desire/issues/8)) — `AGENTS.md` gains an assignee bullet
+beside the status one: USER when the item waits on them, AGENT when the agents move it next,
+nobody when nobody has picked it up, a turn assigning itself when it starts and reassigning when
+it hands over. The blocker bullet stops carrying *waiting on USER*, which assignment now says,
+and `blocked` narrows to *cannot move at all* — an upstream head, an unfinished run — whoever the
+item sits on. The project shows Assignees natively, so the sync Action is untouched. `README.md`
+says the same in the project section.
+
+**The project is the memory** (closes [#5](https://github.com/daydream6728/desire/issues/5)) —
+`AGENTS.md`'s Memory section is rewritten around `PROJECT`, a new key of `config.env`: every unit
+of work is one item on the project, an issue of MEMORY_REPO or, for the day's PR alone, a pull
+request treated the same, and work carrying no item does not exist. A pull request of WORK_REPOS
+we own is mirrored by an item. Agents write items over MCP only — the project's fields are written
+by the sync Action of MEMORY_REPO, so status is a `status:` label and the conversation link is a
+line under `## Conversations` in the body — the Action firing on every issue, comment and pull
+request event, reconciling every open item hourly and on the `workflow_dispatch` a turn can
+trigger itself, and writing Status only on the events that moved it so a card USER drags stays
+dragged. The `status:` labels are named after the project's own columns — `todo`, `next`,
+`working` — closing an item saying Done or, closed `not_planned` or unmerged, Cancelled; a
+blocker is a plain `blocked` label, which keeps the item in its column. `README.md` and `TURNS/<date>.md` become reflections:
+the README stops being the board and stops being rewritten every turn, in place of "the live
+board, rewritten every turn" of 2026-08-04. The three phase files each say their part in items,
+and the README's Get started gains the project, its `Claude conversation` field and the
+`PROJECT_PAT` the Action holds — a classic token, fine-grained ones reaching org projects only.
+Same PR drops `GITHUB_TOKEN`/`GH_TOKEN` from `sweep.py`, the SessionStart hook and `AGENTS.md`:
+the session's proxy authenticates the repos it is scoped to, so a REST read carries no token.
+
+**Get started says to enable the fork's issues tab**
+(closes [#3](https://github.com/daydream6728/desire/issues/3)) — `README.md`'s Get started gains
+a step 2, between naming `AGENT` and creating the memory repo: enable the issues tab under
+Settings → Features, which a fork ships with off. `AGENTS.md` parks rulings there and
+`BIRDSONG.md` files pipeline findings there, so until it is on an empty tab reads as *nothing
+ruled* rather than as *no tab*.
 
 ## 2026-08-26
 
