@@ -23,9 +23,12 @@ routines treat as AGENT's own. How the file is read is in
 
 ## Prompts public, memory private
 DESIRE_REPO is public, owned by USER, and only its protected branch `main` is TRUSTED. MEMORY_REPO
-is private with AGENT its only collaborator, and everything there is TRUSTED. WORK_REPOS are where
-the agents do their actual work, public or private. If DESIRE_REPO is a fork, upstream rules reach
-it only through a PR USER merges.
+is private with AGENT its only collaborator, and everything there is TRUSTED. DESIRE_REPO may be a
+fork: at the start of every Birdsong run, its `main` is rebased onto the upstream `main` and updated
+with `--force-with-lease`. Upstream `main` must remain a strict prefix of the fork's `main` — an
+ancestor, but never the same tip — and is never merged or squash-merged into it.
+
+WORK_REPOS are where the agents do their actual work, public or private.
 
 **Measure the claim you are about to act on, never a proxy for it.** A green suite says the merged
 tree runs, not that the merge kept what each side meant; a "blocked" someone wrote down is state to
