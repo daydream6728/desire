@@ -320,7 +320,14 @@ def todo(repo, number, body, setup, cache):
     finished and nothing else in the sweep reads it. Open boxes are printed
     the way MEMORY_REPO's PR count is — work left is the normal state of a
     branch, not a finding — while a claim past Rule 3's twelve hours and a
-    branch that never carried the file are reported."""
+    branch that never carried the file are reported.
+
+    A branch that never carried one broke `RULES.md` 1, which asks every agent
+    branch to open one, and that is all it broke: `RULES.md` 2 settles the
+    readiness question the other way — *"a branch that never carried one keeps
+    whatever state its author gave it. Read the boxes, not the badge."* There
+    are no boxes, so nothing is pending. Saying such a head "cannot reach
+    sign-off" put a merge gate in front of discopy#763 that no rule asks for."""
     if not owned(repo, number, body, setup):
         return []
     head = (heads(repo, cache).get(number)
@@ -328,7 +335,8 @@ def todo(repo, number, body, setup, cache):
     text = contents(repo, "TODO.md", head)
     if text is None:
         return [] if cleared(repo, head, cache) else [
-            f"#{number} never carried a TODO.md, so it cannot reach sign-off: "
+            f"#{number} never carried a TODO.md, so it never opened one to"
+            " work from (RULES.md 1); its readiness is untouched (RULES.md 2): "
             + body["html_url"]]
     boxes = [(mark.group(1).strip(), line) for line in text.splitlines()
              for mark in [BOX.match(line)] if mark]
@@ -420,13 +428,25 @@ def stale(read, updated):
 READ = re.compile(r"\bread (\d{4}-\d{2}-\d{2})")
 
 
-def cited(texts):
-    """Every `#<number>` an existing note mentions. Forming a view on one item
-    pulls in what it references, which is how an issue earns a note without a
-    human deciding it has: a note that says a head waits on a ruling names the
-    issue, and that issue is then in play."""
-    return {int(number) for text in texts
-            for number in re.findall(r"#(\d+)", text)}
+CITE = re.compile(r"(?P<where>[\w.-]+(?:/[\w.-]+)?)?#(?P<number>\d+)")
+
+
+def cited(repo, texts):
+    """Every `#<number>` an existing note mentions **of this repo**. Forming a
+    view on one item pulls in what it references, which is how an issue earns
+    a note without a human deciding it has: a note that says a head waits on a
+    ruling names the issue, and that issue is then in play.
+
+    A citation carrying a repo belongs to that repo, not to this one. Bare
+    `#26` is this one's, and so are `discopy#26` and `discopy/discopy#26` when
+    sweeping `discopy/discopy`; `desire#26` is somebody else's. Matching the
+    number alone made `WORK/discopy/661.md`, which cites `desire#26`, demand a
+    note for discopy's own unrelated #26 — one finding a night that no turn
+    could act on, and noise a real one can hide behind."""
+    name = repo.split("/")[-1]
+    return {int(match["number"]) for text in texts
+            for match in CITE.finditer(text)
+            if match["where"] in (None, repo, name)}
 
 
 def memory_clone():
@@ -472,7 +492,7 @@ def uncharted(repo, setup, cache):
     items = get(repo, "issues?state=open")
     updated = {item["number"]: item["updated_at"] for item in items}
     pulls = {item["number"] for item in items if "pull_request" in item}
-    want = pulls | (cited(texts.values()) & set(updated))
+    want = pulls | (cited(repo, texts.values()) & set(updated))
     unread = sorted(set(updated) - want - set(files))
     if unread:
         print(f"{repo}: {len(unread)} open issue(s) nobody has a note on, none"
