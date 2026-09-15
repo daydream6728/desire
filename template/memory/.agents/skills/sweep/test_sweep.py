@@ -137,6 +137,25 @@ class Cited(unittest.TestCase):
     def test_a_note_citing_nothing_pulls_in_nothing(self):
         self.assertEqual(sweep.cited(["no numbers here"]), set())
 
+    def test_a_citation_naming_another_repo_is_that_repo_s(self):
+        """`WORK/discopy/661.md` cites `desire#26`, which said nothing about
+        discopy's own #26 — the sweep asked for a note on it every night."""
+        self.assertEqual(sweep.cited(["waits on desire#26"], "discopy/discopy"),
+                         set())
+        self.assertEqual(
+            sweep.cited(["[desire#26](https://github.com/o/desire/issues/26)"],
+                        "discopy/discopy"),
+            set())
+
+    def test_this_repo_named_in_full_or_short_still_counts(self):
+        self.assertEqual(sweep.cited(["discopy#661"], "discopy/discopy"), {661})
+        self.assertEqual(
+            sweep.cited(["discopy/discopy#661"], "discopy/discopy"), {661})
+
+    def test_an_anchor_or_a_url_fragment_is_not_a_citation(self):
+        self.assertEqual(sweep.cited(["README.md#ready", "p/1#issue-2"]),
+                         set())
+
 
 class Notes(unittest.TestCase):
     """`notes` is the whole rule: one file per open item, deleted when the
