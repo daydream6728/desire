@@ -3,6 +3,18 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-09-13
+
+**A `#<number>` citation belongs to the repo it names**
+(`template/memory/.agents/skills/sweep/sweep.py`) — `cited` matched the number
+alone, so `WORK/discopy/661.md` citing `desire#26` made every sweep of discopy
+demand a note for its own unrelated #26. Bare `#26` is the swept repo's, and so
+are `discopy#26` and `discopy/discopy#26`; anything else qualified belongs
+elsewhere. The `TODO.md` finding also stops saying a branch that never carried
+one "cannot reach sign-off", which is a merge gate `RULES.md` 2 denies — that
+rule settles readiness the other way, and `RULES.md` 1 is the only thing such a
+branch broke.
+
 ## 2026-09-10
 
 **Birdsong keeps a fork's `main` rebased onto upstream** (`AGENTS.md`, `BIRDSONG.md`) — at the
