@@ -2,7 +2,8 @@
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
 bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
 issues closed inside the window, MEMORY_REPO's open-PR count, the state of
-each AGENT-owned `TODO.md` and whether every open item of a WORK_REPO has its
+each AGENT-owned `TODO.md`, the review threads of an AGENT-owned pull request
+that wait on an agent and whether every open item of a WORK_REPO has its
 `WORK/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
 pipeline has reacted to say it received it. config.env is the ground truth for
 USER, the repos and the emoji, and it sits at the root of this clone;
@@ -120,6 +121,83 @@ def review_comments(repo, number, body):
     if "pull_request" not in body:
         return []
     return get(repo, f"pulls/{number}/comments")
+
+
+def resolutions(repo, number):
+    """Every review thread of a pull request with its `resolved` flag, or
+    `None` when this runtime cannot read one.
+
+    Resolution state is not in GitHub's own REST API — it is a GraphQL field,
+    and GraphQL answers 403 from these sessions. That 403's body names the
+    stand-in the gateway serves in its place, `pulls/<n>/ccr/review_threads`,
+    which returns each thread's `resolved`, `path` and `comment_ids` over
+    plain REST. Four boards said this check was impossible; the route was in
+    the error message all along.
+
+    A runtime without that gateway gets a 404 here, and `None` says so rather
+    than an empty list: no thread is not the same claim as no answer, and the
+    caller turns `None` into a finding, so the condition reads as unchecked on
+    such a runtime instead of silently passing."""
+    try:
+        return get(repo, f"pulls/{number}/ccr/review_threads")
+    except urllib.error.HTTPError as error:
+        if error.code in (403, 404):
+            return None
+        raise
+
+
+def waiting(threads, comments, setup):
+    """The last word of every review thread that waits on an agent, which is
+    `AGENTS.md`'s third sign-off condition read backwards: a pull request is
+    ready when every thread is resolved or waiting on human feedback, so the
+    threads reported here are the ones that are neither.
+
+    Ours is the word that carries an AGENT_FOOTERS marker; a thread we spoke
+    last on waits on a human and is not a finding. USER's own last word is
+    left to `asking`, which already reports it and lets a 👀 quiet it — this
+    would only say it twice. Everything else — a review bot, a human other
+    than USER — is a thread whose ball is in our court, however old.
+
+    An unresolved thread none of whose comments appear in the listing is
+    reported too. It is rare, and it is the one case where the honest answer
+    is that we cannot tell who spoke last: treating unreadable as resolved is
+    the mistake this whole function exists to stop making."""
+    waits = []
+    for thread in threads:
+        if thread["resolved"]:
+            continue
+        known = [comments[number] for number in thread["comment_ids"]
+                 if number in comments]
+        spoke = max(known, default=None,
+                    key=lambda comment: comment["created_at"])
+        if spoke is None or (answered(spoke, setup)
+                             and not agent_footer(spoke["body"], setup)):
+            waits.append((thread, spoke))
+    return waits
+
+
+def signed_off(repo, number, body, review, setup):
+    """The threads standing between an AGENT-owned pull request and sign-off.
+
+    `AGENTS.md` asks three things of a ready head: no `TODO.md`, green CI, and
+    no review thread waiting on an agent. `todo` checks the first, CI is read
+    off the check runs, and until today nothing checked the third — so it was
+    enforced by whichever turn happened to open the head and look. On that
+    record, discopy #752 on 09-09, #660 on 09-12 and #662 on 09-15 were each
+    called ready with a thread open on them, every one found by accident."""
+    if not owned(repo, number, body, setup):
+        return []
+    threads = resolutions(repo, number)
+    if threads is None:
+        return [f"#{number} sign-off condition 3 is unchecked here: this"
+                " runtime serves no pulls/<n>/ccr/review_threads, so whether"
+                " a review thread waits on an agent is unknown: "
+                + body["html_url"]]
+    comments = {comment["id"]: comment for comment in review}
+    return [f"#{number} review thread waiting on an agent"
+            f" ({thread['path']}): "
+            + (spoke["html_url"] if spoke else body["html_url"])
+            for thread, spoke in waiting(threads, comments, setup)]
 
 
 def reactors(repo, kind, target, emoji, cache):
@@ -375,8 +453,9 @@ def item(repo, number, setup, since, cache):
         findings.append(
             f"#{number} {setup['APPROVE_EMOJI']} from {setup['USER']} on the"
             f" body: {body['html_url']}" + seen(repo, kind, body, setup, cache))
+    review = review_comments(repo, number, body)
     comments = [(comment, comment.get("in_reply_to_id", comment["id"]), "pulls")
-                for comment in review_comments(repo, number, body)]
+                for comment in review]
     comments += [(comment, number, "issues")
                  for comment in get(repo, f"issues/{number}/comments")]
     for comment, thread, endpoint in comments:
@@ -402,7 +481,8 @@ def item(repo, number, setup, since, cache):
             f"#{number} unanswered {setup['USER']}"
             f" {'pull request' if 'pull_request' in body else 'issue'}:"
             f" {body['html_url']}" + flag)
-    return findings + todo(repo, number, body, setup, cache)
+    return (findings + signed_off(repo, number, body, review, setup)
+            + todo(repo, number, body, setup, cache))
 
 
 def notes(have, want):
