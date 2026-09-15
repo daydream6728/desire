@@ -15,6 +15,21 @@ inflow beats outflow two weeks running. `EVENING.md`: merged into next `main` is
 handoff, and rising drift means proposing slices before building. `BIRDSONG.md`: the nightly
 down-merge and the drift report on the board, the proposed slices under `Agent proposals`.
 
+## 2026-09-15
+
+**`sweep.py` checks the third sign-off condition**
+(`template/memory/.agents/skills/sweep/sweep.py`, `OPERATIONS.md`) — on every
+AGENT-owned head it reports each unresolved review thread whose last word is
+neither ours nor USER's, which is *no review thread waiting on an agent* read
+backwards. A thread we replied to last waits on a human; USER's own last word
+stays with the unanswered-question finding and its 👀. Resolution state comes
+from `pulls/<n>/ccr/review_threads`, the REST route the GraphQL 403 names in
+its own body, and a runtime serving no such route reports the condition
+unchecked rather than clean. Until now nothing checked it: discopy #752 on
+09-09, #660 on 09-12 and #662 on 09-15 were each called ready with a thread
+open on them, every one found by a turn that opened the head for another
+reason.
+
 ## 2026-09-13
 
 **A `#<number>` citation belongs to the repo it names**
