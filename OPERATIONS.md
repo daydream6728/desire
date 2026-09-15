@@ -41,6 +41,15 @@ queue. React with `add_issue_comment`'s `reaction` on a body or conversation com
 It also reads [`RULES.md`](RULES.md)'s `TODO.md` off every AGENT-owned head in WORK_REPOS: open
 boxes as context, a claim past its twelve hours and a branch that never carried one as findings.
 
+On those same heads it checks the third sign-off condition — *no review thread waiting on an agent*.
+A thread is a finding when it is unresolved and its last word is neither ours nor USER's: a review
+bot or another human is waiting on us, while a thread we replied to last waits on a human and USER's
+own last word is already reported as an unanswered question, with a 👀 to quiet it. Resolution state
+is not in GitHub's REST API and GraphQL answers 403 from these sessions; the 403's own body names
+the gateway's REST stand-in, `pulls/<n>/ccr/review_threads`, which is what the sweep reads. A
+runtime that serves no such route reports the condition **unchecked** rather than clean, since an
+unreadable thread and a settled one are not the same claim.
+
 ## Matching an attribution footer
 A reply from USER counts as an agent's when its last line is one of AGENT_FOOTERS — as the whole
 line, or inside the HTTPS *target* of a Markdown link on it (which is how a URL token matches the
