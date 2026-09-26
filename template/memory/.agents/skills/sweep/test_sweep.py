@@ -112,6 +112,72 @@ class Stale(unittest.TestCase):
         self.assertEqual(sweep.stale({676: "2020-01-01"}, {}), [])
 
 
+class ReadDate(unittest.TestCase):
+    """The `read <date>` field of a `WORK/` note, which is the whole of the
+    staleness arithmetic: a date the parser cannot see is a note reported as
+    stale every sweep until a turn hand-edits a date that was already right."""
+
+    def test_the_field_as_the_template_writes_it(self):
+        self.assertEqual(
+            sweep.read_date("- **state** ready · read 2026-09-18"),
+            "2026-09-18")
+
+    def test_a_wrapped_state_line_still_carries_it(self):
+        """What a 100-column fill does to `WORK/TEMPLATE.md`'s state line,
+        which is long enough to wrap."""
+        self.assertEqual(sweep.read_date(
+            "- **state** ready · `blocked` · 96/23 across 7 files · read\n"
+            "  2026-09-24"), "2026-09-24")
+
+    def test_two_spaces_are_still_one_field(self):
+        self.assertEqual(sweep.read_date("read  2026-09-18"), "2026-09-18")
+
+    def test_an_emphasised_date_is_a_date(self):
+        """`WORK/discopy/659.md` on 2026-09-25: the freshest note in the
+        directory, bolded to stand out, reported as never read."""
+        self.assertEqual(sweep.read_date("· read **2026-09-25 00:3xZ**"),
+                         "2026-09-25")
+
+    def test_a_time_after_the_date_is_ignored(self):
+        self.assertEqual(sweep.read_date("read 2026-09-25 03:5xZ"),
+                         "2026-09-25")
+
+    def test_prose_between_the_field_and_the_date_is_not_the_field(self):
+        """The field is `read <date>`; a note is free to write prose elsewhere
+        on the line, and an undated note is the honest reading of one."""
+        self.assertIsNone(sweep.read_date("re-read live 2026-09-18"))
+
+    def test_a_date_nobody_read_is_not_a_read_date(self):
+        self.assertIsNone(sweep.read_date(
+            "- **2026-09-19 🌙 Evening** re-merged `main`"))
+
+    def test_a_note_with_no_date_at_all_carries_none(self):
+        self.assertIsNone(sweep.read_date("# discopy#489\n\n- **state** ready"))
+
+    def test_the_first_field_wins_over_a_later_one(self):
+        """The state line is at the top of the note and the log below it, so
+        the newest reading is the one the note opens with."""
+        self.assertEqual(sweep.read_date(
+            "- **state** read 2026-09-25\n- **2026-09-01** read 2026-09-01"),
+            "2026-09-25")
+
+
+class Staleness(unittest.TestCase):
+    """The two findings `stale` returns as one list, told apart: no date wants
+    a date written, an old date wants the head re-read."""
+
+    def test_an_old_date_says_the_item_moved(self):
+        self.assertEqual(sweep.staleness(489, "2026-08-31"),
+                         "was read 2026-08-31 and 489 moved since, so it may"
+                         " be stale")
+
+    def test_no_date_says_so_rather_than_printing_None(self):
+        self.assertEqual(sweep.staleness(489, None),
+                         "carries no read date, so nothing says when it was"
+                         " true — write one")
+        self.assertNotIn("None", sweep.staleness(489, None))
+
+
 class Waiting(unittest.TestCase):
     """`AGENTS.md`'s third sign-off condition — every review thread resolved or
     waiting on human feedback — as a function rather than as whichever turn

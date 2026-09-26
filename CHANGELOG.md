@@ -3,6 +3,21 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-09-26
+
+**A note's `read <date>` is parsed through whitespace and emphasis, and an
+undated note is reported as undated**
+(`template/memory/.agents/skills/sweep/sweep.py`, `template/memory/WORK/TEMPLATE.md`,
+`OPERATIONS.md`, closes
+[#31](https://github.com/daydream6728/desire/issues/31)) — the parser matched
+`read ` with exactly one space and nothing between, so a wrapped state line, a
+double space and `read **2026-09-25 00:3xZ**` all read as no date at all, and
+the finding printed both cases through one sentence: `was read None and 659
+moved since`. `read_date` is now a named function with its own tests, and
+`staleness` gives the undated case its own sentence — no date wants a date
+written, an old date wants the head re-read. `WORK/TEMPLATE.md` says the field
+is load-bearing and what it accepts.
+
 ## 2026-09-15
 
 **`sweep.py` checks the third sign-off condition**
