@@ -8,11 +8,11 @@ since 09-18, and it bit the pipeline a fourth time this morning: `WORK/discopy/6
 `read **2026-09-25 00:3xZ**` and the sweep reported the freshest note in the directory as never
 read. Every point below is the issue's own proposal.
 
-- [ ] The parser is a named function with tests: `read_date(text)`, accepting the whitespace and
+- [x] The parser is a named function with tests: `read_date(text)`, accepting the whitespace and
       the emphasis a note actually carries — a wrapped line, a double space, `read **2026-09-25**`
       — and still refusing prose between the field and its date
-- [ ] The finding says which of the two it is: `carries no read date` where it said `was read None`
-- [ ] `WORK/TEMPLATE.md` says what the field is, now that it is load-bearing
-- [ ] `CHANGELOG.md` entry
-- [ ] Both copies the same turn: `template/memory/.agents/skills/sweep/` here, the live
+- [x] The finding says which of the two it is: `carries no read date` where it said `was read None`
+- [x] `WORK/TEMPLATE.md` says what the field is, now that it is load-bearing
+- [x] `CHANGELOG.md` entry
+- [x] Both copies the same turn: `template/memory/.agents/skills/sweep/` here, the live
       `.agents/skills/sweep/` in MEMORY_REPO's day PR
