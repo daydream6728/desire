@@ -10,14 +10,22 @@ pipeline has reacted to say it received it. config.env is the ground truth for
 USER, the repos and the emoji, and it sits at the root of this clone;
 AGENTS.md's rules say what to do with a finding.
 
-Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
-                [number...]
+Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>]
+                [<owner/repo> [number...]]
+       # no repo: every repo in play, i.e. MEMORY_REPO, DESIRE_REPO and
+       #          every WORK_REPO, which is the only invocation that can
+       #          print "clean"
        # no numbers: every open PR and issue; --since windows the closes
        # and quiets a question the pipeline already 👀'd
-Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding, exit 2
-when GitHub could not be read — an incomplete sweep is neither clean nor a
-finding, and reading it as clean is how a live 🚀 goes unanswered. Open
-`TODO.md` boxes are printed as context and do not make the sweep dirty.
+The last line is the verdict, and `clean` is a claim about the whole
+configuration: it is printed only when the invocation covered every repo in
+play, read all of them and found nothing. Anything narrower says what it did
+cover and names what it left out, since twenty-two turns read `clean` off
+three of four WORK_REPOS as though it covered the fourth (desire#30).
+Exit 1 with one line per finding, exit 2 when a repo in play could not be read
+— an incomplete sweep is neither clean nor a finding, and reading it as clean
+is how a live 🚀 goes unanswered — and exit 0 otherwise. Open `TODO.md` boxes
+are printed as context and do not make the sweep dirty.
 """
 import base64
 import datetime
@@ -752,7 +760,12 @@ def uncharted(repo, setup, cache):
 
 
 def sweep(repo, numbers, since, setup):
-    """One line per finding, empty when the sweep is clean."""
+    """One line per finding, empty when the sweep is clean.
+
+    Every finding names its own repo. One invocation now covers several
+    (desire#30), so a line opening on a bare `#659` would not say whose, and
+    the per-item findings are written that way throughout: the repo goes on
+    here, in one place, rather than in each of the nine that build one."""
     cache, findings = {}, []
     if repo == setup["MEMORY_REPO"] and not numbers:
         findings += memory(repo)
@@ -763,22 +776,68 @@ def sweep(repo, numbers, since, setup):
             issue["number"] for issue in get(repo, "issues?state=open")})
     for number in numbers:
         findings += item(repo, number, setup, since, cache)
-    return findings
+    return [f"{repo}{finding}" if finding.startswith("#") else finding
+            for finding in findings]
+
+
+def everywhere(setup):
+    """Every repo in play, as `AGENTS.md` means it: MEMORY_REPO first, because
+    its day PR is where the turn writes; then DESIRE_REPO, whose `main` is the
+    rules; then the WORK_REPOS, where the work happens. De-duplicated, since
+    DESIRE_REPO is normally one of the WORK_REPOS too, and order-preserving, so
+    that two turns read the same list in the same order.
+
+    Nothing iterated this list before (desire#30): `config()` parsed it and
+    both readers were membership tests on the repo the agent had already typed,
+    so a repo added to `config.env` was swept by nobody until somebody happened
+    to type it, and a turn was never told the configuration had moved."""
+    named = [setup.get("MEMORY_REPO"), setup.get("DESIRE_REPO"),
+             *setup.get("WORK_REPOS", [])]
+    return list(dict.fromkeys(repo for repo in named if repo))
+
+
+def coverage(asked, numbers, unreadable, findings, setup):
+    """The verdict line, and the only thing a turn may read as licence to
+    conclude "no unblocked work".
+
+    `clean` says the configuration is clean, so it needs all three: every repo
+    in play asked about, every one of them read, and no finding in any. A
+    sweep of one repo is not a sweep of the others and a sweep of two items is
+    not a sweep of the repo, so anything narrower names its own scope and what
+    it left out instead — the denial that was invisible in the output for
+    twenty-two turns (desire#30)."""
+    swept = [repo for repo in asked if repo not in unreadable]
+    missed = [repo for repo in everywhere(setup) if repo not in asked]
+    if not (numbers or unreadable or missed or findings):
+        return "clean"
+    scope = ", ".join(swept) + "".join(f" #{number}" for number in numbers)
+    parts = [f"{len(findings)} finding(s)" if findings else "no finding",
+             f"in {scope}" if swept else "anywhere: nothing was read"]
+    return "; ".join([" ".join(parts)] + [
+        f"{label}: {', '.join(repos)}"
+        for label, repos in [("unreadable", unreadable),
+                             ("not asked about", missed)] if repos])
 
 
 def main(arguments):
     since = ""  # ISO 8601 UTC sorts lexicographically, so "" is the epoch
     if arguments and arguments[0] == "--since":
         _, since, *arguments = arguments
-    try:
-        findings = sweep(arguments[0], [int(n) for n in arguments[1:]], since,
-                         config(find_config()))
-    except (urllib.error.URLError, TimeoutError) as error:
-        print(f"{arguments[0]}: GitHub unreadable, the sweep is incomplete and"
-              f" says nothing about this repo: {error}", file=sys.stderr)
-        return 2
-    print("\n".join(findings) if findings else "clean", file=sys.stderr)
-    return 1 if findings else 0
+    setup = config(find_config())
+    asked = [arguments[0]] if arguments else everywhere(setup)
+    numbers = [int(number) for number in arguments[1:]]
+    findings, unreadable = [], []
+    for repo in asked:
+        try:
+            findings += sweep(repo, numbers, since, setup)
+        except (urllib.error.URLError, TimeoutError) as error:
+            unreadable.append(repo)
+            print(f"{repo}: GitHub unreadable, the sweep is incomplete and"
+                  f" says nothing about this repo: {error}", file=sys.stderr)
+    print("\n".join(findings
+                    + [coverage(asked, numbers, unreadable, findings, setup)]),
+          file=sys.stderr)
+    return 2 if unreadable else 1 if findings else 0
 
 
 if __name__ == "__main__":
