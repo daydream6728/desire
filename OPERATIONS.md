@@ -192,7 +192,16 @@ setting authorship. No private signing key needs copying into the orb. Do not ru
 with a forged `CLAUDE_CODE_REMOTE` flag: it clears signing settings. After a push, read GitHub's
 verification result before claiming Verified.
 
-On Claude Code on the web, the SessionStart hook handles identity and optional SSH signing via
-`AGENTS_SIGNING_KEY`. Without that variable it commits unsigned; with it, the key must be registered
-as a signing key on AGENT's account. Setup is in the README's
-[Verified commits](README.md#verified-commits) section.
+On Claude Code on the web, commits are signed through whichever key the session has, both registered
+on AGENT's account. The environment's setup script imports a passphrase-free GPG key and sets
+`gpg.format openpgp`, `user.signingkey` and `commit.gpgsign`, which covers every session of that
+environment; the setup script sees none of the environment's variables, so the key is in the script
+itself, and the identity comes from `GIT_CONFIG_*` variables, read after every config file and so
+after the default identity the environment writes to `~/.gitconfig` once the script is done. Without
+it, the SessionStart hook signs from `AGENTS_SIGNING_KEY`, a passphrase-free SSH private key: it
+installs `openssh-client` (git signs through `ssh-keygen -Y sign`), writes the key and sets
+`commit.gpgsign`. The hook keeps a GPG config whose key is in the keyring and clears any other
+global signing config, so no stale setting outlives its key; a session with neither key commits
+unsigned rather than failing. Leaked, either key can only forge the badge — revoke it by deleting it
+from AGENT's account. Key setup is in the README's [Verified commits](README.md#verified-commits)
+section.
