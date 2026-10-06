@@ -499,13 +499,43 @@ def stale(read, updated):
     last week's date over a head that moved yesterday is not. `read` maps a
     number to the date its note states, `updated` to the item's `updated_at`.
     A note with no readable date is stale by construction — it cannot say when
-    it was true."""
+    it was true — and `staleness` gives it its own sentence, since what it
+    wants is a date rather than a re-read."""
     return sorted(number for number, day in read.items()
                   if number in updated
                   and (day is None or day < updated[number][:10]))
 
 
-READ = re.compile(r"\bread (\d{4}-\d{2}-\d{2})")
+READ = re.compile(r"\bread\s+\**(\d{4}-\d{2}-\d{2})")
+
+
+def read_date(text):
+    """The date a `WORK/` note says it was read, `None` when it carries none.
+
+    The field is `read <date>`, and a note is prose around it: a 100-column
+    fill wraps the date onto the next line, a turn double-spaces it, and one
+    wrote `read **2026-09-25 00:3xZ**` to make the freshest fact on the line
+    stand out. All three are the field, so any whitespace and any emphasis
+    between the two is accepted. Prose between them is not — `re-read live
+    2026-09-18` names no field and reads as undated — and neither is a date
+    with no `read` in front of it, which is every other date in a note's log.
+
+    Undated is reported as such: it is stale by construction, since a note
+    that cannot say when it was true cannot say it is current, but what it
+    wants is a date written rather than its head re-read (desire#31)."""
+    match = READ.search(text)
+    return match.group(1) if match else None
+
+
+def staleness(number, day):
+    """Why a note may be stale, which is two findings rather than one. Both
+    used to print through the sentence of the second, so a note carrying no
+    readable date was reported as `was read None and 489 moved since`: the
+    turn reading it re-read a head that had not moved, or edited a date that
+    was already right — three notes in one night, which is desire#31."""
+    return ("carries no read date, so nothing says when it was true — write"
+            " one" if day is None else
+            f"was read {day} and {number} moved since, so it may be stale")
 
 
 CITE = re.compile(r"(?P<where>[\w.-]+(?:/[\w.-]+)?)?#(?P<number>\d+)")
@@ -567,8 +597,7 @@ def uncharted(repo, setup, cache):
     files = {int(note.stem): note for note in directory.glob("*.md")
              if note.stem.isdigit()} if directory.is_dir() else {}
     texts = {number: note.read_text() for number, note in files.items()}
-    read = {number: (READ.search(text).group(1) if READ.search(text) else None)
-            for number, text in texts.items()}
+    read = {number: read_date(text) for number, text in texts.items()}
     items = get(repo, "issues?state=open")
     updated = {item["number"]: item["updated_at"] for item in items}
     pulls = {item["number"] for item in items if "pull_request" in item}
@@ -585,8 +614,8 @@ def uncharted(repo, setup, cache):
             f" where it stands: {link}{number}" for number in missing
             ] + [f"{repo}: WORK/{name}/{number}.md outlived its item, which is"
                  f" closed — delete it: {link}{number}" for number in orphan
-            ] + [f"{repo}: WORK/{name}/{number}.md was read {read[number]} and"
-                 f" {number} moved since, so it may be stale: {link}{number}"
+            ] + [f"{repo}: WORK/{name}/{number}.md "
+                 + staleness(number, read[number]) + f": {link}{number}"
                  for number in stale(read, updated)]
 
 
