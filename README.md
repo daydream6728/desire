@@ -49,25 +49,62 @@ is idle, and deletes itself when the pull request merges or closes. No setup.
 
 **Optional** — everything above works without this. What it buys: every commit the agents push
 is authored by `AGENT` rather than a default identity, and signed so it shows the **Verified**
-badge — one glance tells a real agent commit from anything else. The SessionStart hook does
-both; wiring it up, on Claude Code on the web:
+badge — one glance tells a real agent commit from anything else. The environment's setup script
+signs and its variables set the identity, so every session of that environment has both, the
+ones that never load the SessionStart hook included; wiring it up, on Claude Code on the web:
 
-1) Generate a passphrase-free SSH key: `ssh-keygen -t ed25519 -f ~/.ssh/agents_signing -N ''` —
-   under `~/.ssh`, never in a checkout, where a broad `git add` could commit it.
-2) Register `~/.ssh/agents_signing.pub` on `AGENT`'s account as a **signing key** — not an
-   authentication key: leaked, it can only forge the badge, revoked by deleting the public half.
-3) Paste the private key into `AGENTS_SIGNING_KEY` in the environment's variables; a session
-   without it commits unsigned rather than failing.
-4) Paste this into the environment's startup script. A multi-repo session opens in the parent
-   directory of its clones, so no repo is the project directory, `memory/.claude/settings.json`
-   never loads, and the hook silently does not run — no identity, no signing. A workspace-level
-   settings file wires it by absolute path, so it pins where the `memory` clone lands. The hook
-   ships with the seed and reads the `config.env` beside it, so both are in the one repo that
-   names you:
+1) Generate a passphrase-free GPG signing key for `AGENT` and its one-line export, outside any
+   checkout, where a broad `git add` could commit it:
+   ```sh
+   gpg --batch --passphrase '' --quick-gen-key "<AGENT> <<AGENT_EMAIL>>" ed25519 sign 1y
+   gpg --export-secret-keys --armor <AGENT_EMAIL> | base64 -w0 > agents_signing_key.b64
+   ```
+2) Register `gpg --armor --export <AGENT_EMAIL>` on `AGENT`'s account as a **GPG key**. Leaked,
+   it can only forge the badge, revoked by deleting it there.
+3) Set the identity in the environment's variables, one per line, no quotes — a variables
+   line keeps them as part of the value:
+   ```
+   GIT_CONFIG_COUNT=2
+   GIT_CONFIG_KEY_0=user.name
+   GIT_CONFIG_VALUE_0=<AGENT>
+   GIT_CONFIG_KEY_1=user.email
+   GIT_CONFIG_VALUE_1=<AGENT_EMAIL>
+   ```
+   Only these two keys: git reads `GIT_CONFIG_*` after every config file, which is why they
+   outlive the default identity the environment writes to `~/.gitconfig` after the setup
+   script, and why a signing key left among them would override the one below.
+4) Paste this into the environment's setup script, with the contents of `agents_signing_key.b64`
+   between the quotes, then delete that file. The key goes in the script itself: the setup
+   script does not see the environment's variables, which only reach the session after it. The
+   image ships `gpg` but not `ssh-keygen`, so nothing is installed. The first lines wire the
+   SessionStart hook: a multi-repo session opens in the parent directory of its clones, so no
+   repo is the project directory, `memory/.claude/settings.json` never loads, and the hook
+   silently does not run. A workspace-level settings file wires it by absolute path, so it pins
+   where the `memory` clone lands. The hook ships with the seed and reads the `config.env`
+   beside it, so both are in the one repo that names you:
 
 ```sh
+#!/bin/bash
+set -euo pipefail
 mkdir -p /home/user/.claude
 cat > /home/user/.claude/settings.json <<'EOF'
 {"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"/home/user/memory/.claude/hooks/session-start.sh"}]}]}}
 EOF
+
+KEY_B64='<one line of agents_signing_key.b64>'
+printf '%s' "$KEY_B64" | base64 -d | gpg --batch --import
+FPR=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr/{print $10; exit}')
+echo "$FPR:6:" | gpg --batch --import-ownertrust
+git config --global gpg.format openpgp
+git config --global user.signingkey "$FPR"
+git config --global commit.gpgsign true
+echo "signing key imported: $FPR"
 ```
+
+The check that it worked, in a new session: `git config user.name` prints `AGENT`, and after
+`git commit --allow-empty -m test`, `git log -1 --show-signature` prints `Good signature from
+"<AGENT> <<AGENT_EMAIL>>"` with `AGENT` as author and committer.
+
+The hook can still sign without the setup script, from an SSH key in `AGENTS_SIGNING_KEY`
+generated with `ssh-keygen -t ed25519 -N ''` and registered as a **signing key**; it does so
+only in the sessions that load it, so the setup script is the one that covers every session.
