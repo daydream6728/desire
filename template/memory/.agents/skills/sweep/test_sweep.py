@@ -571,5 +571,141 @@ class Memory(unittest.TestCase):
         self.assertNotIn("base a new day's PR", err)
 
 
+class Everywhere(unittest.TestCase):
+    """`AGENTS.md` asks for the sweep over every repo in play, and nothing
+    enumerated them: `WORK_REPOS` was parsed and then only ever membership
+    tested against the repo the agent had typed (desire#30)."""
+
+    def test_memory_then_desire_then_the_work_repos(self):
+        self.assertEqual(sweep.everywhere({
+            "MEMORY_REPO": "u/memory", "DESIRE_REPO": "u/desire",
+            "WORK_REPOS": ["u/desire", "o/work", "o/other"]}),
+            ["u/memory", "u/desire", "o/work", "o/other"])
+
+    def test_desire_being_a_work_repo_names_it_once(self):
+        """Which it is in the live config, so the list would otherwise sweep it
+        twice and take minutes doing it."""
+        self.assertEqual(sweep.everywhere({
+            "MEMORY_REPO": "u/memory", "DESIRE_REPO": "u/desire",
+            "WORK_REPOS": ["u/desire"]}), ["u/memory", "u/desire"])
+
+    def test_a_key_the_config_does_not_set_drops_out(self):
+        self.assertEqual(sweep.everywhere({"WORK_REPOS": ["o/work"]}),
+                         ["o/work"])
+
+    def test_the_configured_file_names_every_repo_in_play(self):
+        """Whatever `config.env` holds, here or in the seed: the list is what
+        the file says, and this script hard-codes no repo."""
+        setup = sweep.config(sweep.find_config())
+        in_play = sweep.everywhere(setup)
+        self.assertEqual(in_play[:2],
+                         [setup["MEMORY_REPO"], setup["DESIRE_REPO"]])
+        self.assertEqual(set(in_play), {setup["MEMORY_REPO"],
+                                        setup["DESIRE_REPO"],
+                                        *setup["WORK_REPOS"]})
+
+
+class Coverage(unittest.TestCase):
+    """`clean` is a claim about the configuration, not about whatever the agent
+    typed: twenty-two turns swept three of four WORK_REPOS and read the word
+    clean, and the two repos nobody could read were invisible in the output
+    (desire#30)."""
+
+    def setUp(self):
+        self.setup = {"MEMORY_REPO": "u/memory", "DESIRE_REPO": "u/desire",
+                      "WORK_REPOS": ["u/desire", "o/work"]}
+        self.all = ["u/memory", "u/desire", "o/work"]
+
+    def verdict(self, asked, numbers=(), unreadable=(), findings=()):
+        return sweep.coverage(list(asked), list(numbers), list(unreadable),
+                              list(findings), self.setup)
+
+    def test_everything_read_and_nothing_found_is_clean(self):
+        self.assertEqual(self.verdict(self.all), "clean")
+
+    def test_one_repo_of_three_never_says_clean(self):
+        verdict = self.verdict(["o/work"])
+        self.assertNotIn("clean", verdict)
+        self.assertIn("no finding in o/work", verdict)
+        self.assertIn("not asked about: u/memory, u/desire", verdict)
+
+    def test_a_repo_nobody_could_read_never_says_clean(self):
+        verdict = self.verdict(self.all, unreadable=["o/work"])
+        self.assertNotIn("clean", verdict)
+        self.assertIn("unreadable: o/work", verdict)
+        self.assertIn("in u/memory, u/desire", verdict)
+
+    def test_naming_items_is_not_sweeping_the_repo(self):
+        self.assertIn("in o/work #12 #13",
+                      self.verdict(["o/work"], numbers=[12, 13]))
+
+    def test_findings_are_counted_and_the_scope_still_said(self):
+        self.assertEqual(self.verdict(self.all, findings=["a", "b"]),
+                         "2 finding(s) in u/memory, u/desire, o/work")
+
+    def test_nothing_read_at_all_says_so(self):
+        self.assertIn("anywhere: nothing was read",
+                      self.verdict(["o/work"], unreadable=["o/work"]))
+
+
+class Everything(unittest.TestCase):
+    """`sweep.py` with no repo argument sweeps every repo in play, and one
+    denied repo is a line of its own rather than the whole run's verdict: the
+    old `main` returned 2 on the first failure and printed none of what the
+    readable repos had found."""
+
+    def setUp(self):
+        self.swept = []
+        original = sweep.sweep
+        sweep.sweep = self.fake
+        self.addCleanup(setattr, sweep, "sweep", original)
+        self.config = pathlib.Path(tempfile.mkdtemp()) / "config.env"
+        self.config.write_text("MEMORY_REPO=u/memory\nDESIRE_REPO=u/desire\n"
+                               "WORK_REPOS=u/desire,o/work,o/denied\n")
+        os.environ["AGENTS_CONFIG"] = str(self.config)
+        self.addCleanup(os.environ.pop, "AGENTS_CONFIG", None)
+
+    def fake(self, repo, numbers, since, setup):
+        self.swept.append(repo)
+        if repo == "o/denied":
+            raise urllib.error.HTTPError(repo, 403, "Forbidden", {}, None)
+        return [f"{repo}#1 something"] if repo == "o/work" else []
+
+    def run_main(self, arguments):
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            code = sweep.main(arguments)
+        return code, stderr.getvalue()
+
+    def test_no_argument_sweeps_every_repo_in_play(self):
+        code, err = self.run_main([])
+        self.assertEqual(self.swept, ["u/memory", "u/desire", "o/work",
+                                      "o/denied"])
+        self.assertEqual(code, 2)
+        self.assertIn("o/work#1 something", err)
+        self.assertIn("unreadable: o/denied", err)
+
+    def test_the_denial_does_not_hide_the_other_repos_findings(self):
+        _, err = self.run_main([])
+        self.assertLess(err.index("o/work#1 something"),
+                        err.rindex("o/denied"))
+
+    def test_one_repo_still_sweeps_only_that_one_and_exits_zero(self):
+        """Sweeping the slow repo alone is how a turn is meant to work, so it
+        stays exit 0 — the verdict line is what says it covered one of four."""
+        code, err = self.run_main(["u/desire"])
+        self.assertEqual((self.swept, code), (["u/desire"], 0))
+        self.assertIn("not asked about: u/memory, o/work, o/denied", err)
+
+    def test_since_is_still_read_off_the_front(self):
+        code, _ = self.run_main(
+            ["--since", "2026-09-27T00:00:00Z", "u/desire"])
+        self.assertEqual((self.swept, code), (["u/desire"], 0))
+
+    def test_since_alone_sweeps_everything(self):
+        self.run_main(["--since", "2026-09-27T00:00:00Z"])
+        self.assertEqual(len(self.swept), 4)
+
+
 if __name__ == "__main__":
     unittest.main()
