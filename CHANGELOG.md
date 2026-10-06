@@ -3,6 +3,18 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-06
+
+**The setup script signs every session** (`README.md`, `OPERATIONS.md`, `AGENTS.md`,
+`template/memory/.claude/hooks/session-start.sh`) — the environment's setup script imports a
+passphrase-free GPG key, embedded in the script since it sees none of the environment's
+variables, and sets `gpg.format openpgp`, `user.signingkey` and `commit.gpgsign`; the identity
+moves to `GIT_CONFIG_*` variables, which outlive the default identity the environment writes to
+`~/.gitconfig` after the script. `session-start.sh` keeps a GPG config whose key is in the
+keyring instead of clearing it, and still clears any other. The SSH key in
+`AGENTS_SIGNING_KEY` stays as the hook's own way to sign. Amends the signing entries of
+2026-08-21.
+
 ## 2026-09-15
 
 **`sweep.py` checks the third sign-off condition**
