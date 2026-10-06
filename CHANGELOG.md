@@ -39,6 +39,11 @@ fork. Replaces the upstream pull-request-and-merge rule of 2026-08-12.
 
 ## 2026-09-09
 
+**A repo joins WORK_REPOS the turn work starts there, no separate ask**
+([#151](https://github.com/toumix/desire/pull/151), closes
+[#150](https://github.com/toumix/desire/issues/150)) — `AGENTS.md`'s Config section gains the
+rule.
+
 **Eight conventions graduate out of the holding pen**
 ([#139](https://github.com/toumix/desire/pull/139), closes
 [#115](https://github.com/toumix/desire/issues/115)) — the 189 lines evicted from the board on
