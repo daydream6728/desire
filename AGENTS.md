@@ -203,9 +203,9 @@ Every write to GitHub — pull requests, comments, reviews, reactions — goes t
 `GITHUB_TOKEN` is for reads only, and the two authenticate as different accounts, so assert
 `mcp__github__get_me` is AGENT before a turn's first write. Commits carry that same identity, AGENT
 and AGENT_EMAIL, set on every clone before the first commit; check the branch before pushing with
-`git log --format='%an <%ae>' origin/main..HEAD`. Commits are signed when the environment provides
-`AGENTS_SIGNING_KEY` and unsigned without it, never failing for its absence — the SessionStart
-hook's signing setup and how to revoke a leaked key are in
+`git log --format='%an <%ae>' origin/main..HEAD`. Commits are signed when the environment's setup script
+imported a GPG key or the environment provides `AGENTS_SIGNING_KEY`, and unsigned without either,
+never failing for their absence — the signing setup and how to revoke a leaked key are in
 [`OPERATIONS.md`](OPERATIONS.md#commit-signing).
 
 ## Turmoil
