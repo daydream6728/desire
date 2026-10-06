@@ -41,6 +41,13 @@ queue. React with `add_issue_comment`'s `reaction` on a body or conversation com
 It also reads [`RULES.md`](RULES.md)'s `TODO.md` off every AGENT-owned head in WORK_REPOS: open
 boxes as context, a claim past its twelve hours and a branch that never carried one as findings.
 
+It reads `WORK/` against the live open items three ways: an open item with no note, a note whose
+item is closed, and a note older than the item it describes. The last is arithmetic on the note's
+own `read <date>` field, parsed through any whitespace and any emphasis — `read **2026-09-25**` and
+a date wrapped onto the next line are both the field, prose between the two is not. A note carrying
+no date the parser can see is reported as carrying none rather than as read `None`: it is stale by
+construction, and what it wants is a date written, where an old date wants its head re-read.
+
 On those same heads it checks the third sign-off condition — *no review thread waiting on an agent*.
 A thread is a finding when it is unresolved and its last word is neither ours nor USER's: a review
 bot or another human is waiting on us, while a thread we replied to last waits on a human and USER's
