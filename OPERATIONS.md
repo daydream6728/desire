@@ -79,6 +79,13 @@ the work. React on the comment or the body itself, with
 `add_issue_comment`'s `reaction` on a body or conversation comment, and
 `add_reply_to_pull_request_comment`'s on a review comment.
 
+It reads `WORK/` against the live open items three ways: an open item with no note, a note whose
+item is closed, and a note older than the item it describes. The last is arithmetic on the note's
+own `read <date>` field, parsed through any whitespace and any emphasis — `read **2026-09-25**` and
+a date wrapped onto the next line are both the field, prose between the two is not. A note carrying
+no date the parser can see is reported as carrying none rather than as read `None`: it is stale by
+construction, and what it wants is a date written, where an old date wants its head re-read.
+
 On every AGENT-owned head in WORK_REPOS it checks the third sign-off condition —
 *no review thread waiting on an agent*.
 A thread is a finding when it is unresolved and its last word is neither ours nor USER's: a review

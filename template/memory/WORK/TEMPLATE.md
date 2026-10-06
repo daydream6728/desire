@@ -42,6 +42,13 @@ An example, so the density is not a guess:
 update, so a note older than its item is reported as possibly stale. A turn that re-reads the item
 updates the date; a turn that does not, leaves it.
 
+**`read <date>` is a field, not prose**, because `sweep.py` parses it: it reads the first `read`
+in the file followed by an ISO date, through any whitespace — a wrapped line included — and through
+any emphasis, so `read **2026-09-25 00:3xZ**` is the same field as `read 2026-09-18`. Anything
+between the word and the date is not: `re-read live 2026-09-18` carries no date the sweep can see,
+and a note with none is reported as carrying none — stale by construction, since it cannot say when
+it was true. Write the field on the **state** line and put the prose elsewhere.
+
 **The log is the point**, and it keeps the last five turns: what 🐦 Birdsong reads to see where an
 item stands, and the durable trace an interactive session leaves of work that stayed on its own PR.
 One line per turn, in the past tense, saying what *changed* — not what was scanned or read. Older
