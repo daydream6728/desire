@@ -56,13 +56,24 @@ fi
 
 command -v gh >/dev/null 2>&1 && log "$(gh --version | head -1)" || true
 
-cleared=yes
-for key in commit.gpgsign user.signingkey gpg.format gpg.ssh.program; do
-  git config --global --unset-all "$key" 2>/dev/null
-  case $? in 0 | 5) ;; *) cleared=no ;; esac
-done
-[ "$cleared" = yes ] || log "could NOT clear the signing config — commits may sign through stale settings"
-if [ -n "${AGENTS_SIGNING_KEY:-}" ] && ! command -v ssh-keygen >/dev/null 2>&1; then
+# The environment's setup script signs with a GPG key it imported: keep that
+# config when its key is in the keyring, and clear anything else.
+setup_gpg=""
+if [ -z "${AGENTS_SIGNING_KEY:-}" ] && [ "$(git config --global gpg.format)" = openpgp ]; then
+  setup_gpg="$(git config --global user.signingkey)"
+  gpg --list-secret-keys "$setup_gpg" >/dev/null 2>&1 || setup_gpg=""
+fi
+if [ -z "$setup_gpg" ]; then
+  cleared=yes
+  for key in commit.gpgsign user.signingkey gpg.format gpg.ssh.program; do
+    git config --global --unset-all "$key" 2>/dev/null
+    case $? in 0 | 5) ;; *) cleared=no ;; esac
+  done
+  [ "$cleared" = yes ] || log "could NOT clear the signing config — commits may sign through stale settings"
+fi
+if [ -n "$setup_gpg" ]; then
+  log "commit signing on (GPG $setup_gpg, from the environment's setup script)"
+elif [ -n "${AGENTS_SIGNING_KEY:-}" ] && ! command -v ssh-keygen >/dev/null 2>&1; then
   log "AGENTS_SIGNING_KEY set but ssh-keygen unavailable — commits stay unsigned"
 elif [ -n "${AGENTS_SIGNING_KEY:-}" ]; then
   key="$HOME/.ssh/agents_signing"
