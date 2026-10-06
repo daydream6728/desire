@@ -15,6 +15,25 @@ keyring instead of clearing it, and still clears any other. The SSH key in
 `AGENTS_SIGNING_KEY` stays as the hook's own way to sign. Amends the signing entries of
 2026-08-21.
 
+## 2026-09-28
+
+**`sweep.py` with no repo argument sweeps every repo in play, and `clean` is a
+claim about the configuration** (`template/memory/.agents/skills/sweep/sweep.py`,
+`OPERATIONS.md`, proposal 1 of
+[#30](https://github.com/daydream6728/desire/issues/30)) — nothing iterated
+`WORK_REPOS`: it was parsed and then only ever membership tested against the
+repo the agent had already typed, so a repo added to `config.env` was swept by
+nobody until somebody happened to type it. `everywhere` gives the repos in
+play — MEMORY_REPO, DESIRE_REPO, then the WORK_REPOS, de-duplicated and
+order-preserving — and a bare invocation sweeps all of them, an unreadable one
+becoming a line among the findings rather than the whole run's answer. The last
+line is the verdict: `clean` needs every repo in play asked about, all of them
+read and no finding in any, and anything narrower prints what it covered and
+names what it left out. Exit 2 when a repo in play could not be read, 1 on
+findings, 0 otherwise, so one repo at a time stays exit 0. Every finding now
+names its own repo. The issue's second cause — two WORK_REPOS outside the
+session's GitHub scope — is not this.
+
 ## 2026-09-27
 
 **`sweep.py` checks the second sign-off condition, measured against a head's

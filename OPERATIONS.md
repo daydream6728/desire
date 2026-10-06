@@ -21,10 +21,22 @@ as no conflicts, the silent failure the assertion prevents.
 
 ## Reading the sweep
 [`sweep.py`](template/memory/.agents/skills/sweep/sweep.py) runs from the MEMORY_REPO clone as
-`.agents/skills/sweep/sweep.py [--since <ISO8601>] <owner/repo> [number...]`. It flags every
+`.agents/skills/sweep/sweep.py [--since <ISO8601>] [<owner/repo> [number...]]`. It flags every
 APPROVE_EMOJI react from USER on a body or a comment across both endpoints, and every thread where
 USER spoke last — a thread is answered when anyone other than USER has replied since, and which
-agent closed it does not matter.
+agent closed it does not matter. Every finding names its own repo, since one invocation can cover
+several.
+
+**With no repo argument it sweeps every repo in play** — MEMORY_REPO, DESIRE_REPO and every
+WORK_REPO, de-duplicated in that order — which is the only invocation that can print `clean`. The
+last line is the verdict and `clean` is a claim about the configuration, not about whatever the
+agent typed: a narrower invocation prints what it covered and names the configured repos it was
+never asked about, and a repo it could not read is one line among the findings rather than the whole
+run's answer, so one denial cannot hide what the readable repos found. Exit 2 when a repo in play
+could not be read, 1 on findings, 0 otherwise — so sweeping one slow repo at a time stays exit 0 and
+the verdict line is what says it covered one of four. Before this, `WORK_REPOS` was parsed and never
+iterated, so a repo added to `config.env` was swept by nobody until somebody happened to type it,
+and twenty-two turns read `clean` off three of four ([#30](https://github.com/daydream6728/desire/issues/30)).
 
 `--since` reads the comments as a delta; widen the window after a turn runs late or dies. The sweep
 also lists the issues closed inside the window with their `state_reason` and who closed them, since
