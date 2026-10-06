@@ -48,6 +48,20 @@ a date wrapped onto the next line are both the field, prose between the two is n
 no date the parser can see is reported as carrying none rather than as read `None`: it is stale by
 construction, and what it wants is a date written, where an old date wants its head re-read.
 
+On those same heads it checks the second sign-off condition — *CI green on the real jobs, **with the
+target branch merged in***. One `compare` of the head against its **own** base ref answers it
+exactly: a `pull_request` job checks out `refs/pull/N/merge`, the head merged with its base as of
+the checkout, so a head whose base tip is already an ancestor of it has checks that ran on the tree
+USER would merge, and a head one commit behind has checks that attest to a merge nobody will
+perform. The finding names the count and the base's tip. **Greenness is not read**: the sweep cannot
+know which checks a repository expects — `cubic` is an extra, `proptest` is opt-in by label, `guard`
+does not run on a stacked head — so a conclusion stays with the turn that enumerates them, and what
+is mechanical is whether the runs that exist ran against the right tree. A head carrying **no** run
+is printed as context rather than reported, since DESIRE_REPO runs no CI. The same check reads the
+note's `base <sha>` field, so that a head owing a merge-down and a note owing a re-read are two
+findings rather than one: a note carrying no such field is silent, and every note written before
+this existed carries none.
+
 On those same heads it checks the third sign-off condition — *no review thread waiting on an agent*.
 A thread is a finding when it is unresolved and its last word is neither ours nor USER's: a review
 bot or another human is waiting on us, while a thread we replied to last waits on a human and USER's

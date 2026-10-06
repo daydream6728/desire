@@ -15,6 +15,24 @@ keyring instead of clearing it, and still clears any other. The SSH key in
 `AGENTS_SIGNING_KEY` stays as the hook's own way to sign. Amends the signing entries of
 2026-08-21.
 
+## 2026-09-27
+
+**`sweep.py` checks the second sign-off condition, measured against a head's
+own base** (`template/memory/.agents/skills/sweep/sweep.py`,
+`template/memory/WORK/TEMPLATE.md`, `OPERATIONS.md`, proposals 1 and 2 of
+[#32](https://github.com/daydream6728/desire/issues/32)) — nothing compared a
+head's green to its base's tip, so a pass that ran against a merge nobody will
+perform read as *CI green with the target branch merged in*. One `compare` of
+the head against the ref it targets — `split/3`, not `main` — carries the
+behind-count and the base's tip together, and the finding names both.
+Greenness itself stays with the turn that enumerates the expected checks; a
+head carrying no check run is context, not a finding. `WORK/TEMPLATE.md`'s
+state line gains `base <sha>`, the tip a head's checks ran against, parsed the
+way `read <date>` is, so a head owing a merge-down and a note owing a re-read
+are told apart; a note carrying no such field is silent. Proposal 3 of #32 —
+*the turn that pushes into a base re-reads every head stacked on it* — is a
+rule and is not taken here.
+
 ## 2026-09-26
 
 **A note's `read <date>` is parsed through whitespace and emphasis, and an

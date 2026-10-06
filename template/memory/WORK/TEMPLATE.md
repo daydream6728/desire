@@ -13,7 +13,7 @@ read it as one.
 # <repo>#<number> — <what it is, in half a line>
 
 - **state** <draft|ready|merged|closed> · <mergeable_state> · `TODO.md` <n open|all `[x]`|gone|never> ·
-  <added>/<removed> lines across <n> files · read <date>
+  <added>/<removed> lines across <n> files · <n> behind `<base ref>` · base <sha> · read <date>
 - **does** one or two lines. The mathematics before the plumbing
 - **needs** the one thing that would move it: a read, a ruling, a merge, a fix — and from whom
 - **touches** the modules it changes, and the heads it collides with over which files
@@ -28,7 +28,8 @@ An example, so the density is not a guess:
 ```markdown
 # discopy#489 — let statements and non-strictly-associative products in closed terms
 
-- **state** ready · `blocked` · `TODO.md` gone · 2,113/188 across 21 files · read 2026-09-01
+- **state** ready · `blocked` · `TODO.md` gone · 2,113/188 across 21 files · 0 behind `main` ·
+  base 4d96025 · read 2026-09-01
 - **does** adds `let` to the internal language of closed categories, and drops the assumption that
   the product is strictly associative, so a term can name an intermediate value
 - **needs** USER's read. Nothing is waiting on an agent
@@ -51,6 +52,18 @@ any emphasis, so `read **2026-09-25 00:3xZ**` is the same field as `read 2026-09
 between the word and the date is not: `re-read live 2026-09-18` carries no date the sweep can see,
 and a note with none is reported as carrying none — stale by construction, since it cannot say when
 it was true. Write the field on the **state** line and put the prose elsewhere.
+
+**`base <sha>` is a field too**, and it is the second sign-off condition written down: the tip of
+the head's **own** base ref — `split/3`, not `main` — that the head's checks ran against. A
+`pull_request` job checks out the head merged with its base *as of that run*, so a head level with
+its base has checks that attest to the tree USER would merge and a head one commit behind has
+checks that attest to a merge nobody will ever perform. `sweep.py` reads the count live from
+`compare`, and it reads this field to tell a head that owes a merge-down from a note that owes a
+re-read. It is parsed the way `read <date>` is — through backticks and emphasis, so
+``base **`4d96025`**`` is the same field — and the ref is named in the behind-count beside it
+rather than between the field and its sha. A note carrying no `base` is silent, not stale: the
+arithmetic is live and needs no note, and the field is there so that a reader of the note can do it
+too.
 
 **The log is the point.** It is what 🐦 Birdsong reads instead of re-deriving the queue from
 GitHub, and the only trace an interactive session leaves of work that stayed on its own PR. One
