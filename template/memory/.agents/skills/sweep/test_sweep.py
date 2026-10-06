@@ -178,6 +178,80 @@ class Staleness(unittest.TestCase):
         self.assertNotIn("None", sweep.staleness(489, None))
 
 
+class BaseSha(unittest.TestCase):
+    """The `base <sha>` field of a `WORK/` note: the tip its checks ran
+    against, so a reader of the note can do the arithmetic `arrears` does live.
+    Carrying none is silent, which is why the parser must not guess."""
+
+    def test_the_field_as_the_template_writes_it(self):
+        self.assertEqual(sweep.base_sha(
+            "- **state** ready · 0 behind `main` · base 4d96025 ·"
+            " read 2026-09-27"), "4d96025")
+
+    def test_a_sha_in_backticks_and_emphasis_is_the_field(self):
+        self.assertEqual(sweep.base_sha("· base **`4d96025`** ·"), "4d96025")
+
+    def test_a_full_sha_is_the_field(self):
+        self.assertEqual(
+            sweep.base_sha("base 4d96025149cda6b222006a27a81d25ca4beb9474"),
+            "4d96025149cda6b222006a27a81d25ca4beb9474")
+
+    def test_a_ref_between_the_field_and_its_sha_is_not_the_field(self):
+        """`base `main`@`4d96025`` puts prose between the two, so it carries no
+        sha the sweep can see: the ref is named elsewhere on the line."""
+        self.assertIsNone(sweep.base_sha("· base `main`@`4d96025` ·"))
+
+    def test_a_branch_name_is_not_a_sha(self):
+        self.assertIsNone(sweep.base_sha("- **state** 0 behind base `main`"))
+
+    def test_prose_about_a_base_carries_no_sha(self):
+        self.assertIsNone(sweep.base_sha(
+            "- **2026-09-19 🌙 Evening** its base moved three commits"))
+
+    def test_a_note_predating_the_field_carries_none(self):
+        self.assertIsNone(sweep.base_sha(
+            "- **state** ready · `blocked` · read 2026-09-18"))
+
+
+class Unmerged(unittest.TestCase):
+    """Sign-off condition 2, which nothing checked before desire#32: *CI green
+    on the real jobs, with the target branch merged in.* Arrears against a
+    head's own base is the head's failure, a note recording another base is the
+    note's, and the two want different work."""
+
+    def test_a_head_level_with_its_own_base_holds(self):
+        self.assertIsNone(sweep.unmerged(0, "4d96025aa", None))
+
+    def test_one_commit_of_arrears_is_a_merge_nobody_will_perform(self):
+        """discopy#660 on 2026-09-19: three behind `split/2`, green since
+        09-12, called ready by three notes and two boards."""
+        self.assertEqual(
+            sweep.unmerged(3, "bb99e4e2a4d4", None),
+            "is 3 commit(s) behind its own base bb99e4e, so every check on it"
+            " ran against a merge nobody will perform — condition 2 is stale,"
+            " not green")
+
+    def test_a_current_head_whose_note_records_another_base(self):
+        self.assertEqual(
+            sweep.unmerged(0, "4d96025149cd", "66d01e3"),
+            "is current, and its note still records base 66d01e3 where the"
+            " base is now 4d96025 — re-read the note, not the head")
+
+    def test_an_abbreviated_sha_agrees_with_the_tip_it_abbreviates(self):
+        self.assertIsNone(sweep.unmerged(0, "4d96025149cda6b2", "4d96025"))
+
+    def test_a_note_with_no_base_field_says_nothing_either_way(self):
+        """103 notes predate the field; a finding on each would drown the one
+        note that is wrong."""
+        self.assertIsNone(sweep.unmerged(0, "4d96025", None))
+
+    def test_arrears_outrank_the_note(self):
+        """A head that owes a merge-down owes it whatever its note says, and
+        one finding per head is what a turn can act on."""
+        self.assertIn("behind its own base",
+                      sweep.unmerged(3, "bb99e4e", "66d01e3"))
+
+
 class Waiting(unittest.TestCase):
     """`AGENTS.md`'s third sign-off condition — every review thread resolved or
     waiting on human feedback — as a function rather than as whichever turn
@@ -331,6 +405,42 @@ class MemoryClone(unittest.TestCase):
     def test_a_config_path_that_does_not_exist_is_none(self):
         self.configured_by(self.root / "nowhere" / "config.env")
         self.assertIsNone(sweep.memory_clone())
+
+
+class NotedBase(unittest.TestCase):
+    """`noted_base` reads the field off the note of one item, and answers
+    `None` for every way a note can fail to carry one — no clone, no note, no
+    field — because carrying none is silent rather than a finding."""
+
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = pathlib.Path(self.directory.name)
+        (self.root / "WORK" / "discopy").mkdir(parents=True)
+        (self.root / "config.env").write_text("MEMORY_REPO=someone/memory\n")
+        os.environ["AGENTS_CONFIG"] = str(self.root / "config.env")
+        self.addCleanup(os.environ.pop, "AGENTS_CONFIG", None)
+
+    def note(self, number, text):
+        (self.root / "WORK" / "discopy" / f"{number}.md").write_text(text)
+
+    def test_the_field_off_the_note_of_that_item(self):
+        self.note(660, "- **state** ready · base bb99e4e · read 2026-09-27")
+        self.assertEqual(sweep.noted_base("discopy/discopy", 660), "bb99e4e")
+
+    def test_an_item_with_no_note_carries_no_base(self):
+        self.assertIsNone(sweep.noted_base("discopy/discopy", 660))
+
+    def test_a_note_predating_the_field_carries_no_base(self):
+        self.note(660, "- **state** ready · `blocked` · read 2026-09-18")
+        self.assertIsNone(sweep.noted_base("discopy/discopy", 660))
+
+    def test_the_directory_is_the_repo_name_alone(self):
+        """`WORK/<name>/`, not `WORK/<owner>/<name>/`, the same key `uncharted`
+        globs — so a note read here is the note reported there."""
+        self.note(660, "· base bb99e4e ·")
+        self.assertIsNone(sweep.noted_base("rel-int/discopy", 661))
+        self.assertEqual(sweep.noted_base("rel-int/discopy", 660), "bb99e4e")
 
 
 class Config(unittest.TestCase):
