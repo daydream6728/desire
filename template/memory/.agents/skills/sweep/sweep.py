@@ -3,8 +3,9 @@
 bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
 issues closed inside the window, MEMORY_REPO's open-PR count, the state of
 each AGENT-owned `TODO.md`, the review threads of an AGENT-owned pull request
-that wait on an agent and whether every open item of a WORK_REPO has its
-`WORK/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
+that wait on an agent, whether its checks ran against its own base's tip and
+whether every open item of a WORK_REPO has its `WORK/<repo>/<number>.md` note
+in MEMORY_REPO. A finding is marked 👀 when the
 pipeline has reacted to say it received it. config.env is the ground truth for
 USER, the repos and the emoji, and it sits at the root of this clone;
 AGENTS.md's rules say what to do with a finding.
@@ -198,6 +199,102 @@ def signed_off(repo, number, body, review, setup):
             f" ({thread['path']}): "
             + (spoke["html_url"] if spoke else body["html_url"])
             for thread, spoke in waiting(threads, comments, setup)]
+
+
+def check_runs(repo, head, cache):
+    """The check runs on a commit, once per head. The listing is a mapping
+    rather than an array, so `get` returns its first page whole: a head with
+    more than a hundred runs would read short, and none of ours has ten."""
+    if head not in cache.setdefault("runs", {}):
+        cache["runs"][head] = get(
+            repo, f"commits/{head}/check-runs").get("check_runs", [])
+    return cache["runs"][head]
+
+
+def arrears(repo, pull, cache):
+    """How many commits the head's **own** base has that the head lacks, with
+    that base's tip, or `(None, None)` when GitHub will not compare the two.
+
+    This is `AGENTS.md`'s second sign-off condition read exactly rather than
+    through a clock. A `pull_request` job checks out `refs/pull/N/merge`, the
+    head merged with its base as of the checkout; when the base's tip is
+    already an ancestor of the head, that merge **is** the head, so a green run
+    on the head's sha is green *with the target branch merged in*. One commit
+    of arrears and it is not: the ticks are green and they attest to a merge
+    nobody will ever perform.
+
+    The base is the head's **own** ref — `split/3`, not `main` — which is the
+    whole of desire#32: every behind-count in that stack was right about `main`
+    and silent about the base that had moved. desire#32 proposed reading two
+    timestamps and calling a green stale when it predates the base's tip; one
+    `compare` carries the count and the tip together, so the same question is
+    answered by an ancestry rather than by a proxy for one, at the same price.
+    """
+    key = (pull["base"]["ref"], pull["head"]["sha"])
+    if key not in cache.setdefault("arrears", {}):
+        try:
+            compared = get(repo, "compare/{}...{}".format(*key))
+            cache["arrears"][key] = (compared["behind_by"],
+                                     compared["base_commit"]["sha"])
+        except urllib.error.HTTPError as error:
+            if error.code not in (403, 404, 422):
+                raise
+            cache["arrears"][key] = (None, None)
+    return cache["arrears"][key]
+
+
+def unmerged(count, base, noted):
+    """Why sign-off condition 2 may fail on a head, or `None` when it holds —
+    two sentences rather than one, the way `staleness` splits its pair.
+
+    Arrears against its own base is the **head's** failure: no job has ever
+    seen the tree USER would merge, so its green says nothing about it, and
+    what it wants is a merge-down and a round. A note recording another base is
+    the **note's** failure and wants a re-read rather than a push: the head is
+    current and what is written down about it is not."""
+    if count:
+        return (f"is {count} commit(s) behind its own base {base[:7]}, so"
+                " every check on it ran against a merge nobody will perform"
+                " — condition 2 is stale, not green")
+    if noted and not (base.startswith(noted) or noted.startswith(base)):
+        return (f"is current, and its note still records base {noted} where"
+                f" the base is now {base[:7]} — re-read the note, not the head")
+    return None
+
+
+def condition_two(repo, number, body, setup, cache):
+    """`AGENTS.md`'s second sign-off condition on one AGENT-owned pull request:
+    *CI is green on the real jobs, with the target branch merged in.*
+
+    Nothing checked it until now, so it was enforced by whichever turn happened
+    to open the head and look — the footing condition 3 was on before
+    `signed_off`, and with the same result: three notes and two boards called
+    discopy#660 ready between 09-16 and 09-19 while its own base had moved
+    three commits and no job had seen that tree (desire#32).
+
+    Greenness itself is not read here. The sweep cannot know which checks a
+    repository expects — `cubic` is an extra, `proptest` is opt-in by label,
+    `guard` does not run on a stacked head — so a conclusion is left to the
+    turn that enumerates them, and what is mechanical is whether the runs that
+    exist ran against the right tree. A head carrying no run at all is printed
+    as context rather than reported: DESIRE_REPO runs no CI, so every head
+    there would otherwise be a finding for good."""
+    if not owned(repo, number, body, setup):
+        return []
+    pull = heads(repo, cache).get(number) or get(repo, f"pulls/{number}")
+    count, base = arrears(repo, pull, cache)
+    if base is None:
+        return [f"#{number} sign-off condition 2 is unchecked here: GitHub"
+                " would not compare its head to its base"
+                f" {pull['base']['ref']!r}, so whether its checks ran against"
+                " the merge is unknown: " + body["html_url"]]
+    if not check_runs(repo, pull["head"]["sha"], cache):
+        print(f"{repo}#{number}: no check run on its head, so condition 2 is"
+              f" unattested rather than green ({count} behind base"
+              f" {base[:7]})", file=sys.stderr)
+        return []
+    why = unmerged(count, base, noted_base(repo, number))
+    return [] if why is None else [f"#{number} {why}: " + body["html_url"]]
 
 
 def reactors(repo, kind, target, emoji, cache):
@@ -482,6 +579,7 @@ def item(repo, number, setup, since, cache):
             f" {'pull request' if 'pull_request' in body else 'issue'}:"
             f" {body['html_url']}" + flag)
     return (findings + signed_off(repo, number, body, review, setup)
+            + condition_two(repo, number, body, setup, cache)
             + todo(repo, number, body, setup, cache))
 
 
@@ -536,6 +634,40 @@ def staleness(number, day):
     return ("carries no read date, so nothing says when it was true — write"
             " one" if day is None else
             f"was read {day} and {number} moved since, so it may be stale")
+
+
+BASE = re.compile(r"\bbase\s+[*`]*([0-9a-f]{7,40})\b")
+
+
+def base_sha(text):
+    """The base sha a `WORK/` note records its checks as having run against,
+    `None` when it carries none.
+
+    The field is `base <sha>` on the **state** line, beside the `head <sha>`
+    the notes already carry, and it is parsed the way `read <date>` is: through
+    the emphasis and the backticks a note dresses a sha in, and nothing else.
+    The base *ref* is named elsewhere on the line — `0 behind `main`` says it
+    once — because `base `main`@`4d96025`` would put prose between the field
+    and its value, which this refuses on purpose: a field is one shape or it is
+    not parsed at all. An abbreviation is a prefix and compares as one."""
+    match = BASE.search(text)
+    return match.group(1) if match else None
+
+
+def noted_base(repo, number):
+    """The base sha `WORK/<repo>/<number>.md` records, `None` when there is no
+    note or it carries no such field.
+
+    Carrying none is silent and never a finding. The arithmetic in `arrears` is
+    live and needs no note at all; the field exists so that a *reader* of the
+    note can do it too, the way `read <date>` lets one date a fact without
+    asking GitHub. Every note written before desire#32 has none, and a finding
+    on each would drown the one note that is actually wrong."""
+    root = memory_clone()
+    if root is None:
+        return None
+    note = root / "WORK" / repo.split("/")[-1] / f"{number}.md"
+    return base_sha(note.read_text()) if note.is_file() else None
 
 
 CITE = re.compile(r"(?P<where>[\w.-]+(?:/[\w.-]+)?)?#(?P<number>\d+)")
