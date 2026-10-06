@@ -84,10 +84,15 @@ before it is linked, and an internal session or thread ID is not a URL and must 
 one.
 
 ## Commit signing
-Commits are signed when the environment provides `AGENTS_SIGNING_KEY`, a passphrase-free SSH private
-key whose public half is registered on AGENT's account as a **signing key**. The SessionStart hook
-clears the global signing config so no stale setting outlives its key, installs `openssh-client`
-(git signs through `ssh-keygen -Y sign`), writes the key and sets `commit.gpgsign`, so pushed
-commits show Verified; a session without the variable commits unsigned rather than failing. Leaked,
-the key can only forge the badge — revoke it by deleting the public half from AGENT's account. Key
-setup is in the README's Verified commits section.
+Commits are signed through whichever key the session has, both registered on AGENT's account. The
+environment's setup script imports a passphrase-free GPG key and sets `gpg.format openpgp`,
+`user.signingkey` and `commit.gpgsign`, which covers every session of that environment; the
+setup script sees none of the environment's variables, so the key is in the script itself, and
+the identity comes from `GIT_CONFIG_*` variables, read after every config file and so after the
+default identity the environment writes to `~/.gitconfig` once the script is done. Without it,
+the SessionStart hook signs from `AGENTS_SIGNING_KEY`, a passphrase-free SSH private key: it
+installs `openssh-client` (git signs through `ssh-keygen -Y sign`), writes the key and sets
+`commit.gpgsign`. The hook keeps a GPG config whose key is in the keyring and clears any other
+global signing config, so no stale setting outlives its key; a session with neither key commits
+unsigned rather than failing. Leaked, either key can only forge the badge — revoke it by deleting
+it from AGENT's account. Key setup is in the README's Verified commits section.
