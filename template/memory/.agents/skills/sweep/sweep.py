@@ -24,19 +24,36 @@ cover and names what it left out, since twenty-two turns read `clean` off
 three of four WORK_REPOS as though it covered the fourth (desire#30).
 Exit 1 with one line per finding, exit 2 when a repo in play could not be read
 — an incomplete sweep is neither clean nor a finding, and reading it as clean
-is how a live 🚀 goes unanswered — and exit 0 otherwise. Open `TODO.md` boxes
-are printed as context and do not make the sweep dirty.
+is how a live 🚀 goes unanswered — and exit 0 otherwise. A read nobody answered
+is retried before it counts as unreadable, since one dropped connection in
+some two hundred used to end the run with a traceback, i.e. on exit 1.
+Open `TODO.md` boxes are printed as context and do not make the sweep dirty.
 """
 import base64
 import datetime
+import http.client
 import json
 import os
 import pathlib
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 
+# The failures that mean nobody answered, as against GitHub answering no. The
+# difference runs through this whole file — a 403 is raised so that a listing
+# nobody read can never pass for an empty one — and a dropped connection is the
+# other side of it: there is no answer to misread, only a read to do again.
+# `urllib` wraps what fails while it sends the request in `URLError` and leaves
+# what fails while it reads the response bare, so `http.client`'s own
+# exceptions have to be named or they escape the guards written for exactly
+# them: a `RemoteDisconnected` is a `ConnectionResetError` and an
+# `HTTPException`, and neither is a `URLError`.
+TRANSPORT = (urllib.error.URLError, http.client.HTTPException,
+             ConnectionError, TimeoutError)
+ATTEMPTS = 4      # one read and three retries, which a sweep can afford
+BACKOFF = 2.0     # seconds before the first retry, doubling after it
 BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
 CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
                    r"(?:Z|[+-]\d{2}:?\d{2})?)?")
@@ -87,6 +104,34 @@ def config(path):
     return setup
 
 
+def read(request):
+    """One REST read, retried while nobody has answered it.
+
+    An `HTTPError` is GitHub answering and is raised at once, unretried, so
+    that every status code in this file keeps the meaning its caller reads off
+    it. A transport failure is the opposite case and the only one retried: a
+    sweep of every repo in play is some two hundred reads, and discarding all
+    of them because the one hundred and eighty-third was dropped costs the turn
+    its only instrument. Measured rather than feared — on 2026-10-07 a
+    `RemoteDisconnected` on `pulls/<n>/comments` ended a bare invocation with a
+    traceback, three findings in, before discopy's pull requests were read at
+    all.
+
+    When the last attempt fails too the failure is raised, where `main` names
+    the repo unreadable and the sweep exits 2: an incomplete sweep is neither
+    clean nor a finding, whether the silence lasted one read or four."""
+    for attempt in range(ATTEMPTS):
+        try:
+            with urllib.request.urlopen(request) as response:
+                return json.load(response)
+        except urllib.error.HTTPError:
+            raise
+        except TRANSPORT:
+            if attempt + 1 == ATTEMPTS:
+                raise
+            time.sleep(BACKOFF * 2 ** attempt)
+
+
 def get(repo, path):
     """A GitHub REST resource, every page of a listing. A page holds 100 and
     `discopy/discopy` had 153 open items the day this stopped reading one page:
@@ -103,8 +148,7 @@ def get(repo, path):
         token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
         if token:
             request.add_header("Authorization", f"Bearer {token}")
-        with urllib.request.urlopen(request) as response:
-            items = json.load(response)
+        items = read(request)
         if not isinstance(items, list):  # a single issue, comment or user
             return items
         results += items
@@ -830,7 +874,7 @@ def main(arguments):
     for repo in asked:
         try:
             findings += sweep(repo, numbers, since, setup)
-        except (urllib.error.URLError, TimeoutError) as error:
+        except TRANSPORT as error:
             unreadable.append(repo)
             print(f"{repo}: GitHub unreadable, the sweep is incomplete and"
                   f" says nothing about this repo: {error}", file=sys.stderr)
