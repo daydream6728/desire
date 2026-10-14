@@ -6,10 +6,13 @@
 - it scans `mentions:AGENT` for threads it was tagged in, answering them or queueing the work
 - it translates USER feedback (both direct orders and emoji-approved) into `TODO.md` checkboxes
 - **it takes one head and finishes it.** USER's explicit order first; otherwise the head closest to
-  a **terminal handoff** — merged or closed; or ready, with `TODO.md` deleted, no review thread
-  waiting on an agent and every expected check passed; or blocked on one named external action that
-  it asked for on the work PR the same turn. It selects no second head until the first is there.
-  Sub-agents parallelise *within* that head, not across unrelated ones, unless USER approved a batch
+  a **terminal handoff** — merged or closed, which on a next repo it reaches itself; or ready, with
+  `TODO.md` deleted, no review thread waiting on an agent and every expected check passed; or
+  blocked on one named external action that it asked for on the work PR the same turn. It selects
+  no second head until the first is there. Sub-agents parallelise *within* that head, not across
+  unrelated ones, unless USER approved a batch
+- on a next repo with drift rising, it slices before it builds: the head it takes is an upstream
+  PR cut from what next `main` already carries
 - a scan, a re-merge, a rebase, a review trigger, a board repair is **support work, not an
   outcome**: name it only where it changed what was available or ate the round. A night of
   re-merging the queue is a night with nothing finished, and should read that way

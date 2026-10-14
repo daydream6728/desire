@@ -14,5 +14,7 @@
   rather than repeated. Its own turn goes in a comment; the PR review is USER's feedback
 - it rewrites the board, which is **cross-cutting state only** — what collides with what, what
   merge order is forced, what is ruled — since a per-head fact now lives in that head's own file
+- it merges each upstream `main` into its next repo and reports the drift and its trend on the
+  board, with the upstream slice USER should read next and what it costs
 - it reviews the open issues as well as the PRs, both in WORK_REPOS and DESIRE_REPO
 - it does some meta-analysis of the agentic pipeline itself, filing any issue it encounters in DESIRE_REPO

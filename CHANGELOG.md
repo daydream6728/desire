@@ -3,6 +3,18 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-14
+
+**Next repos: agents merge into a mirror of a WORK_REPO and keep its drift small**
+(`AGENTS.md`, `EVENING.md`, `BIRDSONG.md`, `template/memory/config.env`) — a tenth config value,
+NEXT_REPOS, pairs an upstream with its next repo. `AGENTS.md` gains a `Next repos` section: next
+`main` is upstream `main` plus work meant to go upstream, merged by agents without human review;
+experiments on branches; upstream merged down nightly; every change has an upstream PR with an
+`Upstream:` trailer; drift measured outside `.github/` with its weekly trend, and no new work while
+inflow beats outflow two weeks running. `EVENING.md`: merged into next `main` is a terminal
+handoff, and rising drift means slicing before building. `BIRDSONG.md`: the nightly down-merge and
+the drift report.
+
 ## 2026-09-09
 
 **A repo joins WORK_REPOS the turn work starts there, no separate ask**

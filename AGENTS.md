@@ -8,12 +8,12 @@ The rules are here; the machinery behind them — how each mechanism works and h
 doesn't — is in [`OPERATIONS.md`](OPERATIONS.md), which `CLAUDE.md` does not load into every session.
 
 ## Config
-The nine values — USER, AGENT, AGENT_EMAIL, WORK_REPOS, MEMORY_REPO, DESIRE_REPO, APPROVE_EMOJI,
-AGENT_FOOTERS, ADOPTED_PRS — live in `config.env` at the root of MEMORY_REPO's clone, the one file
-that names them; nothing here duplicates it. They are not rules, and this repo is public while
-WORK_REPOS and ADOPTED_PRS name private repos — so they live where the work does. Both readers —
-`session-start.sh` before a turn's first commit and `sweep.py`'s `config()` before every sweep —
-live beside it, with public copies under [`template/`](template), the seed a new MEMORY_REPO is
+The ten values — USER, AGENT, AGENT_EMAIL, WORK_REPOS, MEMORY_REPO, DESIRE_REPO, APPROVE_EMOJI,
+AGENT_FOOTERS, ADOPTED_PRS, NEXT_REPOS — live in `config.env` at the root of MEMORY_REPO's clone,
+the one file that names them; nothing here duplicates it. They are not rules, and this repo is
+public while WORK_REPOS, ADOPTED_PRS and NEXT_REPOS name private repos — so they live where the
+work does. Both readers — `session-start.sh` before a turn's first commit and `sweep.py`'s
+`config()` before every sweep — live beside it, with public copies under [`template/`](template), the seed a new MEMORY_REPO is
 built from: a change to either lands in both the same turn. How they locate the file and what a turn
 does when it cannot be read is in [`OPERATIONS.md`](OPERATIONS.md#finding-configenv).
 
@@ -178,6 +178,22 @@ material otherwise. A proposal is a bullet under `Agent proposals`, never buried
 turn that opens or reports a PR states its review cost — lines changing existing code, lines in new
 files, core modules touched — since churn is a proxy for scanning not thinking, so the split matters
 more than the total.
+
+## Next repos
+NEXT_REPOS pairs a WORK_REPO with its next repo, `<upstream>:<next>`. The upstream stays fully
+human-reviewed; the next repo is the agents', and **their job is to keep the drift between the two
+small** (USER, 2026-10-14).
+
+- Next `main` is upstream `main` plus work meant to go upstream. Agents merge into it themselves
+  once its checks pass: no human review and no `TODO.md` gate there.
+- Experiments live on branches of the next repo, never on its `main`, and are not measured.
+- Down: upstream `main` is merged into next `main` every night, never rebased.
+- Up: every change on next `main` has an open upstream PR cut from upstream `main`, small enough to
+  read, and the next-side merge names it with an `Upstream: <repo>#<n>` trailer.
+- Drift is `git diff upstream/main...next/main` outside `.github/`, split library, tests and docs,
+  with its trend: lines landed on next against lines merged upstream, per week. While inflow beats
+  outflow two weeks running, nothing new lands on next `main` until slicing catches up.
+- Other authors' PRs are theirs to bring upstream; agents do not merge them into a next repo.
 
 ## Issues and reviews
 **The gate is USER's review time** (USER, 2026-08-09): the queue drains at the rate USER reads it,
