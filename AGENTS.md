@@ -188,8 +188,8 @@ small** (USER, 2026-10-14).
   once its checks pass: no human review and no `TODO.md` gate there.
 - Experiments live on branches of the next repo, never on its `main`, and are not measured.
 - Down: upstream `main` is merged into next `main` every night, never rebased.
-- Up: every change on next `main` has an open upstream PR cut from upstream `main`, small enough to
-  read, and the next-side merge names it with an `Upstream: <repo>#<n>` trailer.
+- Up: an upstream PR is opened only at USER's request, cut from upstream `main` and small enough to
+  read; agents propose the slices, they do not open one per change on next `main`.
 - Drift is `git diff upstream/main...next/main` outside `.github/`, split library, tests and docs,
   with its trend: lines landed on next against lines merged upstream, per week. While inflow beats
   outflow two weeks running, nothing new lands on next `main` until slicing catches up.

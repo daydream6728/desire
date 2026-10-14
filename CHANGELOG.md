@@ -9,11 +9,11 @@ Entries state the changes, no explanation of why.
 (`AGENTS.md`, `EVENING.md`, `BIRDSONG.md`, `template/memory/config.env`) — a tenth config value,
 NEXT_REPOS, pairs an upstream with its next repo. `AGENTS.md` gains a `Next repos` section: next
 `main` is upstream `main` plus work meant to go upstream, merged by agents without human review;
-experiments on branches; upstream merged down nightly; every change has an upstream PR with an
-`Upstream:` trailer; drift measured outside `.github/` with its weekly trend, and no new work while
+experiments on branches; upstream merged down nightly; upstream PRs proposed by agents, opened only
+at USER's request; drift measured outside `.github/` with its weekly trend, and no new work while
 inflow beats outflow two weeks running. `EVENING.md`: merged into next `main` is a terminal
-handoff, and rising drift means slicing before building. `BIRDSONG.md`: the nightly down-merge and
-the drift report.
+handoff, and rising drift means proposing slices before building. `BIRDSONG.md`: the nightly
+down-merge and the drift report with its proposed slices.
 
 ## 2026-09-09
 

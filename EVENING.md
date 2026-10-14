@@ -11,8 +11,8 @@
   blocked on one named external action that it asked for on the work PR the same turn. It selects
   no second head until the first is there. Sub-agents parallelise *within* that head, not across
   unrelated ones, unless USER approved a batch
-- on a next repo with drift rising, it slices before it builds: the head it takes is an upstream
-  PR cut from what next `main` already carries
+- on a next repo with drift rising, it slices before it builds: it carves what next `main` already
+  carries into proposed upstream slices, and opens one only when USER asks
 - a scan, a re-merge, a rebase, a review trigger, a board repair is **support work, not an
   outcome**: name it only where it changed what was available or ate the round. A night of
   re-merging the queue is a night with nothing finished, and should read that way
