@@ -13,7 +13,7 @@ experiments on branches; upstream merged down nightly; upstream PRs proposed by 
 at USER's request; drift measured outside `.github/` with its weekly trend, and no new work while
 inflow beats outflow two weeks running. `EVENING.md`: merged into next `main` is a terminal
 handoff, and rising drift means proposing slices before building. `BIRDSONG.md`: the nightly
-down-merge and the drift report with its proposed slices.
+down-merge and the drift report on the board, the proposed slices under `Agent proposals`.
 
 ## 2026-09-09
 
