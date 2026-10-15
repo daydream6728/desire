@@ -3,6 +3,18 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-14
+
+**Next repos: agents merge into a mirror of a WORK_REPO and keep its drift small**
+(`AGENTS.md`, `EVENING.md`, `BIRDSONG.md`, `template/memory/config.env`) — a tenth config value,
+NEXT_REPOS, pairs an upstream with its next repo. `AGENTS.md` gains a `Next repos` section: next
+`main` is upstream `main` plus work meant to go upstream, merged by agents without human review;
+experiments on branches; upstream merged down nightly; upstream PRs proposed by agents, opened only
+at USER's request; drift measured outside `.github/` with its weekly trend, and no new work while
+inflow beats outflow two weeks running. `EVENING.md`: merged into next `main` is a terminal
+handoff, and rising drift means proposing slices before building. `BIRDSONG.md`: the nightly
+down-merge and the drift report on the board, the proposed slices under `Agent proposals`.
+
 ## 2026-10-06
 
 **The setup script signs every session** (`README.md`, `OPERATIONS.md`, `AGENTS.md`,
@@ -102,6 +114,11 @@ updates the fork with `--force-with-lease`, and verifies that upstream is a stri
 fork. Replaces the upstream pull-request-and-merge rule of 2026-08-12.
 
 ## 2026-09-09
+
+**A repo joins WORK_REPOS the turn work starts there, no separate ask**
+([#151](https://github.com/toumix/desire/pull/151), closes
+[#150](https://github.com/toumix/desire/issues/150)) — `AGENTS.md`'s Config section gains the
+rule.
 
 **Eight conventions graduate out of the holding pen**
 ([#139](https://github.com/toumix/desire/pull/139), closes
