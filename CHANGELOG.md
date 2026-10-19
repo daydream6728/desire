@@ -5,9 +5,9 @@ Entries state the changes, no explanation of why.
 
 ## 2026-10-19
 
-**Next repos: drift never freezes next `main`** (`AGENTS.md`) — the rule that nothing new lands on
-next `main` while inflow beats outflow two weeks running is dropped; drift and its weekly trend
-are still measured and tended down by slicing.
+**Next repos: the two-weeks-of-inflow rule is dropped** (`AGENTS.md`) — the rule that nothing new
+lands on next `main` while inflow beats outflow two weeks running is dropped; drift and its weekly
+trend are still measured and tended down by slicing.
 
 ## 2026-10-14
 
