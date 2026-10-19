@@ -192,8 +192,7 @@ small** (USER, 2026-10-14).
   read; agents propose the slices, they do not open one per change on next `main`.
 - Drift is `git diff upstream/main...next/main -- . ':!.github'`, split library, tests and docs,
   with its trend: lines landed on next against lines merged upstream, per week. Agents tend it
-  down by slicing, but it never freezes next `main` (USER, 2026-10-19): moving work from upstream
-  to next adds no drift, it only moves it.
+  down by slicing; moving work from upstream to next adds no drift, it only moves it.
 - Other authors' PRs are theirs to bring upstream; agents do not merge them into a next repo.
 - An open issue reporting a bug in a next repo is fixed there without asking USER (USER,
   2026-10-19), whoever filed it, unless it needs a design decision. It needs none when what is

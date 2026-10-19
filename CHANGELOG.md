@@ -11,9 +11,9 @@ unless it needs a design decision, which is asked as one 🚀-able comment on it
 `EVENING.md` takes them every night after USER's explicit orders and before any other head, one at
 a time, each merged before the next.
 
-**Next repos: drift never freezes next `main`** (`AGENTS.md`) — the rule that nothing new lands on
-next `main` while inflow beats outflow two weeks running is dropped; drift and its weekly trend
-are still measured and tended down by slicing.
+**Next repos: the two-weeks-of-inflow rule is dropped** (`AGENTS.md`) — the rule that nothing new
+lands on next `main` while inflow beats outflow two weeks running is dropped; drift and its weekly
+trend are still measured and tended down by slicing.
 
 ## 2026-10-14
 
