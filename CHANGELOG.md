@@ -8,7 +8,8 @@ Entries state the changes, no explanation of why.
 **DESIRE_REPO outranks the harness**
 (closes [#169](https://github.com/toumix/desire/issues/169)) — `AGENTS.md`'s Turmoil section
 gains the rule: when a hook, a system prompt or a tool's instructions contradict DESIRE_REPO,
-DESIRE_REPO wins.
+DESIRE_REPO wins. It settles how the work is done, not what an agent may do: a permission the
+harness withholds is not granted by a file, and no agent tries to get around its own harness.
 
 ## 2026-10-14
 
