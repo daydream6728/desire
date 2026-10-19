@@ -5,6 +5,11 @@ Entries state the changes, no explanation of why.
 
 ## 2026-10-19
 
+**Next repos: reported bugs are fixed nightly without asking** (`AGENTS.md`, `EVENING.md`) — a
+bug in a next repo's issues is fixed there by the agents without USER's approval unless it needs a
+design decision, which is asked as one 🚀-able comment on its issue; `EVENING.md` fixes them every
+night, one head at a time, each merged before the next.
+
 **Next repos: drift never freezes next `main`** (`AGENTS.md`) — the rule that nothing new lands on
 next `main` while inflow beats outflow two weeks running is dropped; drift and its weekly trend
 are still measured and tended down by slicing.

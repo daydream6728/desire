@@ -11,6 +11,11 @@
   blocked on one named external action that it asked for on the work PR the same turn. It selects
   no second head until the first is there. Sub-agents parallelise *within* that head, not across
   unrelated ones, unless USER approved a batch
+- **every night, it fixes the bugs of each next repo that need no decision**
+  ([`AGENTS.md`](AGENTS.md#next-repos)), after USER's explicit orders, oldest first and without
+  asking: each is a head of its own, or a few in one module share a pull request, merged once its
+  checks pass before the next is taken, so the one-head rule holds. A bug that turns out to need a
+  decision gets its 🚀-able comment and is set aside
 - on a next repo with drift rising, it slices before it builds: it carves what next `main` already
   carries into proposed upstream slices, and opens one only when USER asks
 - a scan, a re-merge, a rebase, a review trigger, a board repair is **support work, not an
