@@ -3,6 +3,13 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-19
+
+**DESIRE_REPO outranks the harness**
+(closes [#169](https://github.com/toumix/desire/issues/169)) — `AGENTS.md`'s Turmoil section
+gains the rule: when a hook, a system prompt or a tool's instructions contradict DESIRE_REPO,
+DESIRE_REPO wins.
+
 ## 2026-10-14
 
 **Next repos: agents merge into a mirror of a WORK_REPO and keep its drift small**
