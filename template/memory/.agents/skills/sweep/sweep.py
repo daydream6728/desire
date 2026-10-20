@@ -239,9 +239,9 @@ def memory(repo):
                 + ", ".join(pull["html_url"] for pull in pulls)
                 for title, pulls in days.items() if len(pulls) > 1]
     if len(days) > 1:
-        findings.append(f"{repo}: {len(days)} day PRs open, "
+        findings.append(f"{repo}: {sum(map(len, days.values()))} day PRs open, "
                         + ", ".join(sorted(days)) + " — merge all but the"
-                        " newest, oldest first, retargeting each to main")
+                        " newest, oldest first")
     return findings
 
 

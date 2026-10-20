@@ -101,8 +101,8 @@ requests.
 draft — titled with the day it covers. It carries everything whose lifetime is the day (the turn
 file, the board, `USER_TODO.md`, `WORK/` notes); every later turn of that day pushes there and
 leaves a comment rather than opening another. **The turn that opens a new day's PR first merges the
-previous day's itself**: whatever in that PR's comment thread should outlive it goes into a file or
-an issue first, a conflict is resolved by merging `main` into its branch, and the new day is cut
+previous day's PR itself**: whatever in that PR's comment thread should outlive it goes into a file
+or an issue first, a conflict is resolved by merging `main` into its branch, and the new day is cut
 from `main`. If no day PR is open, the turn opens one — Birdsong normally does, but any turn may,
 rather than borrowing whichever branch is open. This replaces stacking each day on the newest
 unmerged one ([#144](https://github.com/toumix/desire/issues/144)), which existed only while USER

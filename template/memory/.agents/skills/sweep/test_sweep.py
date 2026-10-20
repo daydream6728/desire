@@ -294,6 +294,14 @@ class Memory(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertIn("2026-09-04, 2026-09-07", findings[0])
 
+    def test_two_days_count_every_open_day_pr(self):
+        self.patch([self.pull("2026-09-07", "c", "2026-09-07T00:00:00Z"),
+                    self.pull("2026-09-07", "b", "2026-09-07T01:00:00Z"),
+                    self.pull("2026-09-04", "a", "2026-09-04T00:00:00Z")])
+        findings, _ = self.run_memory()
+        self.assertEqual(len(findings), 2)
+        self.assertTrue(any("3 day PRs open" in f for f in findings))
+
     def test_two_under_one_title_is_a_finding(self):
         self.patch([self.pull("2026-09-07", "b", "2026-09-07T00:00:00Z"),
                     self.pull("2026-09-07", "a", "2026-09-07T01:00:00Z")])

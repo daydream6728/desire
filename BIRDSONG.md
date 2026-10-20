@@ -8,7 +8,7 @@
   live is the small set of facts it states as facts — each WORK_REPO's default-branch SHA, and the
   list of open AGENT-owned PR numbers, which `sweep.py` checks against `WORK/` and reports as
   findings ([#124](https://github.com/toumix/desire/issues/124))
-- it does deep thinking, merges the previous day's PR in its MEMORY_REPO and opens the day's
+- it does deep thinking, merges the previous day's PR in its MEMORY_REPO and opens the day's PR
 - it crafts an executive summary as the PR **description** on MEMORY_REPO and is the only routine
   that writes it, as short as the day can be said; a table belongs to the board, linked from here
   rather than repeated. Its own turn goes in a comment; the PR review is USER's feedback

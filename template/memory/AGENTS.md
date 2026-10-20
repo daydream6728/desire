@@ -32,7 +32,7 @@ the title is wrong. Its **description is the day's executive summary and 🐦 Bi
 it**, to the shape in [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md); every
 routine leaves a comment for its own turn. That PR's review is USER's feedback channel and its
 comment thread is the short-term memory — verbatim quotes with their context, discarded when the PR
-merges, so anything meant to outlive it goes in the description, a file, or an issue.
+merges, so anything meant to outlive it goes in a file or an issue.
 The turn that opens a new day's PR merges the previous one first, cutting the new day from `main`.
 
 **Standing orders are open issues on DESIRE_REPO**, not a file here. A ruling that outlives the
