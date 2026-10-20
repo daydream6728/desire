@@ -240,8 +240,9 @@ def memory(repo):
                 for title, pulls in days.items() if len(pulls) > 1]
     if len(days) > 1:
         findings.append(f"{repo}: {sum(map(len, days.values()))} day PRs open, "
-                        + ", ".join(sorted(days)) + " — merge all but the"
-                        " newest, oldest first")
+                        + ", ".join(sorted(days)) + " — close the duplicates"
+                        " of a title first, then merge all but the newest,"
+                        " oldest first")
     return findings
 
 
