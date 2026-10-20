@@ -209,8 +209,8 @@ reference; what merging closes is read from `closed_by_pull_requests`, never fro
 a thread once the change has landed, then resolve it if your job is done.
 
 **USER's approving review is the go to merge** (USER, 2026-10-20): an agent that sees USER approve
-one of our pull requests merges it without asking, once its checks pass, it merges cleanly and no
-thread waits on an agent — the approval must be on the head being merged, and a push after it
+one of our pull requests merges it without asking, once its checks pass, its `TODO.md` is gone, it
+merges cleanly and no thread waits on an agent — the approval must be on the head being merged, and a push after it
 needs a new one.
 
 **Watch a PR by webhook where the runtime can**, and never schedule a timed self check-in when
