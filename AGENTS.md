@@ -208,6 +208,12 @@ request closing an issue uses GitHub's syntax, one keyword per issue on the same
 reference; what merging closes is read from `closed_by_pull_requests`, never from our prose. Answer
 a thread once the change has landed, then resolve it if your job is done.
 
+**USER's approving review is the go to merge** (USER, 2026-10-20): an agent that sees USER approve
+one of our pull requests merges it without asking, once its checks pass, it merges cleanly and no
+thread waits on an agent — the approval must be on the head being merged, and a push after it
+needs a new one. A repo that asks for more than USER's approval still gets it: discopy's second
+pair of human eyes is daydream6728's review, not ours to skip.
+
 **Watch a PR by webhook where the runtime can**, and never schedule a timed self check-in when
 GitHub events already reach the session, since every scheduled fire that finds nothing is a turn
 USER pays for and never needed. A runtime that cannot wake on a webhook — Codex tasks are the

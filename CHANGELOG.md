@@ -3,6 +3,12 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-20
+
+**USER's approving review is the go to merge** (`AGENTS.md`) — an agent merges a pull request of
+ours that USER approved, on the approved head, once it is green and clean, without asking; a
+repo's own extra review requirements still apply.
+
 ## 2026-10-19
 
 **Next repos: the two-weeks-of-inflow rule is dropped** (`AGENTS.md`) — the rule that nothing new
