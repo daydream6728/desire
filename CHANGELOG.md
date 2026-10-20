@@ -6,8 +6,7 @@ Entries state the changes, no explanation of why.
 ## 2026-10-20
 
 **USER's approving review is the go to merge** (`AGENTS.md`) — an agent merges a pull request of
-ours that USER approved, on the approved head, once it is green and clean, without asking; a
-repo's own extra review requirements still apply.
+ours that USER approved, on the approved head, once it is green and clean, without asking.
 
 ## 2026-10-19
 
