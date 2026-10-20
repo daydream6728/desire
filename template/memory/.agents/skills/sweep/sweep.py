@@ -32,6 +32,7 @@ CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
                    r"(?:Z|[+-]\d{2}:?\d{2})?)?")
 STALE = datetime.timedelta(hours=12)
 CONFIG = pathlib.Path(__file__).parents[3] / "config.env"
+DAY = re.compile(r"\d{4}-\d{2}-\d{2}\b")
 FOOTER_LINK = re.compile(r"\[[^\]]*\]\((https://[^\s)]+)\)")
 
 
@@ -214,29 +215,34 @@ def asking(repo, kind, target, setup, since, cache):
 
 
 def memory(repo):
-    """MEMORY_REPO holds one open PR per day, checked whatever the window since
-    it is an invariant rather than a delta. Several open at once is USER not
-    having merged the past days, which is theirs and no finding of ours; two
-    under one title is a day written twice, which is ours. The count and the
-    URLs are printed either way, so a turn sees what is waiting to be merged
-    without the sweep calling it dirty. When any are open the newest is named
-    as the branch to cut a new day's PR from, not `main`, so unmerged days
-    stack rather than conflict on `README.md`/`USER_TODO.md` (desire#144)."""
+    """MEMORY_REPO holds one open day PR, a PR titled with its date, checked
+    whatever the window since it is an invariant rather than a delta. The turn
+    that opens a new day's PR merges the previous one first, so two day PRs
+    open at once is a turn that skipped the merge, and two under one title is
+    a day written twice: both are findings of ours. Every open PR is printed,
+    the `OTHERS/` ones included, and the open day PR is named as the one to
+    push today's turn to, or to merge before opening today's."""
     open_prs = get(repo, "pulls?state=open")
     print(f"{repo}: {len(open_prs)} open PR(s)"
           + "".join("\n  " + pr["html_url"] for pr in open_prs), file=sys.stderr)
-    if open_prs:
-        newest = max(open_prs, key=lambda pull: pull["created_at"])
-        print(f"{repo}: base a new day's PR on {newest['head']['ref']!r}"
-              f" ({newest['title']!r}, the newest still open), not main, so"
-              " unmerged days stack rather than conflict (desire#144)",
-              file=sys.stderr)
     days = {}
     for pull in open_prs:
-        days.setdefault(pull["title"], []).append(pull["html_url"])
-    return [f"{repo}: {len(urls)} open PRs titled {title!r}, one a day is the"
-            " rule — push to one and close the rest: " + ", ".join(urls)
-            for title, urls in days.items() if len(urls) > 1]
+        if DAY.match(pull["title"]):
+            days.setdefault(pull["title"], []).append(pull)
+    for title, pulls in sorted(days.items()):
+        for pull in pulls:
+            print(f"{repo}: day PR {title!r} on {pull['head']['ref']!r}: push"
+                  " today's turn there if it is today's, else merge it before"
+                  " opening today's from main", file=sys.stderr)
+    findings = [f"{repo}: {len(pulls)} open PRs titled {title!r}, one a day is"
+                " the rule — push to one and close the rest: "
+                + ", ".join(pull["html_url"] for pull in pulls)
+                for title, pulls in days.items() if len(pulls) > 1]
+    if len(days) > 1:
+        findings.append(f"{repo}: {len(days)} day PRs open, "
+                        + ", ".join(sorted(days)) + " — merge all but the"
+                        " newest, oldest first, retargeting each to main")
+    return findings
 
 
 def heads(repo, cache):

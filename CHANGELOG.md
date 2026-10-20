@@ -3,6 +3,14 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-20
+
+**Agents merge the previous day's memory PR before opening a fresh one** (`AGENTS.md`,
+`BIRDSONG.md`, `template/memory/AGENTS.md`, `sweep.py`) — the turn that opens a new day's PR merges
+the previous one itself, after moving what should outlive its comments into a file or an issue, and
+cuts the new day from `main`. Replaces stacking each day on the newest unmerged one (#144). The
+sweep names the open day PR and reports two day PRs open as a finding.
+
 ## 2026-10-19
 
 **Next repos: the two-weeks-of-inflow rule is dropped** (`AGENTS.md`) — the rule that nothing new

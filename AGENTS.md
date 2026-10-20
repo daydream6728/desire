@@ -98,17 +98,17 @@ own, what they have landed, what of theirs touches our lanes — and outlives ev
 requests.
 
 **One pull request per day for the day's work, opened by 🐦 Birdsong** — ready for review rather
-than draft, so USER can merge in one click — titled with the day it covers. It carries everything
-whose lifetime is the day (the turn file, the board, `USER_TODO.md`, `WORK/` notes); every later
-turn of that day pushes there and leaves a comment rather than opening another. A day's PR is opened
-even when the previous day's has not merged. If no day PR is open, the turn opens one — Birdsong
-normally does, but any turn may, rather than borrowing whichever branch is open. **A new day's PR
-opened while a previous day's is still unmerged is cut from the newest still-open day PR's branch,
-not from `main`** ([#144](https://github.com/toumix/desire/issues/144)): `README.md` and
-`USER_TODO.md` are rewritten every turn, so two day PRs both off `main` almost always touch both
-files and conflict, leaving the later turn to either duplicate work already in the earlier PR or
-fold the sibling branch in by hand — stacking makes each merge an ordinary fast-forward instead.
-`sweep.py` prints that branch. Branch names carry
+than draft — titled with the day it covers. It carries everything whose lifetime is the day (the
+turn file, the board, `USER_TODO.md`, `WORK/` notes); every later turn of that day pushes there and
+leaves a comment rather than opening another. **The turn that opens a new day's PR first merges the
+previous day's itself** (USER, 2026-10-20: *"now I trust the agents to know what to keep in
+long-term memory so it's ok for them to merge the PR for the previous day before opening a fresh
+one"*): whatever in that PR's comment thread should outlive it goes into a file or an issue first,
+a conflict is resolved by merging `main` into its branch, and the new day is cut from `main`. If no
+day PR is open, the turn opens one — Birdsong normally does, but any turn may, rather than
+borrowing whichever branch is open. This replaces stacking each day on the newest unmerged one
+([#144](https://github.com/toumix/desire/issues/144)), which existed only while USER merged them.
+`sweep.py` names the open day PR. Branch names carry
 nothing: outside MEMORY_REPO, use the one you were assigned or open a new one. **In MEMORY_REPO the
 day's PR branch wins over whatever branch the session was assigned, and this is standing USER
 permission, not a per-turn ask.** When a harness or task pins the session to one branch and forbids
@@ -119,8 +119,8 @@ branch has misread this rule.
 A file that is a substantial read in its own right, `OTHERS/<person>.md` above all, opens its own
 pull request the first time it is written, titled for the file rather than the day, so USER can
 merge it on its own schedule; once it exists, every later edit is ordinary turn work and goes to the
-day PR. Several day PRs open at once is USER not having merged past days: the sweep prints
-MEMORY_REPO's open PRs whatever their number and fails only on two under one title, a day written
+day PR. Two day PRs open at once is a turn that skipped the merge: the sweep prints MEMORY_REPO's
+open PRs whatever their number and fails on two day PRs open, or two under one title, a day written
 twice — `git log` is not the check.
 
 Feedback happens as comments on that PR — agents listen to GitHub events — or in interactive chats,
