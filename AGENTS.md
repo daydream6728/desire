@@ -117,9 +117,10 @@ exception USER has already granted — take it without stopping to ask; a memory
 branch has misread this rule.
 
 A file that is a substantial read in its own right, `OTHERS/<person>.md` above all, opens its own
-pull request the first time it is written, titled for the file rather than the day, so USER can
-merge it on its own schedule; once it exists, every later edit is ordinary turn work and goes to the
-day PR. Two day PRs open at once is a turn that skipped the merge: the sweep prints MEMORY_REPO's
+pull request the first time it is written, titled for the file rather than the day, so it can be read
+on its own; agents merge it themselves like a day PR, at the latest when the next day's PR opens
+(USER, 2026-10-20: *"yes agents can merge OTHERS PRs too"*). Once it exists, every later edit is
+ordinary turn work and goes to the day PR. Two day PRs open at once is a turn that skipped the merge: the sweep prints MEMORY_REPO's
 open PRs whatever their number and fails on two day PRs open, or two under one title, a day written
 twice — `git log` is not the check.
 

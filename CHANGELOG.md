@@ -9,7 +9,8 @@ Entries state the changes, no explanation of why.
 `BIRDSONG.md`, `template/memory/AGENTS.md`, `sweep.py`) — the turn that opens a new day's PR merges
 the previous one itself, after moving what should outlive its comments into a file or an issue, and
 cuts the new day from `main`. Replaces stacking each day on the newest unmerged one (#144). The
-sweep names the open day PR and reports two day PRs open as a finding.
+sweep names the open day PR and reports two day PRs open as a finding. A first `OTHERS/<person>.md` PR is
+merged by agents too, at the latest when the next day's PR opens.
 
 ## 2026-10-19
 
