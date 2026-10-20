@@ -9,8 +9,11 @@ import pathlib
 import tempfile
 import unittest
 import contextlib
+import http.client
 import io
+import json
 import urllib.error
+import urllib.request
 
 import sweep
 
@@ -705,6 +708,100 @@ class Everything(unittest.TestCase):
     def test_since_alone_sweeps_everything(self):
         self.run_main(["--since", "2026-09-27T00:00:00Z"])
         self.assertEqual(len(self.swept), 4)
+
+
+class Transport(unittest.TestCase):
+    """A read nobody answered is done again; a read GitHub answered is not.
+    The two used to be one case and neither was handled: a
+    `RemoteDisconnected` is a `ConnectionResetError` and an `HTTPException`
+    and is no kind of `URLError`, so it walked through the guard in `main`
+    written for exactly it, and ended a sweep of five repos with a traceback
+    on the one hundred and eighty-third read."""
+
+    def setUp(self):
+        self.attempts = []
+        original = urllib.request.urlopen
+        urllib.request.urlopen = self.urlopen
+        self.addCleanup(setattr, urllib.request, "urlopen", original)
+        self.addCleanup(setattr, sweep, "BACKOFF", sweep.BACKOFF)
+        sweep.BACKOFF = 0  # the waiting is not what these tests are about
+
+    def urlopen(self, request):
+        self.attempts.append(request.full_url)
+        failure = self.failures.pop(0) if self.failures else None
+        if failure is not None:
+            raise failure
+        return io.StringIO(json.dumps(self.answer))
+
+    def read(self, failures, answer=None):
+        self.failures, self.answer = list(failures), answer
+        return sweep.read(urllib.request.Request("https://api.github.com/x"))
+
+    def test_a_dropped_connection_is_read_again(self):
+        dropped = http.client.RemoteDisconnected("closed without response")
+        self.assertEqual(self.read([dropped], answer=[{"number": 7}]),
+                         [{"number": 7}])
+        self.assertEqual(len(self.attempts), 2)
+
+    def test_a_reset_and_a_timeout_are_the_same_case(self):
+        self.assertEqual(
+            self.read([ConnectionResetError(), TimeoutError(),
+                       urllib.error.URLError("unreachable")], answer=[]),
+            [])
+        self.assertEqual(len(self.attempts), sweep.ATTEMPTS)
+
+    def test_a_forbidden_read_is_raised_on_the_first_attempt(self):
+        """GitHub answering no is an answer, and the rest of this file reads
+        the status code off it: retrying one would turn a 403 into four and
+        tell the caller nothing it did not already know."""
+        self.failures = [urllib.error.HTTPError("u", 403, "Forbidden", {},
+                                                None)]
+        self.answer = []
+        with self.assertRaises(urllib.error.HTTPError):
+            sweep.read(urllib.request.Request("https://api.github.com/x"))
+        self.assertEqual(len(self.attempts), 1)
+
+    def test_a_read_nobody_ever_answers_is_raised_not_swallowed(self):
+        with self.assertRaises(http.client.RemoteDisconnected):
+            self.read([http.client.RemoteDisconnected()] * sweep.ATTEMPTS)
+        self.assertEqual(len(self.attempts), sweep.ATTEMPTS)
+
+
+class Dropped(unittest.TestCase):
+    """What a drop that outlives its retries costs: the repo is unreadable and
+    the sweep exits 2. Exit 1 would be the lie — it is the code for findings,
+    and a traceback used to land on it."""
+
+    def setUp(self):
+        original = sweep.sweep
+        sweep.sweep = self.fake
+        self.addCleanup(setattr, sweep, "sweep", original)
+        self.config = pathlib.Path(tempfile.mkdtemp()) / "config.env"
+        self.config.write_text("MEMORY_REPO=u/memory\nDESIRE_REPO=u/desire\n"
+                               "WORK_REPOS=u/desire,o/work\n")
+        os.environ["AGENTS_CONFIG"] = str(self.config)
+        self.addCleanup(os.environ.pop, "AGENTS_CONFIG", None)
+
+    def fake(self, repo, numbers, since, setup):
+        if repo == "o/work":
+            raise http.client.RemoteDisconnected("closed without response")
+        return []
+
+    def run_main(self):
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            code = sweep.main([])
+        return code, stderr.getvalue()
+
+    def test_the_drop_is_a_line_and_the_verdict_is_two(self):
+        code, err = self.run_main()
+        self.assertEqual(code, 2)
+        self.assertIn("o/work: GitHub unreadable", err)
+        self.assertIn("unreadable: o/work", err)
+
+    def test_the_other_repos_are_still_swept(self):
+        _, err = self.run_main()
+        self.assertNotIn("clean", err)
 
 
 if __name__ == "__main__":
