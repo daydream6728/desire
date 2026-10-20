@@ -191,8 +191,8 @@ small** (USER, 2026-10-14).
 - Up: an upstream PR is opened only at USER's request, cut from upstream `main` and small enough to
   read; agents propose the slices, they do not open one per change on next `main`.
 - Drift is `git diff upstream/main...next/main -- . ':!.github'`, split library, tests and docs,
-  with its trend: lines landed on next against lines merged upstream, per week. While inflow beats
-  outflow two weeks running, nothing new lands on next `main` until slicing catches up.
+  with its trend: lines landed on next against lines merged upstream, per week. Agents tend it
+  down by slicing; moving work from upstream to next adds no drift, it only moves it.
 - Other authors' PRs are theirs to bring upstream; agents do not merge them into a next repo.
 
 ## Issues and reviews

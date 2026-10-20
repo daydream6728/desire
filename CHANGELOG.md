@@ -3,6 +3,12 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-19
+
+**Next repos: the two-weeks-of-inflow rule is dropped** (`AGENTS.md`) — the rule that nothing new
+lands on next `main` while inflow beats outflow two weeks running is dropped; drift and its weekly
+trend are still measured and tended down by slicing.
+
 ## 2026-10-14
 
 **Next repos: agents merge into a mirror of a WORK_REPO and keep its drift small**
