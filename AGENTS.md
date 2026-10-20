@@ -97,32 +97,29 @@ the item is and dies with it; `OTHERS/` is what working with that person has bee
 own, what they have landed, what of theirs touches our lanes — and outlives every one of their pull
 requests.
 
-**One pull request per day for the day's work, opened by 🐦 Birdsong** — ready for review rather
-than draft — titled with the day it covers. It carries everything whose lifetime is the day (the
-turn file, the board, `USER_TODO.md`, `WORK/` notes); every later turn of that day pushes there and
+**One pull request per day for the day's work, opened by 🐦 Birdsong** — ready for review rather than
+draft — titled with the day it covers. It carries everything whose lifetime is the day (the turn
+file, the board, `USER_TODO.md`, `WORK/` notes); every later turn of that day pushes there and
 leaves a comment rather than opening another. **The turn that opens a new day's PR first merges the
-previous day's itself** (USER, 2026-10-20: *"now I trust the agents to know what to keep in
-long-term memory so it's ok for them to merge the PR for the previous day before opening a fresh
-one"*): whatever in that PR's comment thread should outlive it goes into a file or an issue first,
-a conflict is resolved by merging `main` into its branch, and the new day is cut from `main`. If no
-day PR is open, the turn opens one — Birdsong normally does, but any turn may, rather than
-borrowing whichever branch is open. This replaces stacking each day on the newest unmerged one
-([#144](https://github.com/toumix/desire/issues/144)), which existed only while USER merged them.
-`sweep.py` names the open day PR. Branch names carry
-nothing: outside MEMORY_REPO, use the one you were assigned or open a new one. **In MEMORY_REPO the
-day's PR branch wins over whatever branch the session was assigned, and this is standing USER
-permission, not a per-turn ask.** When a harness or task pins the session to one branch and forbids
-pushing elsewhere without permission, pushing the day's memory work to the day PR branch is the
-exception USER has already granted — take it without stopping to ask; a memory turn that asks which
-branch has misread this rule.
+previous day's itself**: whatever in that PR's comment thread should outlive it goes into a file or
+an issue first, a conflict is resolved by merging `main` into its branch, and the new day is cut
+from `main`. If no day PR is open, the turn opens one — Birdsong normally does, but any turn may,
+rather than borrowing whichever branch is open. This replaces stacking each day on the newest
+unmerged one ([#144](https://github.com/toumix/desire/issues/144)), which existed only while USER
+merged them. `sweep.py` names the open day PR. Branch names carry nothing: outside MEMORY_REPO, use
+the one you were assigned or open a new one. **In MEMORY_REPO the day's PR branch wins over whatever
+branch the session was assigned, and this is standing USER permission, not a per-turn ask.** When a
+harness or task pins the session to one branch and forbids pushing elsewhere without permission,
+pushing the day's memory work to the day PR branch is the exception USER has already granted — take
+it without stopping to ask; a memory turn that asks which branch has misread this rule.
 
 A file that is a substantial read in its own right, `OTHERS/<person>.md` above all, opens its own
-pull request the first time it is written, titled for the file rather than the day, so it can be read
-on its own; agents merge it themselves like a day PR, at the latest when the next day's PR opens
-(USER, 2026-10-20: *"yes agents can merge OTHERS PRs too"*). Once it exists, every later edit is
-ordinary turn work and goes to the day PR. Two day PRs open at once is a turn that skipped the merge: the sweep prints MEMORY_REPO's
-open PRs whatever their number and fails on two day PRs open, or two under one title, a day written
-twice — `git log` is not the check.
+pull request the first time it is written, titled for the file rather than the day, so it can be
+read on its own; agents merge it themselves like a day PR, at the latest when the next day's PR
+opens. Once it exists, every later edit is ordinary turn work and goes to the day PR. Two day PRs
+open at once is a turn that skipped the merge: the sweep prints MEMORY_REPO's open PRs whatever
+their number and fails on two day PRs open, or two under one title, a day written twice — `git log`
+is not the check.
 
 Feedback happens as comments on that PR — agents listen to GitHub events — or in interactive chats,
 recorded as agent comments with verbatim quotes. **PR comments are the short-term memory, discarded
