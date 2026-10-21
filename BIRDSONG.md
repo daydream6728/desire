@@ -19,7 +19,7 @@
   board and MEMORY_REPO's open issues rather than repeating them. Its own turn goes in a comment; the PR review
   is USER's feedback
 - it rewrites the board, which is **cross-cutting state only** — what collides with what, what
-  merge order is forced, what is ruled — a per-head fact being that head's own file
+  merge order is forced, what is ruled; a fact about one head goes in its own `WORK/` note
 - it merges each upstream `main` into its next repo and reports the drift and its trend on the
   board; the upstream slices it proposes, with what each costs to read, go under `Agent proposals`
 - it reviews the open issues as well as the PRs, both in WORK_REPOS and DESIRE_REPO
