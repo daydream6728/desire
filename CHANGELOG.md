@@ -3,6 +3,16 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-21
+
+**A review is read as USER signal, where the sweep saw only comments**
+(`template/memory/.agents/skills/sweep/sweep.py`, `test_sweep.py`) — `verdicts(...)` reads
+`pulls/<n>/reviews`, the one endpoint serving a review's state and body, and `item` reports every
+review of USER's that nothing of ours has answered, with its state. A review carries no reactions
+endpoint, so 👀 cannot quiet one and `--since` never hides one: what answers a review is a post of
+ours after it, so the comments are read beside the reviews rather than each alone. A `PENDING`
+review is a draft and is not read. The public copy is byte-identical to MEMORY_REPO's live one.
+
 ## 2026-10-20
 
 **A read nobody answered is retried, so one dropped connection stops costing a whole sweep**

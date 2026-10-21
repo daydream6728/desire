@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
-bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
+bodies and threads where USER spoke last, the reviews of USER's that nothing
+of ours has answered, APPROVE_EMOJI reacts from USER, the
 issues closed inside the window, MEMORY_REPO's open-PR count, the state of
 each AGENT-owned `TODO.md`, the review threads of an AGENT-owned pull request
 that wait on an agent, whether its checks ran against its own base's tip and
@@ -174,6 +175,38 @@ def review_comments(repo, number, body):
     if "pull_request" not in body:
         return []
     return get(repo, f"pulls/{number}/comments")
+
+
+def verdicts(repo, number, body, comments, setup):
+    """USER's reviews of a pull request that nothing of ours has answered,
+    oldest first.
+
+    `pulls/<n>/reviews` is the only place a review's state and its body are
+    served, and the sweep read it nowhere: `pulls/<n>/comments` lists the line
+    comments without the review that carried them, `issues/<n>/comments` lists
+    the conversation tab, and a bare approval appears in neither. So an
+    `APPROVED` of USER's reached the pipeline through no instrument it owned,
+    and `USER_TODO.md` went on asking for a review twelve hours after USER
+    wrote it (desire#49). `commenter:` and `involves:` do not see one either;
+    `reviewed-by:` does.
+
+    A review carries no reactions endpoint of its own, so 👀 cannot quiet one
+    and `--since` never hides one: what answers a review is a post of ours
+    after it, which is why the comments are read here beside the reviews
+    rather than each alone. A `PENDING` review is a draft nobody but its
+    author can read, and the state is part of the finding — an `APPROVED` is
+    what unblocks a head and a `CHANGES_REQUESTED` is work."""
+    if "pull_request" not in body:
+        return []
+    reviewed = [(review["submitted_at"], review)
+                for review in get(repo, f"pulls/{number}/reviews")
+                if review["state"] != "PENDING"]
+    posted = reviewed + [(comment["created_at"], comment)
+                         for comment in comments]
+    ours = max((when for when, post in posted if answered(post, setup)),
+               default="")
+    return [review for when, review in sorted(reviewed, key=lambda it: it[0])
+            if not answered(review, setup) and when > ours]
 
 
 def resolutions(repo, number):
@@ -589,7 +622,8 @@ def todo(repo, number, body, setup, cache):
 
 def item(repo, number, setup, since, cache):
     """The findings on one PR or issue: USER's APPROVE_EMOJI on the body or on
-    any comment, and every thread where USER spoke last. GitHub splits comments
+    any comment, every review of USER's that nothing of ours answered, and
+    every thread where USER spoke last. GitHub splits comments
     across two endpoints, review comments threaded by in_reply_to_id and the
     conversation tab flat; both are swept, and so are the bodies. A body USER
     wrote is the thread when nothing else was said on it, which is the shape a
@@ -615,6 +649,12 @@ def item(repo, number, setup, since, cache):
                 f"#{number} {setup['APPROVE_EMOJI']} from {setup['USER']}:"
                 f" {comment['html_url']}"
                 + seen(repo, kind, comment, setup, cache))
+    for review in verdicts(repo, number, body,
+                           [comment for comment, _, _ in comments], setup):
+        findings.append(
+            f"#{number} unanswered {setup['USER']}"
+            f" {review['state'].lower().replace('_', ' ')} review:"
+            f" {review['html_url']}")
     for (endpoint, _), thread in threads.items():
         asked = thread[-1]  # both endpoints list oldest first
         kind = f"{endpoint}/comments/{asked['id']}/reactions"
