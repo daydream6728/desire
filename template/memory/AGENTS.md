@@ -33,7 +33,7 @@ The turn that opens a new day's PR merges the previous one first, cutting the ne
 it, `waiting` when it is one react, one merge or one word. An agent closes a `waiting` one on
 evidence and never a `yours` one. The day PR's comments are the turn journal: each turn leaves one.
 
-**Standing orders are open issues on DESIRE_REPO**, not a file here. A ruling that outlives the
+**Standing orders are open issues on DESIRE_REPO**. A ruling that outlives the
 pull request it was made on belongs in the prompts; until a prompt file carries it, it waits as an
 open issue there, where USER can see it and close it. Read those open issues before planning
 anything — re-deriving a ruling from scratch is how a wrong one survives.

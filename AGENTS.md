@@ -134,7 +134,7 @@ when the PR merges; memory files stay as concise as possible.**
 ## One file per open item
 `WORK/<repo>/<number>.md` says what one open item does, where it stands, what it waits on, and
 carries one line per turn that touched it: one writer per file, one file per item, written by the
-turn that did the work rather than by a nightly re-derivation.
+turn that did the work.
 
 It covers the whole repository, not our own slice of it: someone else's pull
 request is what ours collides with, an issue nobody answered is why a head is stuck. Ownership —

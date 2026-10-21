@@ -16,10 +16,9 @@ Last rewritten: never — this is the seed. Delete this line when the first turn
 <!-- Rulings USER has already made, one line each with the date. A turn that reopens one of these
 has cost a night. Empty until the first ruling. -->
 
-# The queue
+# Collisions and forced merge order
 
-<!-- Not a list of heads — that is what WORK/ is. What goes here is what one head's file cannot
-say on its own: forced merge order, live file collisions between two heads, a lane that is blocked
+<!-- What one head's file cannot say on its own: forced merge order, live file collisions between two heads, a lane that is blocked
 as a lane. -->
 
 # The open issues
