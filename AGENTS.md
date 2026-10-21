@@ -10,9 +10,6 @@ only. The machinery behind the rules — how each mechanism works and how to rec
 is in [`OPERATIONS.md`](OPERATIONS.md), loaded by no one until needed. When each rule landed, and
 who ruled it, is in [`CHANGELOG.md`](CHANGELOG.md). **A rule says what is, as if it had always
 been so**: what it replaced, and what it is not because something else once was, belong there.
-**The prompts have a budget**: what a session loads — `CLAUDE.md` with its imports, `BIRDSONG.md`,
-`EVENING.md` — stays within 20% of its size on 2026-10-21, a rule that does not fit replaces one,
-and [`lint.py`](.github/lint.py) checks it with the links and copies on every push.
 
 ## Config
 The ten values — USER, AGENT, AGENT_EMAIL, WORK_REPOS, MEMORY_REPO, DESIRE_REPO, APPROVE_EMOJI,

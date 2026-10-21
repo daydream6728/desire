@@ -7,18 +7,18 @@ Entries state the changes, no explanation of why.
 
 **`RULES.md` leaves DESIRE_REPO; a linter and a prompt budget; the harness's three asks**
 (`AGENTS.md`, `CLAUDE.md`, `OPERATIONS.md`, `BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `.github/`,
-`template/memory/`) —
-`RULES.md` is deleted and no file here names it or `TODO.md` any more: the prompts drop the
+`template/memory/`) — `RULES.md` is deleted and no file here names it or `TODO.md` any more: the prompts drop the
 `TODO.md` gate, a WORK_REPO's own `AGENTS.md` says how its pull requests are run, and `sweep.py`
 no longer reads `TODO.md`. `.github/lint.py`, run on every push, checks the relative links, the deny
 lists' tool names, the copies a MEMORY_REPO carries from `template/memory/` and its board's 200
-lines, and a byte budget 20% above today's size on what `CLAUDE.md`, `BIRDSONG.md` and `EVENING.md`
-load. The deny lists name `mcp__claude-code-remote__*`, the server they meant. Turmoil gains *When
+lines, and a budget of 30,000 bytes on what `CLAUDE.md`, `BIRDSONG.md` and `EVENING.md` load
+together. The deny lists name `mcp__claude-code-remote__*`, the server they meant. Turmoil gains *When
 the harness says otherwise*: timed check-ins, draft pull requests, the assigned branch, the last of
 which leaves the Memory section. The board is no longer said to be rewritten every turn. USER:
 *"remove desire/RULES.md we only need it for discopy"*, *"There is no RULES.md nor TODO.md in this
 repo anymore, scan and remove these from everywhere except CHANGELOG"*, *"add a special section in
-Turmoil for these three cases"*, *"add a cap at 20% above the current size"*.
+Turmoil for these three cases"*, *"add a cap at 20% above the current size"*, *"drop the date let's
+just say 30K total, remove it from AGENTS.md it can be in the linter only"*.
 
 **`WORK/` notes only for what an agent works on; a slimmer note** (`AGENTS.md`, `sweep.py`,
 `template/memory/`, closes [#158](https://github.com/toumix/desire/issues/158)) — a note is owed

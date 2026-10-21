@@ -15,8 +15,9 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SEED = ROOT / "template" / "memory"
 
-# Bytes a session loads, 20% above their size on 2026-10-21.
-BUDGET = {"CLAUDE.md": 22_840, "BIRDSONG.md": 2_412, "EVENING.md": 3_508}
+# The prompts a session loads, and the bytes all of them may take together.
+PROMPTS = ["CLAUDE.md", "BIRDSONG.md", "EVENING.md"]
+BUDGET = 30_000
 
 # The MCP servers a deny list may name: a wrong server name denies nothing.
 SERVERS = {"claude-code-remote"}
@@ -77,11 +78,10 @@ def loaded(path, missing):
 
 
 def budget():
-    for name, cap in BUDGET.items():
-        missing = []
-        if (size := loaded(ROOT / name, missing)) > cap:
-            yield f"{name} loads {size} bytes, over its budget of {cap}"
-        yield from missing
+    missing = []
+    if (size := sum(loaded(ROOT / name, missing) for name in PROMPTS)) > BUDGET:
+        yield f"the prompts load {size} bytes, over the budget of {BUDGET}"
+    yield from missing
 
 
 def denied():
