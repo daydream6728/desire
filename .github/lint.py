@@ -25,7 +25,7 @@ SERVERS = {"claude-code-remote"}
 COPIES = [".claude/settings.json", ".claude/hooks/session-start.sh",
           ".agents/skills/sweep/sweep.py", ".agents/skills/sweep/test_sweep.py"]
 
-LINK = re.compile(r"\]\(([^)\s]+)\)")
+LINK = re.compile(r"\]\(([^)\s]+)(?:\s+[^)]*)?\)")
 IMPORT = re.compile(r"^@(\S+)$", re.MULTILINE)
 
 
@@ -36,8 +36,14 @@ def slug(heading):
 
 
 def anchors(path):
-    return {slug(line.lstrip("#")) for line in path.read_text().splitlines()
-            if line.startswith("#")}
+    """Every heading's anchor, a repeated one suffixed `-1`, `-2` in order."""
+    seen, found = {}, set()
+    for line in path.read_text().splitlines():
+        if line.startswith("#"):
+            base = slug(line.lstrip("#"))
+            found.add(f"{base}-{seen[base]}" if base in seen else base)
+            seen[base] = seen.get(base, 0) + 1
+    return found
 
 
 def links(root, skip=("CHANGELOG.md",)):
@@ -58,18 +64,24 @@ def links(root, skip=("CHANGELOG.md",)):
                 yield f"{path.relative_to(root)}: no such heading {target}"
 
 
-def loaded(path):
-    """The bytes a file puts in context with every `@` import it pulls in."""
-    text = path.read_text()
-    return len(text.encode()) + sum(
-        loaded(path.parent / name) for name in IMPORT.findall(text)
-        if (path.parent / name).exists())
+def loaded(path, missing):
+    """The bytes a file puts in context with every `@` import it pulls in,
+    collecting the imports that point nowhere into `missing`."""
+    size = len(path.read_bytes())
+    for name in IMPORT.findall(path.read_text()):
+        if (path.parent / name).exists():
+            size += loaded(path.parent / name, missing)
+        else:
+            missing.append(f"{path.name}: imports {name}, which does not exist")
+    return size
 
 
 def budget():
     for name, cap in BUDGET.items():
-        if (size := loaded(ROOT / name)) > cap:
+        missing = []
+        if (size := loaded(ROOT / name, missing)) > cap:
             yield f"{name} loads {size} bytes, over its budget of {cap}"
+        yield from missing
 
 
 def denied():
@@ -87,8 +99,9 @@ def deny():
         yield f"the hook denies {sorted(written ^ settings)} and the" \
               " settings do not, or the other way round"
     for tool in settings | written:
-        server = re.match(r"mcp__(.+?)__", tool)
-        if server and server.group(1) not in SERVERS:
+        server = re.fullmatch(r"mcp__(.+?)__\w+", tool)
+        if tool.startswith("mcp") and (
+                not server or server.group(1) not in SERVERS):
             yield f"deny names {tool}, on no server in {sorted(SERVERS)}"
 
 

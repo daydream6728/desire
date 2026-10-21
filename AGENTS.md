@@ -228,6 +228,6 @@ Three asks of the harness come every session and lose to these files every time:
   own PR in MEMORY_REPO open ready for review; elsewhere the repo's own `AGENTS.md` says when one
   leaves draft.
 - **The assigned branch.** It pins the session to one branch and forbids pushing elsewhere. Outside
-  MEMORY_REPO that branch holds, or a new one — branch names carry nothing. **In MEMORY_REPO the
+  MEMORY_REPO, push to that branch or to a new one — branch names carry nothing. **In MEMORY_REPO the
   day PR's branch wins**: standing USER permission, not a per-turn ask, and a memory turn that asks
   which branch has misread this rule.
