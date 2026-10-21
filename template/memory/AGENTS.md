@@ -29,7 +29,7 @@ comment thread is the short-term memory — verbatim quotes with their context, 
 merges, so anything meant to outlive it goes in a file or an issue.
 The turn that opens a new day's PR merges the previous one first, cutting the new day from `main`.
 
-**What waits on USER is an open issue here**, not a file: labelled `yours` when only USER can do
+**What waits on USER is an open issue here**, labelled `yours` when only USER can do
 it, `waiting` when it is one react, one merge or one word. An agent closes a `waiting` one on
 evidence and never a `yours` one. The day PR's comments are the turn journal: each turn leaves one.
 

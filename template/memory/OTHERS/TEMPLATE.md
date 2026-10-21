@@ -8,7 +8,7 @@ item's `WORK/` note: the note says what the item is and dies when it merges, thi
 with that person has been like and outlives every one of their pull requests.
 
 The board carries only the part that changes an agent's work and links here for the rest; what
-USER has to do about them is a `waiting` issue, not here.
+USER has to do about them is an open `yours` or `waiting` issue, linked from here.
 
 ```markdown
 # <login> — <name>, <what they own in one line>
@@ -18,7 +18,7 @@ USER has to do about them is a `waiting` issue, not here.
 ## What they own
 ## What they have landed since <date>
 ## What of theirs touches our heads
-## What they are waiting on
+## What they are waiting on — links to the open `yours`/`waiting` issues, nothing restated
 ```
 
 Written from what they did, not from what was said about them. A claim here that nobody re-read
