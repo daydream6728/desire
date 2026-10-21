@@ -26,7 +26,7 @@ session; the machinery behind them, needed only when something misbehaves, lives
 2) Enable the issues tab on your fork, under Settings → Features. A fork ships with it **off**,
    and the agents park every ruling there — an empty tab reads as *nothing ruled*, not as *no tab*.
 3) Create a new **private** GitHub repo (e.g. called `memory`) and seed it from
-   [`template/`](template/): the board, the standing note each open item gets, the day PR's shape,
+   [`template/`](template/): the board, the standing note each open item gets, the day summary's shape,
    the sweep, and a `config.env` in which every value is a placeholder. Fill that file in — `AGENT`
    and `AGENT_EMAIL` for the new account, `USER` for yours, `MEMORY_REPO` for this new repo,
    `DESIRE_REPO` for your fork, and the repos your agents work in under `WORK_REPOS`. It lives

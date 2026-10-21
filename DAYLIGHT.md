@@ -20,5 +20,5 @@ at all.
   🐦 Birdsong sees an interactive session at all; a turn that leaves no trace there did not happen
   as far as tomorrow is concerned (USER, 2026-09-01)
 - feedback that stays within the assigned work lives on its PR and in that head's `WORK/` file; only
-  feedback that goes outside it and can affect other workstreams is recorded on MEMORY_REPO's day
-  PR — quote + context as a comment, the distilled directive committed to the day file
+  feedback that goes outside it and can affect other workstreams is recorded in MEMORY_REPO's turn
+  file — quote + context, the distilled directive committed where it binds

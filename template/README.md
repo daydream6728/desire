@@ -36,4 +36,4 @@ a list with nothing on it, and the three `TEMPLATE.md` files are shapes rather t
 first turn writes the real thing. Leave the templates in place: they are what an agent reads when
 it writes its first `WORK/` file, and deleting them costs you the shape.
 
-`memory/.github/PULL_REQUEST_TEMPLATE.md` is the day PR's shape, the one 🐦 Birdsong writes.
+`memory/TURNS/SUMMARY.md` is the day summary's shape, the one 🐦 Birdsong writes atop its turn.

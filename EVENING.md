@@ -26,5 +26,5 @@
   and a head with no `build` run at all is a merge conflict rather than a slow runner, since a
   `pull_request` job runs against `refs/pull/N/merge` and that ref does not exist while the pull
   request is dirty
-- it writes the `WORK/` file of the head it worked, its turn file, and one comment on the memory PR,
-  never that PR's description
+- it writes the `WORK/` file of the head it worked, and its turn file, committed to MEMORY_REPO
+  `main` as one commit, never the day summary

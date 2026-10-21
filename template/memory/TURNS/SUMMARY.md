@@ -1,7 +1,7 @@
 # <date>
 
 ## Since last time
-<!-- Activity since the *previous* memory PR, not literally today. Split by source: interactive
+<!-- Activity since the *previous* summary, not literally today. Split by source: interactive
 work under USER's own prompts, and the autonomous round — say plainly when a round did nothing, or
 did not run at all, rather than omit it. Substance: what a head does and what it reached, not that
 it exists. Scans, re-merges and board repair are support work — name them only where they changed

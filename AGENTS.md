@@ -91,42 +91,30 @@ follows is only what binds a turn in *this* repo.
 
 Every turn writes to MEMORY_REPO whatever else it did: the `WORK/` file of every item it touched,
 always, even when the work never left that one pull request. Anything that affects *other* heads
-goes to the board or the day PR besides. A review of somebody else's work is also recorded in
+goes to the board or the turn file besides. A review of somebody else's work is also recorded in
 `OTHERS/<person>.md`: whenever 🌤️ Daylight is charged with reviewing a pull request that is not
 ours, it writes there as well as in that item's `WORK/` note (USER, 2026-09-01). The note is what
 the item is and dies with it; `OTHERS/` is what working with that person has been like — what they
 own, what they have landed, what of theirs touches our lanes — and outlives every one of their pull
 requests.
 
-**One pull request per day for the day's work, opened by 🐦 Birdsong** — ready for review rather
-than draft, so USER can merge in one click — titled with the day it covers. It carries everything
-whose lifetime is the day (the turn file, the board, `USER_TODO.md`, `WORK/` notes); every later
-turn of that day pushes there and leaves a comment rather than opening another. A day's PR is opened
-even when the previous day's has not merged. If no day PR is open, the turn opens one — Birdsong
-normally does, but any turn may, rather than borrowing whichever branch is open. **A new day's PR
-opened while a previous day's is still unmerged is cut from the newest still-open day PR's branch,
-not from `main`** ([#144](https://github.com/toumix/desire/issues/144)): `README.md` and
-`USER_TODO.md` are rewritten every turn, so two day PRs both off `main` almost always touch both
-files and conflict, leaving the later turn to either duplicate work already in the earlier PR or
-fold the sibling branch in by hand — stacking makes each merge an ordinary fast-forward instead.
-`sweep.py` prints that branch. Branch names carry
-nothing: outside MEMORY_REPO, use the one you were assigned or open a new one. **In MEMORY_REPO the
-day's PR branch wins over whatever branch the session was assigned, and this is standing USER
-permission, not a per-turn ask.** When a harness or task pins the session to one branch and forbids
-pushing elsewhere without permission, pushing the day's memory work to the day PR branch is the
-exception USER has already granted — take it without stopping to ask; a memory turn that asks which
-branch has misread this rule.
+**Every round commits once, straight to MEMORY_REPO `main`, with no pull request** (USER,
+2026-10-21: *"i don't even want it to open PRs. it can push on main. one commit per round"*). A
+round is one turn: Birdsong's morning, an Evening night, one interactive session's turn. It
+stages everything it wrote (`WORK/` notes, the board, `USER_TODO.md`, the turn file, `OTHERS/`)
+and commits it as one commit whose message names the routine and what the round was. If the push
+is refused because `main` moved, the round fetches, replays its one commit onto the new `main`
+(it was never published, so this rewrites nothing anyone else holds), resolves any conflict by
+keeping both rounds' content, and pushes again: never a force-push, never a second commit to fix
+the first. A round that changed nothing in MEMORY_REPO commits nothing. **In MEMORY_REPO,
+pushing to `main` is standing USER permission, not a per-turn ask**, whatever branch the
+harness assigned the session: a memory turn that asks which branch has misread this rule.
+Outside MEMORY_REPO, branch names carry nothing: use the one you were assigned or open a new one.
 
-A file that is a substantial read in its own right, `OTHERS/<person>.md` above all, opens its own
-pull request the first time it is written, titled for the file rather than the day, so USER can
-merge it on its own schedule; once it exists, every later edit is ordinary turn work and goes to the
-day PR. Several day PRs open at once is USER not having merged past days: the sweep prints
-MEMORY_REPO's open PRs whatever their number and fails only on two under one title, a day written
-twice — `git log` is not the check.
-
-Feedback happens as comments on that PR — agents listen to GitHub events — or in interactive chats,
-recorded as agent comments with verbatim quotes. **PR comments are the short-term memory, discarded
-when the PR merges; memory files stay as concise as possible.**
+Feedback reaches the routines in interactive chats or as issues and comments on DESIRE_REPO,
+which the sweep reads; nothing reads comments on a memory commit. A live ruling is quoted verbatim, with
+its context, in that round's turn file, and the distilled directive goes where it binds. **The
+turn file is the short-term memory; memory files stay as concise as possible.**
 
 ## One file per open item
 `WORK/<repo>/<number>.md` says what one open item does, where it stands, what it waits on, and
@@ -150,13 +138,14 @@ re-read live (state, mergeable state, checks) carries the date it was read, and 
 that against the item's own, so staleness is arithmetic.
 [`template/memory/WORK/TEMPLATE.md`](template/memory/WORK/TEMPLATE.md) is the shape.
 
-## Memory PR Template
-🐦 Birdsong writes it and nobody else, as short as the day can be said:
+## Day summary
+🐦 Birdsong writes it at the top of its section of `TURNS/<date>.md`, and nobody else, as short as
+the day can be said:
 
 ```
 # <date>
-## Since last time         high-level summary of activity since the *previous memory PR*, not
-                           literally "today" — a PR opened at 8am has nothing to say about today's
+## Since last time         high-level summary of activity since the *previous summary*, not
+                           literally "today" — a summary written at 8am has nothing to say about today's
                            calendar date and everything to say about the days since the last one.
                            Split by source: interactive work under your own prompts, and Evening's
                            autonomous round — say plainly when a round did nothing, or didn't run
@@ -170,8 +159,8 @@ that against the item's own, so staleness is arithmetic.
 ```
 
 `USER_TODO.md` is the standing list of what waits on USER, kept current every turn, so the
-description never repeats it: the "Since last time" report is an honest activity account, answerable
-for "did Evening even launch" from the description alone rather than from commit history. The board
+summary never repeats it: the "Since last time" report is an honest activity account, answerable
+for "did Evening even launch" from the summary alone rather than from commit history. The board
 is where a table lives — link it, do not repeat it, since a copy goes stale first. No agent
 narration beyond that activity summary: a scan, a re-merge, a review trigger or a board repair is
 support work, named only where it changed what was available or ate the round, and turn-file

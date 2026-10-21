@@ -27,12 +27,11 @@ Five kinds of file, each with exactly **one lifetime**:
 - [`OTHERS/<person>.md`](OTHERS) — one standing note per collaborator, **rewritten when
   re-read**, not per turn. Shape in [`OTHERS/TEMPLATE.md`](OTHERS/TEMPLATE.md).
 
-One pull request per day, titled with that day, shared by all three routines — a routine name in
-the title is wrong. Its **description is the day's executive summary and 🐦 Birdsong alone writes
-it**, to the shape in [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md); every
-routine leaves a comment for its own turn. That PR's review is USER's feedback channel and its
-comment thread is the short-term memory — verbatim quotes with their context, discarded when the PR
-merges, so anything meant to outlive it goes in the description, a file, or an issue.
+No pull requests here: **every round commits once, straight to `main`**, whichever routine it
+is. The **day's executive summary heads 🐦 Birdsong's section of the turn file and Birdsong alone
+writes it**, to the shape in [`TURNS/SUMMARY.md`](TURNS/SUMMARY.md). Feedback comes in live turns or
+as issues on DESIRE_REPO; anything meant to outlive the day goes
+in a file or an issue.
 
 **Standing orders are open issues on DESIRE_REPO**, not a file here. A ruling that outlives the
 pull request it was made on belongs in the prompts; until a prompt file carries it, it waits as an

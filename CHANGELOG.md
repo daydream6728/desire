@@ -3,6 +3,16 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-21
+
+**Memory rounds commit straight to `main`** (`AGENTS.md`, `BIRDSONG.md`, `DAYLIGHT.md`,
+`EVENING.md`, `README.md`, `template/`) — every round makes one commit on MEMORY_REPO `main`,
+replayed onto a moved `main` rather than force-pushed or followed by a second. Birdsong's executive
+summary moves from the day PR's description to the top of its section of the turn file, its shape
+from `.github/PULL_REQUEST_TEMPLATE.md` to `TURNS/SUMMARY.md`; feedback moves from the day PR's
+thread to live turns and desire issues. Replaces one day PR shared by every
+round and left for USER to merge, and its stacking rule.
+
 ## 2026-10-14
 
 **Next repos: agents merge into a mirror of a WORK_REPO and keep its drift small**
