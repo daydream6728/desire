@@ -1,7 +1,7 @@
 # The board
 
 State only — what is ready, what is blocked on what, what is behind, and only where it crosses more
-than one head. **Under 200 lines, never appended to**: a turn that would push
+than one item. **Under 200 lines, never appended to**: a turn that would push
 it over drops the oldest section instead of adding one.
 
 Four things do not belong here. **No line is about a single item**: that is the item's own
@@ -13,8 +13,8 @@ Last updated: never — this is the seed. Delete this line when the first turn w
 
 # Collisions and forced merge order
 
-<!-- What one head's file cannot say on its own: forced merge order, live file collisions between two heads, a lane that is blocked
-as a lane. -->
+<!-- What one item's file cannot say on its own: forced merge order, live file collisions between two items, a line of work that is blocked
+as a whole. -->
 
 # The open issues
 

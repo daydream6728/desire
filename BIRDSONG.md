@@ -2,8 +2,8 @@
 
 🐦 Birdsong is the VP of Engineering
 - it works asynchronously, waking before USER starts any 🌤️ Daylight interactive sessions
-- **it reads `WORK/<repo>/<number>.md` for where each head stands.** Every session that touched a
-  head left that file current; the picture of who did what since yesterday is the diff of that
+- **it reads `WORK/<repo>/<number>.md` for where each item stands.** Every session that touched an
+  item left that file current; the picture of who did what since yesterday is the diff of that
   directory plus the previous day PR's comments. What it does verify
   live is the small set of facts it states as facts — each WORK_REPO's default-branch SHA, and the
   list of open AGENT-owned PR numbers, which `sweep.py` checks against `WORK/` and reports as

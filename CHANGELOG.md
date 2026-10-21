@@ -5,6 +5,17 @@ Entries state the changes, no explanation of why.
 
 ## 2026-10-21
 
+**`AGENTS.md` halves; plain words for the routines' jargon** (`AGENTS.md`, `OPERATIONS.md`,
+`BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `template/memory/`) — `AGENTS.md` goes from 2,764 to
+about 1,500 words with five bold rules; the conditions, mechanics and edge cases move to new
+`OPERATIONS.md` sections (*The day PR*, *WORK notes*, *Bugs in a next repo*, *Issues and reviews*,
+*Merging on approval*, *Watching a pull request*, *When the harness says otherwise*, *Identity and
+signing*). *Head* becomes *item* (one open pull request or issue, defined in `AGENTS.md`),
+*terminal handoff* becomes *done*, *support work* becomes *housekeeping*, *lane* and *in play* are
+gone. USER: *"Cut `AGENTS.md` to about 1,500 words. Keep around 5 bold rules and move the
+conditional clauses to `OPERATIONS.md`. Yeah please do that in a fresh desire PR now."*, *"there
+shouldn't be weird terms like this, I have no idea what these words mean either"*.
+
 **The board drops its rulings; no board line about a single item** (`BIRDSONG.md`,
 `.github/lint.py`, `template/memory/`) — the board's *Ruled, do not re-ask* section is gone: a
 ruling lives in DESIRE_REPO, as a prompt line or an open issue. A board line about exactly one
