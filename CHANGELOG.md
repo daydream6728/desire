@@ -5,6 +5,15 @@ Entries state the changes, no explanation of why.
 
 ## 2026-10-21
 
+**Birdsong clears stale `WORK/` notes; no `TURNS/`; USER's todos are issues** (`AGENTS.md`,
+`BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `template/`) — 🐦 Birdsong deletes the note of every
+merged or closed item before planning. `TURNS/<date>.md` is dropped: a turn's account is its one
+comment on the day PR. `USER_TODO.md` is replaced by MEMORY_REPO issues labelled `yours` or
+`waiting`, closed on evidence, never a `yours` one by an agent. USER: *"let's add cleaning up stale
+work notes as an explicit rule for birdsong"*, *"we don't need turns at all? we mostly have one PR
+open at a time"*, *"keeping a todo in a text file makes no sense: let's just use memory issues as
+todos!"*.
+
 **Every session loads less** (`CLAUDE.md`, `AGENTS.md`, `BIRDSONG.md`, `DAYLIGHT.md`,
 `OPERATIONS.md`, `README.md`, `template/memory/`) — `CLAUDE.md` imports `AGENTS.md`, `RULES.md` and
 `DAYLIGHT.md` only; 🐦 Birdsong and 🌙 Evening read their own file from their routine's prompt. The

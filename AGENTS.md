@@ -95,12 +95,18 @@ Anything that affects *other* heads goes to the board or the day PR besides. A r
 else's pull request is also recorded in `OTHERS/<person>.md`: the note is what the item is and dies
 with it; `OTHERS/` is what working with that person has been like — what they own, what they have
 landed, what of theirs touches our lanes — and outlives every one of their pull requests.
-`USER_TODO.md` is the standing list of what waits on USER, kept current every turn.
+
+**What waits on USER is an open issue on MEMORY_REPO**, one per thing, never a file: labelled
+`yours` when only USER can do it, `waiting` when it is one react, one merge or one word, its title
+naming what answering unblocks. A point blocked on USER is still asked on its own pull request the
+same turn, and its issue links that comment. An agent closes a `waiting` issue on evidence — the
+react, the merge, the reply — linking it; it never closes a `yours` one. The sweep runs over
+MEMORY_REPO's issues like any other repo's, so USER can answer on the issue itself.
 
 **One pull request per day for the day's work, opened by 🐦 Birdsong** — ready for review rather than
-draft — titled with the day it covers. It carries everything whose lifetime is the day (the turn
-file, the board, `USER_TODO.md`, `WORK/` notes); every later turn of that day pushes there and
-leaves a comment rather than opening another. **The turn that opens a new day's PR first merges the
+draft — titled with the day it covers. It carries the day's file changes (the board, `WORK/` and `OTHERS/` notes); every later turn of
+that day pushes there and **leaves one comment saying what it did** — the turn's own account, which
+no file repeats — rather than opening another PR. **The turn that opens a new day's PR first merges the
 previous day's PR itself**: whatever in that PR's comment thread should outlive it goes into a file
 or an issue first, a conflict is resolved by merging `main` into its branch, and the new day is cut
 from `main`. If no day PR is open, the turn opens one — Birdsong normally does, but any turn may,

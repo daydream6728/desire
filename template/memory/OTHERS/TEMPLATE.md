@@ -8,7 +8,7 @@ item's `WORK/` note: the note says what the item is and dies when it merges, thi
 with that person has been like and outlives every one of their pull requests.
 
 The board carries only the part that changes an agent's work and links here for the rest; what
-USER has to do about them is a section of `USER_TODO.md`, not here.
+USER has to do about them is a `waiting` issue, not here.
 
 ```markdown
 # <login> — <name>, <what they own in one line>

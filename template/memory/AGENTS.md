@@ -5,7 +5,7 @@ Birdsong, 🌤️ Daylight, 🌙 Evening. The rules they follow are public and l
 is the work, so it stays here. [`config.env`](config.env) at the root is the one file that names
 USER, AGENT and the repos, and both the prompts and the tooling read it from here.
 
-Five kinds of file, each with exactly **one lifetime**:
+Three kinds of file, each with exactly **one lifetime**:
 
 - [`WORK/<repo>/<number>.md`](WORK) — one standing note per open item of a WORK_REPO, **rewritten
   by whichever session touches it**, deleted by the turn that sees it merged or closed. It covers
@@ -18,13 +18,6 @@ Five kinds of file, each with exactly **one lifetime**:
   in that head's own file. **It stays under 200 lines**: a turn that would push it over drops the
   oldest section rather than appending, and `wc -l README.md` says whether it is over before the
   push.
-- [`TURNS/<date>.md`](TURNS) — the turn journal, **write-once**: one section per routine, in firing
-  order, carrying what changed rather than the whole picture. Shape in
-  [`TURNS/TEMPLATE.md`](TURNS/TEMPLATE.md).
-- [`USER_TODO.md`](USER_TODO.md) — USER's own list, as checkboxes: what only USER can do under
-  **Yours**, then what waits on USER — one react, one merge or one word each — grouped by whose
-  work it unblocks. A turn ticks a box only on evidence, never one under **Yours**, and drops the
-  line on the next rewrite.
 - [`OTHERS/<person>.md`](OTHERS) — one standing note per collaborator, **rewritten when
   re-read**, not per turn. Shape in [`OTHERS/TEMPLATE.md`](OTHERS/TEMPLATE.md).
 
@@ -35,6 +28,10 @@ routine leaves a comment for its own turn. That PR's review is USER's feedback c
 comment thread is the short-term memory — verbatim quotes with their context, discarded when the PR
 merges, so anything meant to outlive it goes in a file or an issue.
 The turn that opens a new day's PR merges the previous one first, cutting the new day from `main`.
+
+**What waits on USER is an open issue here**, not a file: labelled `yours` when only USER can do
+it, `waiting` when it is one react, one merge or one word. An agent closes a `waiting` one on
+evidence and never a `yours` one. The day PR's comments are the turn journal: each turn leaves one.
 
 **Standing orders are open issues on DESIRE_REPO**, not a file here. A ruling that outlives the
 pull request it was made on belongs in the prompts; until a prompt file carries it, it waits as an

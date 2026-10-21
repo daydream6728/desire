@@ -6,8 +6,8 @@ it over drops the oldest section instead of adding one.
 
 Four things do not belong here. A fact about a single pull request is that head's own
 [`WORK/<repo>/<number>.md`](WORK). A convention or a ruling is an open issue on DESIRE_REPO. Turn
-narration — anything carrying a timestamp and an agent name — is [`TURNS/<date>.md`](TURNS). What
-waits on USER, and what USER is working on, is [`USER_TODO.md`](USER_TODO.md).
+narration — anything carrying a timestamp and an agent name — is a comment on the day PR. What
+waits on USER is an open `yours` or `waiting` issue on this repo.
 
 Last rewritten: never — this is the seed. Delete this line when the first turn writes a real one.
 

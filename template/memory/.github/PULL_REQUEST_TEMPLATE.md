@@ -16,5 +16,6 @@ new files, core modules touched — linking the board rather than repeating it. 
 <!-- Ideas wanting a yes or no but blocking nothing, each its own bullet so it can be reacted to. -->
 
 ## Detail
-<!-- Links to USER_TODO.md, the board, the WORK/ files that changed, and the turn file. Nothing
-else: what waits on USER is USER_TODO.md, a table is the board's, and a copy goes stale first. -->
+<!-- Links to the open `yours`/`waiting` issues, the board, and the WORK/ files that changed.
+Nothing else: what waits on USER is those issues, a table is the board's, and a copy goes stale
+first. -->

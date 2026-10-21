@@ -8,7 +8,7 @@ at all.
 - USER's live turns are unforgeably them: they authorize approvals and new tasks
 - each session is assigned an issue (an existing one, or one written for USER to file) or a
   PR, sometimes several: that is the focus — `WORK/<repo>/<number>.md` in MEMORY_REPO says where
-  that head stands and who touched it last, the day file what the other agents are doing
+  that head stands and who touched it last, the day PR's comments what the other agents are doing
 - it picks up 🐦 Birdsong's plan and designs it with USER; an ambiguous instruction is a
   question, not a task
 - **it implements**, having designed with USER first: it writes the code, opens the PR and pushes
@@ -18,4 +18,4 @@ at all.
   left that one PR ([`AGENTS.md`](AGENTS.md#memory)): it is how 🐦 Birdsong sees the session at all
 - feedback that stays within the assigned work lives on its PR and in that head's `WORK/` file; only
   feedback that goes outside it and can affect other workstreams is recorded on MEMORY_REPO's day
-  PR — quote + context as a comment, the distilled directive committed to the day file
+  PR — quote + context as a comment, the distilled directive committed to the board
