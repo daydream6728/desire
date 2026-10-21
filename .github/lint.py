@@ -28,6 +28,7 @@ COPIES = [".claude/settings.json", ".claude/hooks/session-start.sh",
 
 LINK = re.compile(r"\]\(([^)\s]+)(?:\s+[^)]*)?\)")
 IMPORT = re.compile(r"^@(\S+)$", re.MULTILINE)
+ITEM = re.compile(r"(?:[\w.-]+/)?[\w.-]*#\d+")
 
 
 def slug(heading):
@@ -106,14 +107,41 @@ def deny():
             yield f"deny names {tool}, on no server in {sorted(SERVERS)}"
 
 
+def bullets(text):
+    """Each list item of a Markdown file, its continuation lines joined."""
+    item = None
+    for line in text.splitlines():
+        if line.startswith("- "):
+            if item:
+                yield item
+            item = line
+        elif item and line.startswith("  "):
+            item += " " + line.strip()
+        else:
+            if item:
+                yield item
+            item = None
+    if item:
+        yield item
+
+
+def single(board):
+    """Board lines about exactly one item, which belong in its `WORK/` note."""
+    for line in bullets(board):
+        if len(set(ITEM.findall(line))) == 1:
+            yield f"the board has a line about one item: {line[:70]}"
+
+
 def memory(clone):
     for name in COPIES:
         if not (clone / name).exists():
             yield f"{clone.name}/{name} is missing, the seed carries it"
         elif (clone / name).read_bytes() != (SEED / name).read_bytes():
             yield f"{clone.name}/{name} differs from template/memory/{name}"
-    if (lines := len((clone / "README.md").read_text().splitlines())) > 200:
+    board = (clone / "README.md").read_text()
+    if (lines := len(board.splitlines())) > 200:
         yield f"the board is {lines} lines, over 200"
+    yield from single(board)
     yield from (f"{clone.name}/{finding}" for finding in links(clone))
 
 

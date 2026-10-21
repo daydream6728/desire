@@ -4,17 +4,12 @@ State only — what is ready, what is blocked on what, what is behind, and only 
 than one head. **Under 200 lines, never appended to**: a turn that would push
 it over drops the oldest section instead of adding one.
 
-Four things do not belong here. A fact about a single pull request is that head's own
-[`WORK/<repo>/<number>.md`](WORK). A convention or a ruling is an open issue on DESIRE_REPO. Turn
+Four things do not belong here. **No line is about a single item**: that is the item's own
+[`WORK/<repo>/<number>.md`](WORK), and `lint.py --memory` reports a line naming exactly one. A convention or a ruling is an open issue on DESIRE_REPO. Turn
 narration — anything carrying a timestamp and an agent name — is a comment on the day PR. What
 waits on USER is an open `yours` or `waiting` issue on this repo.
 
 Last updated: never — this is the seed. Delete this line when the first turn writes a real one.
-
-# Ruled, do not re-ask
-
-<!-- Rulings USER has already made, one line each with the date. A turn that reopens one of these
-has cost a night. Empty until the first ruling. -->
 
 # Collisions and forced merge order
 

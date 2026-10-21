@@ -13,8 +13,8 @@ Three kinds of file, each with exactly **one lifetime**:
   session writes the note of every item it touched, even when the work never left that pull
   request: it is how an interactive turn is visible to the next morning's plan. Shape in [`WORK/TEMPLATE.md`](WORK/TEMPLATE.md).
 - [`README.md`](README.md) — the board, **updated in place**: cross-cutting state only. What
-  collides with what, what merge order is forced, what has been ruled. A fact about one head goes
-  in that head's own file. **It stays under 200 lines**: a turn that would push it over drops the
+  collides with what, what merge order is forced. **No line is about a single item**: that is the
+  item's own file, and a ruling is an open issue on DESIRE_REPO. **It stays under 200 lines**: a turn that would push it over drops the
   oldest section rather than appending, and `wc -l README.md` says whether it is over before the
   push.
 - [`OTHERS/<person>.md`](OTHERS) — one standing note per collaborator, **rewritten when

@@ -5,6 +5,13 @@ Entries state the changes, no explanation of why.
 
 ## 2026-10-21
 
+**The board drops its rulings; no board line about a single item** (`BIRDSONG.md`,
+`.github/lint.py`, `template/memory/`) — the board's *Ruled, do not re-ask* section is gone: a
+ruling lives in DESIRE_REPO, as a prompt line or an open issue. A board line about exactly one
+item belongs in that item's `WORK/` note, and `lint.py --memory` reports one that names exactly one
+item. USER: *"remove the board's "Ruled, do not re-ask" section"*, *"remove the facts about single
+PRs and add an explicit rule to avoid them coming back"*.
+
 **`RULES.md` leaves DESIRE_REPO; a linter and a prompt budget; the harness's three asks**
 (`AGENTS.md`, `CLAUDE.md`, `OPERATIONS.md`, `BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `.github/`,
 `template/memory/`) — `RULES.md` is deleted and no file here names it or `TODO.md` any more: the prompts drop the
