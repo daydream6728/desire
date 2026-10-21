@@ -147,6 +147,43 @@ class Notes(unittest.TestCase):
         self.assertEqual(sweep.notes({1, 2}, set()), ([], [1, 2]))
 
 
+class Required(unittest.TestCase):
+    """A note is owed by our own pull requests and by what a note cites,
+    never by an item merely being open."""
+
+    setup = {"AGENT": "bot", "ADOPTED_PRS": {"a/b": [7]}}
+
+    @staticmethod
+    def pull(number, login):
+        return {"number": number, "user": {"login": login},
+                "pull_request": {}}
+
+    def test_our_pull_request_is_required(self):
+        items = [self.pull(1, "bot")]
+        self.assertEqual(sweep.required("a/b", items, [], self.setup), {1})
+
+    def test_someone_elses_pull_request_is_not(self):
+        items = [self.pull(2, "alice")]
+        self.assertEqual(sweep.required("a/b", items, [], self.setup), set())
+
+    def test_an_adopted_pull_request_is_ours(self):
+        items = [self.pull(7, "alice")]
+        self.assertEqual(sweep.required("a/b", items, [], self.setup), {7})
+
+    def test_a_cited_item_is_required_whoever_opened_it(self):
+        items = [self.pull(2, "alice"), {"number": 3, "user": {"login": "x"}}]
+        self.assertEqual(sweep.required(
+            "a/b", items, ["collides with #2, waits on #3"], self.setup),
+            {2, 3})
+
+    def test_a_citation_of_a_closed_item_requires_nothing(self):
+        self.assertEqual(sweep.required("a/b", [], ["#9"], self.setup), set())
+
+    def test_our_issue_is_not_required_uncited(self):
+        items = [{"number": 4, "user": {"login": "bot"}}]
+        self.assertEqual(sweep.required("a/b", items, [], self.setup), set())
+
+
 class MemoryClone(unittest.TestCase):
     """The memory clone is wherever the `config.env` we are configured by
     sits, so there is one answer rather than two that can disagree. A sweep

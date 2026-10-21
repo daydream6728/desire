@@ -5,6 +5,13 @@ Entries state the changes, no explanation of why.
 
 ## 2026-10-21
 
+**`WORK/` notes only for what an agent works on; a slimmer note** (`AGENTS.md`, `sweep.py`,
+`template/memory/`, closes [#158](https://github.com/toumix/desire/issues/158)) — a note is owed
+by our own pull requests, every item a session touched and every open item a note cites, no longer
+by every open pull request. `sweep.py`'s `required()` says which. The note drops its `state` line
+for a `whose · read <date>` line, and its log keeps the
+last five turns. USER: *"yes let's do that too"*.
+
 **Birdsong clears stale `WORK/` notes; no `TURNS/`; USER's todos are issues** (`AGENTS.md`,
 `BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `template/`) — 🐦 Birdsong deletes the note of every
 merged or closed item before planning. `TURNS/<date>.md` is dropped: a turn's account is its one

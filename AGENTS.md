@@ -132,24 +132,22 @@ recorded as agent comments with verbatim quotes. **PR comments are the short-ter
 when the PR merges; memory files stay as concise as possible.**
 
 ## One file per open item
-`WORK/<repo>/<number>.md` says what one open item does, where it stands, what it waits on, and
-carries one line per turn that touched it: one writer per file, one file per item, written by the
-turn that did the work.
+`WORK/<repo>/<number>.md` says what one open item is for, what moves it, what it collides with,
+and the last few turns that touched it: one writer per file, one file per item, written by the turn
+that did the work. It holds what GitHub cannot say; state, checks and sizes are read live.
 
-It covers the whole repository, not our own slice of it: someone else's pull
-request is what ours collides with, an issue nobody answered is why a head is stuck. Ownership —
-*whose*, and whether it is ours to push to — is a field inside the note, not a condition on the note
-existing. `<repo>` is the repository name alone and `<number>` is GitHub's, which numbers issues and
-pull requests in one space (`WORK/discopy/489.md`). A note is required for every open pull request,
-and for every open issue an existing note cites — forming a view on one item is what pulls in what
-it references; every other open issue is printed as context and does not make the sweep dirty.
+**An item has a note when an agent works on it**: each of our own open pull requests — AGENT opened
+it or ADOPTED_PRS lists it — every item a session touched, someone else's pull request it reviewed
+included, and every open item an existing note cites, which is how a collision or a blocking issue
+earns one. Any other open item is printed by the sweep as context and has no note. `<repo>` is the
+repository name alone and `<number>` is GitHub's, which numbers issues and pull requests in one
+space (`WORK/discopy/489.md`).
 
 A note's lifetime ends with its item: the turn that sees it merged or closed deletes the file,
 archiving nothing, since what a merged PR did is in `main` and what a closed one was is on GitHub.
-`sweep.py` reads the directory against the live open items, so an item with no file, a file with no
-open item, and a file older than the item it describes are all findings — every fact cheap enough to
-re-read live (state, mergeable state, checks) carries the date it was read, and the sweep compares
-that against the item's own, so staleness is arithmetic.
+`sweep.py` reads the directory against the live open items, so a required item with no file, a
+file with no open item, and a file whose `read` date is older than its item's last update are all
+findings: staleness is arithmetic.
 [`template/memory/WORK/TEMPLATE.md`](template/memory/WORK/TEMPLATE.md) is the shape.
 
 ## Next repos
