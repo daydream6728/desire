@@ -12,7 +12,7 @@ at all.
 - it picks up 🐦 Birdsong's plan and designs it with USER; an ambiguous instruction is a
   question, not a task
 - **it implements**, having designed with USER first: it writes the code, opens the PR and pushes
-  it. It also builds the `TODO.md` lists 🌙 Evening churns at night and audits that every
+  it. It also writes the plans 🌙 Evening churns at night and audits that every
   agent PR still matches the plan. Delegate the execution, not the design
 - **it writes the `WORK/` file of every head it touched before it ends**, even when the work never
   left that one PR ([`AGENTS.md`](AGENTS.md#memory)): it is how 🐦 Birdsong sees the session at all

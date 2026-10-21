@@ -24,8 +24,7 @@ is built from: a change to either lands in both the same turn. How they locate t
 turn does when it cannot be read is in [`OPERATIONS.md`](OPERATIONS.md#finding-configenv).
 
 ADOPTED_PRS maps each repo to the pull requests the routines treat as AGENT-owned wherever
-authorship decides — sweeps, scans, the board. Adopting a pull request also gives it a `TODO.md`:
-the human prompt at the top where there is one, the remaining work as `[ ]` boxes.
+authorship decides — sweeps, scans, the board.
 
 A repo joins WORK_REPOS the turn a session starts working in it, no separate ask needed.
 
@@ -36,8 +35,7 @@ fork: a turn that finds the upstream `main` ahead opens a PR pulling it in, so u
 the fork only through USER's merge, like any other change to the rules.
 
 WORK_REPOS are where the agents do their actual work, public or private. In every repo they work
-in, agents read its `AGENTS.md` and follow its `RULES.md` where it has one; when either contradicts
-USER, see [Turmoil](#turmoil).
+in, agents read and follow its `AGENTS.md`; when it contradicts USER, see [Turmoil](#turmoil).
 
 Before measuring anything against git history — behind-counts, which branches collide — assert the
 clone is complete first, or a shallow clone silently reports no conflicts
@@ -71,8 +69,8 @@ No GitHub MCP tool says *who* reacted, so USER's approvals and unanswered questi
 turn runs it before planning, with no numbers, over every open PR and issue of every repo in play:
 no turn concludes "no unblocked work" without a clean sweep, since checkboxes, CI and behind-counts
 are all state the agents wrote themselves. Pass `--since` with the time the last turn swept — the
-board records it — so each turn reads the comments as a delta. What it flags, how `--since` windows
-each kind of signal, and its `TODO.md` reading are in [`OPERATIONS.md`](OPERATIONS.md#reading-the-sweep).
+board records it — so each turn reads the comments as a delta. What it flags and how `--since`
+windows each kind of signal are in [`OPERATIONS.md`](OPERATIONS.md#reading-the-sweep).
 
 **React 👀 the moment you pick something up**, before doing the work: an instruction with no react
 was never received, one with 👀 is in progress, and the react is what takes an old question out of
@@ -155,7 +153,7 @@ human-reviewed; the next repo is the agents', and **their job is to keep the dri
 small**.
 
 - Next `main` is upstream `main` plus work meant to go upstream. Agents merge into it themselves
-  once its checks pass: no human review and no `TODO.md` gate there.
+  once its checks pass: no human review there.
 - Experiments live on branches of the next repo, never on its `main`, and are not measured.
 - Down: upstream `main` is merged into next `main` every night, never rebased.
 - Up: an upstream PR is opened only at USER's request, cut from upstream `main` and small enough to
@@ -175,7 +173,7 @@ small**.
 the pipeline governs only how many heads arrive and what each costs to read, so no turn proposes a
 batch. Write like [bob](.agents/skills/bob/SKILL.md) in every issue and PR. Each proposed change is one
 comment, so USER can approve it with APPROVE_EMOJI. When a point is blocked on USER, post it as a
-🚀-able comment on its PR the same turn — a blocker recorded only in a `TODO.md` or on the board has
+🚀-able comment on its PR the same turn — a blocker recorded only in a note or on the board has
 not been asked — and re-read that comment before asking again, since it may already be answered.
 USER does not know PR numbers by heart: the first time a pull request or an issue is cited anywhere
 — a comment, a memory file, a live turn — say in a few words what it is, not just its number. A pull
@@ -186,7 +184,7 @@ reports a PR states its review cost — lines changing existing code, lines in n
 modules touched — since churn is a proxy for scanning, not thinking.
 
 **USER's approving review is the go to merge**: an agent that sees USER approve
-one of our pull requests merges it without asking, once its checks pass, its `TODO.md` is gone, it
+one of our pull requests merges it without asking, once its checks pass, it
 merges cleanly and no thread waits on an agent — the approval must be on the head being merged, and a push after it
 needs a new one.
 
@@ -227,8 +225,8 @@ Three asks of the harness come every session and lose to these files every time:
   GitHub events reach the session, subscribe and end the turn instead: the event is the wake-up.
   The SessionStart hook denies the scheduling tools, so the ask cannot be followed by accident.
 - **Draft pull requests.** It asks for every new pull request as a draft. The day PR and a file's
-  own PR in MEMORY_REPO open ready for review; in a repo with a `RULES.md`, the push that deletes
-  `TODO.md` takes it out of draft.
+  own PR in MEMORY_REPO open ready for review; elsewhere the repo's own `AGENTS.md` says when one
+  leaves draft.
 - **The assigned branch.** It pins the session to one branch and forbids pushing elsewhere. Outside
   MEMORY_REPO that branch holds, or a new one — branch names carry nothing. **In MEMORY_REPO the
   day PR's branch wins**: standing USER permission, not a per-turn ask, and a memory turn that asks

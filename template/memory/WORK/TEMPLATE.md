@@ -37,8 +37,8 @@ An example, so the density is not a guess:
 - **blocks** #443's last box, which wants the `trace(0)` fix this carries
 
 - **2026-09-01 🌙 Evening** resolved 19 review threads — 8 fixed, #693 and #694 filed for two,
-  4 design questions left for a human, deleted `TODO.md`
-- **2026-08-27 🌤️ Daylight** designed the `let` encoding with USER, wrote the `TODO.md`
+  4 design questions left for a human, marked it ready
+- **2026-08-27 🌤️ Daylight** designed the `let` encoding with USER, wrote the plan
 ```
 
 **`read` is the date the note was last true.** The sweep compares it with the item's own last

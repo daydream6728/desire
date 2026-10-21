@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
 bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
-issues closed inside the window, MEMORY_REPO's open-PR count, the state of
-each AGENT-owned `TODO.md` and whether every open item of a WORK_REPO that
-needs one has its `WORK/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
+issues closed inside the window, MEMORY_REPO's open-PR count, and whether
+every open item of a WORK_REPO that needs one has its `WORK/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
 pipeline has reacted to say it received it. config.env is the ground truth for
 USER, the repos and the emoji, and it sits at the root of this clone;
 AGENTS.md's rules say what to do with a finding.
@@ -14,11 +13,8 @@ Usage: sweep.py [--since <ISO8601 UTC, e.g. 2026-08-18T00:00:00Z>] <owner/repo>
        # and quiets a question the pipeline already 👀'd
 Exit 0 and "clean" on a clean sweep, exit 1 with one line per finding, exit 2
 when GitHub could not be read — an incomplete sweep is neither clean nor a
-finding, and reading it as clean is how a live 🚀 goes unanswered. Open
-`TODO.md` boxes are printed as context and do not make the sweep dirty.
+finding, and reading it as clean is how a live 🚀 goes unanswered.
 """
-import base64
-import datetime
 import json
 import os
 import pathlib
@@ -27,10 +23,6 @@ import sys
 import urllib.error
 import urllib.request
 
-BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
-CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
-                   r"(?:Z|[+-]\d{2}:?\d{2})?)?")
-STALE = datetime.timedelta(hours=12)
 CONFIG = pathlib.Path(__file__).parents[3] / "config.env"
 DAY = re.compile(r"\d{4}-\d{2}-\d{2}\b")
 FOOTER_LINK = re.compile(r"\[[^\]]*\]\((https://[^\s)]+)\)")
@@ -246,127 +238,6 @@ def memory(repo):
     return findings
 
 
-def heads(repo, cache):
-    """Every open pull request by number. `TODO.md` is read off the head
-    commit, which the listing already carries, so the whole repo costs one
-    request rather than one per pull request."""
-    if "heads" not in cache:
-        cache["heads"] = {pull["number"]: pull
-                          for pull in get(repo, "pulls?state=open")}
-    return cache["heads"]
-
-
-def contents(repo, path, ref):
-    """A file at one commit, `None` when that commit does not carry it: a
-    missing `TODO.md` is a finding here rather than an error. Undecodable bytes
-    are replaced rather than raised, since one unreadable file would otherwise
-    abort the whole sweep. `validate=True` is wrong here — GitHub wraps the
-    base64 it serves, which the strict decoder rejects."""
-    try:
-        blob = get(repo, f"contents/{path}?ref={ref}")
-    except urllib.error.HTTPError as error:
-        if error.code == 404:
-            return None
-        raise
-    return base64.b64decode(blob["content"]).decode(errors="replace")
-
-
-def claimed(box):
-    """When a `[WIP]` box was claimed, `None` when it carries no readable date.
-    Rule 3 stamps `@<SessionID>-<yyyy-MM-dd HH:mm>`, in practice with an offset
-    or a `Z` and sometimes a range, so the first date on the line wins and a
-    naive one is read as UTC."""
-    stamp = CLAIM.search(box)
-    if not stamp:
-        return None
-    text = re.sub(r"([+-]\d{2})(\d{2})$", r"\1:\2",
-                  stamp.group().replace(" ", "T").replace("Z", "+00:00"))
-    try:
-        when = datetime.datetime.fromisoformat(text)
-    except ValueError:
-        return None
-    return when if when.tzinfo else when.replace(
-        tzinfo=datetime.timezone.utc)
-
-
-def cleared(repo, head, cache):
-    """Whether this branch carried a `TODO.md` and deleted it, which is what
-    clears the merge gate. Both cases read as missing at the head, and the
-    diff cannot tell them apart either: adding a file and deleting it again
-    nets out to nothing. The branch's own commits touching the path do, once
-    the ones it inherits from `main` are taken out. Asked only of a branch
-    already known to have no `TODO.md`."""
-    if "cleared" not in cache:
-        cache["cleared"] = {commit["sha"] for commit in get(
-            repo, "commits?sha=main&path=TODO.md")}
-    return any(commit["sha"] not in cache["cleared"] for commit in get(
-        repo, f"commits?sha={head}&path=TODO.md"))
-
-
-def elapsed(age):
-    """An age in whole hours, in days once there are two of them: the window
-    is twelve hours and the claims that break it run to weeks."""
-    hours = int(age.total_seconds() // 3600)
-    return f"{hours // 24} days" if hours >= 48 else f"{hours} hours"
-
-
-def binds(repo, cache):
-    """Whether `RULES.md` binds this repo, i.e. its default branch carries
-    one: a repo without it, DESIRE_REPO and MEMORY_REPO among them, owes no
-    `TODO.md`."""
-    if "rules" not in cache:
-        cache["rules"] = contents(repo, "RULES.md", "HEAD") is not None
-    return cache["rules"]
-
-
-def owned(repo, number, body, setup):
-    """Whether the pipeline is answerable for this pull request: AGENT opened
-    it or ADOPTED_PRS lists it, the same test the board and the scans use.
-    Nobody else's branch owes us a `TODO.md`."""
-    return "pull_request" in body and repo in setup["WORK_REPOS"] and (
-        body["user"]["login"] == setup["AGENT"]
-        or number in setup.get("ADOPTED_PRS", {}).get(repo, []))
-
-
-def todo(repo, number, body, setup, cache):
-    """The `TODO.md` findings on one AGENT-owned pull request. Its boxes are
-    the mutex between parallel agents and deleting the file is what clears the
-    merge gate, so it is the one file that says whether a pull request is
-    finished and nothing else in the sweep reads it. Open boxes are printed
-    the way MEMORY_REPO's PR count is — work left is the normal state of a
-    branch, not a finding — while a claim past Rule 3's twelve hours and a
-    branch that never carried the file are reported."""
-    if not owned(repo, number, body, setup) or not binds(repo, cache):
-        return []
-    head = (heads(repo, cache).get(number)
-            or get(repo, f"pulls/{number}"))["head"]["sha"]
-    text = contents(repo, "TODO.md", head)
-    if text is None:
-        return [] if cleared(repo, head, cache) else [
-            f"#{number} never carried a TODO.md, so it cannot reach sign-off: "
-            + body["html_url"]]
-    boxes = [(mark.group(1).strip(), line) for line in text.splitlines()
-             for mark in [BOX.match(line)] if mark]
-    if opened := [line for mark, line in boxes if not mark]:
-        print(f"{repo}#{number}: {len(opened)} of {len(boxes)} TODO.md"
-              " point(s) open", file=sys.stderr)
-    findings = []
-    for mark, line in boxes:
-        if "WIP" not in mark.upper():
-            continue
-        when = claimed(line)
-        age = None if when is None else (
-            datetime.datetime.now(datetime.timezone.utc) - when)
-        if age is not None and age < STALE:
-            continue
-        findings.append(
-            f"#{number} stale [WIP] claim, "
-            + ("no readable date" if age is None else
-               f"{when:%Y-%m-%d} ({elapsed(age)} old)")
-            + ", reclaim it: " + body["html_url"])
-    return findings
-
-
 def item(repo, number, setup, since, cache):
     """The findings on one PR or issue: USER's APPROVE_EMOJI on the body or on
     any comment, and every thread where USER spoke last. GitHub splits comments
@@ -409,7 +280,7 @@ def item(repo, number, setup, since, cache):
             f"#{number} unanswered {setup['USER']}"
             f" {'pull request' if 'pull_request' in body else 'issue'}:"
             f" {body['html_url']}" + flag)
-    return findings + todo(repo, number, body, setup, cache)
+    return findings
 
 
 def notes(have, want):

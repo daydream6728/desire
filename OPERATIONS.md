@@ -42,10 +42,6 @@ The sweep marks a `👀` flag when anyone but USER has reacted, so a turn can te
 queue. React with `add_issue_comment`'s `reaction` on a body or conversation comment, and
 `add_reply_to_pull_request_comment`'s on a review comment.
 
-It also reads the `TODO.md` a repo's own `RULES.md` asks for off every AGENT-owned head, in the
-WORK_REPOS that carry one: open boxes as context, a claim past its twelve hours and a branch that
-never carried one as findings.
-
 ## Matching an attribution footer
 A reply from USER counts as an agent's when its last line is one of AGENT_FOOTERS — as the whole
 line, or inside the HTTPS *target* of a Markdown link on it (which is how a URL token matches the
