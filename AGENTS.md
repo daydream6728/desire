@@ -194,6 +194,12 @@ small** (USER, 2026-10-14).
   with its trend: lines landed on next against lines merged upstream, per week. Agents tend it
   down by slicing; moving work from upstream to next adds no drift, it only moves it.
 - Other authors' PRs are theirs to bring upstream; agents do not merge them into a next repo.
+- An open issue reporting a bug in a next repo is fixed there without asking USER (USER,
+  2026-10-19), whoever filed it, unless it needs a design decision. It needs none when what is
+  right is already said — by a law, a docstring, `STYLE.md` or the behaviour upstream — and the fix
+  chooses nothing: no public name beyond the protocol it completes, no stated convention changed,
+  no pick between readings the issue leaves open. One that needs a decision gets one 🚀-able
+  comment on its issue and waits; one an open pull request already addresses is left to it.
 
 ## Issues and reviews
 **The gate is USER's review time** (USER, 2026-08-09): the queue drains at the rate USER reads it,
