@@ -4,12 +4,12 @@
 - it reads the MEMORY_REPO to get the overall plan and current state of the codebase as context:
   the board for what is cross-cutting, `WORK/<repo>/<number>.md` for where each head stands
 - it scans `mentions:AGENT` for threads it was tagged in, answering them or queueing the work
-- it translates USER feedback (both direct orders and emoji-approved) into points of work on the
+- it translates USER feedback (both direct orders and emoji-approved) into points of the plan on the
   head it belongs to
 - **it takes one head and finishes it.** USER's explicit order first; then a next repo's open bugs
   that need no decision, below; otherwise the head closest to a **terminal handoff** — merged or
-  closed, which on a next repo it reaches itself; or ready, with no review thread waiting on an
-  agent and every expected check passed; or blocked on one named external
+  closed, which on a next repo it reaches itself; or ready, with every point of its plan done, no
+  review thread waiting on an agent and every expected check passed; or blocked on one named external
   action that it asked for on the work PR the same turn. It selects no second head until the first
   is there. Sub-agents parallelise *within* that head, not across unrelated ones, unless USER
   approved a batch

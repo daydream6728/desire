@@ -33,7 +33,8 @@ IMPORT = re.compile(r"^@(\S+)$", re.MULTILINE)
 def slug(heading):
     """GitHub's anchor for a heading: lowercase, punctuation dropped, spaces
     to hyphens."""
-    return re.sub(r"[^\w\- ]", "", heading.strip().lower()).replace(" ", "-")
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", heading.strip().lower())
+    return re.sub(r"[^\w\- ]", "", text).replace(" ", "-")
 
 
 def anchors(path):
