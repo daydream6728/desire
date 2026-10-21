@@ -8,7 +8,7 @@ deletes the file.
 
 It holds what GitHub cannot say: what the item is for, what moves it, what it collides with, and
 what each turn did. State, mergeable state, checks and line counts are read live, never copied
-here. Four fields, a `read` date, then the log newest-first. If a field has no answer today, say
+here. Five fields with the `read` date on the first, then the log newest-first. If a field has no answer today, say
 so — an empty **needs** is a claim that nothing is blocking it, and the next turn will read it as
 one.
 
@@ -37,7 +37,7 @@ An example, so the density is not a guess:
 - **blocks** #443's last box, which wants the `trace(0)` fix this carries
 
 - **2026-09-01 🌙 Evening** resolved 19 review threads — 8 fixed, #693 and #694 filed for two,
-  4 design questions left for a human — full suite green, deleted `TODO.md`
+  4 design questions left for a human, deleted `TODO.md`
 - **2026-08-27 🌤️ Daylight** designed the `let` encoding with USER, wrote the `TODO.md`
 ```
 

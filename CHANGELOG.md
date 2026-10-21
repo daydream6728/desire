@@ -9,7 +9,7 @@ Entries state the changes, no explanation of why.
 `template/memory/`, closes [#158](https://github.com/toumix/desire/issues/158)) — a note is owed
 by our own pull requests, every item a session touched and every open item a note cites, no longer
 by every open pull request. `sweep.py`'s `required()` says which. The note drops its `state` line
-(state, checks and sizes are read live) for a `whose · read <date>` line, and its log keeps the
+for a `whose · read <date>` line, and its log keeps the
 last five turns. USER: *"yes let's do that too"*.
 
 **Birdsong clears stale `WORK/` notes; no `TURNS/`; USER's todos are issues** (`AGENTS.md`,
