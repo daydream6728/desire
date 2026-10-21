@@ -295,6 +295,33 @@ class ReviewComments(unittest.TestCase):
             sweep.review_comments("a/b", 136, {"pull_request": {}})
 
 
+class Binds(unittest.TestCase):
+    """`TODO.md` is owed only where `RULES.md` binds: a repo whose default
+    branch carries no `RULES.md` is never asked for one."""
+
+    def setUp(self):
+        original = sweep.get
+        self.addCleanup(setattr, sweep, "get", original)
+
+    def stub(self, found):
+        def get(repo, path):
+            if found:
+                return {"content": ""}
+            raise urllib.error.HTTPError(path, 404, "Not Found", {}, None)
+        sweep.get = get
+
+    def test_a_repo_with_rules_binds(self):
+        self.stub(True)
+        self.assertTrue(sweep.binds("a/b", {}))
+
+    def test_a_repo_without_rules_owes_no_todo(self):
+        self.stub(False)
+        body = {"pull_request": {}, "user": {"login": "agent"},
+                "html_url": "https://github.com/a/b/pull/1"}
+        setup = {"WORK_REPOS": ["a/b"], "AGENT": "agent"}
+        self.assertEqual(sweep.todo("a/b", 1, body, setup, {}), [])
+
+
 class Memory(unittest.TestCase):
     """One open day PR is the invariant, since the turn that opens a new day
     merges the previous one first. Two day PRs open, or two under one title,

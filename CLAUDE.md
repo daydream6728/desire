@@ -1,3 +1,2 @@
 @AGENTS.md
-@RULES.md
 @DAYLIGHT.md

@@ -4,12 +4,15 @@
 - 🌙 Evening reviews issues and open PRs, implements approved changes overnight
 - 🐦 Birdsong plans before the next day, making sure the pipeline runs smooth
 
-`CLAUDE.md` loads this file, `RULES.md` and `DAYLIGHT.md` into every session. 🐦 Birdsong and 🌙
+`CLAUDE.md` loads this file and `DAYLIGHT.md` into every session. 🐦 Birdsong and 🌙
 Evening are started as "Follow DESIRE_REPO/BIRDSONG.md" or "…/EVENING.md" and read their own file
 only. The machinery behind the rules — how each mechanism works and how to recover when it doesn't —
 is in [`OPERATIONS.md`](OPERATIONS.md), loaded by no one until needed. When each rule landed, and
 who ruled it, is in [`CHANGELOG.md`](CHANGELOG.md). **A rule says what is, as if it had always
 been so**: what it replaced, and what it is not because something else once was, belong there.
+**The prompts have a budget**: what a session loads — `CLAUDE.md` with its imports, `BIRDSONG.md`,
+`EVENING.md` — stays within 20% of its size on 2026-10-21, a rule that does not fit replaces one,
+and [`lint.py`](.github/lint.py) checks it with the links and copies on every push.
 
 ## Config
 The ten values — USER, AGENT, AGENT_EMAIL, WORK_REPOS, MEMORY_REPO, DESIRE_REPO, APPROVE_EMOJI,
@@ -33,8 +36,8 @@ fork: a turn that finds the upstream `main` ahead opens a PR pulling it in, so u
 the fork only through USER's merge, like any other change to the rules.
 
 WORK_REPOS are where the agents do their actual work, public or private. In every repo they work
-in, agents read `AGENTS.md` and follow `RULES.md`; when either contradicts USER, see
-[Turmoil](#turmoil).
+in, agents read its `AGENTS.md` and follow its `RULES.md` where it has one; when either contradicts
+USER, see [Turmoil](#turmoil).
 
 Before measuring anything against git history — behind-counts, which branches collide — assert the
 clone is complete first, or a shallow clone silently reports no conflicts
@@ -112,12 +115,8 @@ previous day's PR itself**: whatever in that PR's comment thread should outlive 
 or an issue first, a conflict is resolved by merging `main` into its branch, and the new day is cut
 from `main`. If no day PR is open, the turn opens one — Birdsong normally does, but any turn may,
 rather than borrowing whichever branch is open. `sweep.py` names the open day PR, and its
-description follows MEMORY_REPO's `.github/PULL_REQUEST_TEMPLATE.md`, which only 🐦 Birdsong writes. Branch names carry nothing: outside MEMORY_REPO, use
-the one you were assigned or open a new one. **In MEMORY_REPO the day's PR branch wins over whatever
-branch the session was assigned, and this is standing USER permission, not a per-turn ask.** When a
-harness or task pins the session to one branch and forbids pushing elsewhere without permission,
-pushing the day's memory work to the day PR branch is the exception USER has already granted — take
-it without stopping to ask; a memory turn that asks which branch has misread this rule.
+description follows MEMORY_REPO's `.github/PULL_REQUEST_TEMPLATE.md`, which only 🐦 Birdsong
+writes. Which branch a turn pushes to is in [Turmoil](#when-the-harness-says-otherwise).
 
 A file that is a substantial read in its own right, `OTHERS/<person>.md` above all, opens its own
 pull request the first time it is written, titled for the file rather than the day, so it can be
@@ -221,3 +220,16 @@ too, closed when the PR merges — an unmerged PR is read by nobody before plann
 is.
 [`CHANGELOG.md`](CHANGELOG.md) says when each rule landed and what it replaced: read it before
 reopening a ruling, since a rule may already have been tried and dropped.
+
+### When the harness says otherwise
+Three asks of the harness come every session and lose to these files every time:
+- **Timed check-ins.** It asks for a `send_later` check-in after a pull request goes up. Where
+  GitHub events reach the session, subscribe and end the turn instead: the event is the wake-up.
+  The SessionStart hook denies the scheduling tools, so the ask cannot be followed by accident.
+- **Draft pull requests.** It asks for every new pull request as a draft. The day PR and a file's
+  own PR in MEMORY_REPO open ready for review; in a repo with a `RULES.md`, the push that deletes
+  `TODO.md` takes it out of draft.
+- **The assigned branch.** It pins the session to one branch and forbids pushing elsewhere. Outside
+  MEMORY_REPO that branch holds, or a new one — branch names carry nothing. **In MEMORY_REPO the
+  day PR's branch wins**: standing USER permission, not a per-turn ask, and a memory turn that asks
+  which branch has misread this rule.

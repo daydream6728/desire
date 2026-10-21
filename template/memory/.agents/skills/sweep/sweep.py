@@ -310,11 +310,19 @@ def elapsed(age):
     return f"{hours // 24} days" if hours >= 48 else f"{hours} hours"
 
 
+def binds(repo, cache):
+    """Whether `RULES.md` binds this repo, i.e. its default branch carries
+    one: a repo without it, DESIRE_REPO and MEMORY_REPO among them, owes no
+    `TODO.md`."""
+    if "rules" not in cache:
+        cache["rules"] = contents(repo, "RULES.md", "HEAD") is not None
+    return cache["rules"]
+
+
 def owned(repo, number, body, setup):
     """Whether the pipeline is answerable for this pull request: AGENT opened
     it or ADOPTED_PRS lists it, the same test the board and the scans use.
-    Nobody else's branch owes us a `TODO.md`, and neither does one in
-    DESIRE_REPO or MEMORY_REPO — the rule binds where the work happens."""
+    Nobody else's branch owes us a `TODO.md`."""
     return "pull_request" in body and repo in setup["WORK_REPOS"] and (
         body["user"]["login"] == setup["AGENT"]
         or number in setup.get("ADOPTED_PRS", {}).get(repo, []))
@@ -328,7 +336,7 @@ def todo(repo, number, body, setup, cache):
     the way MEMORY_REPO's PR count is — work left is the normal state of a
     branch, not a finding — while a claim past Rule 3's twelve hours and a
     branch that never carried the file are reported."""
-    if not owned(repo, number, body, setup):
+    if not owned(repo, number, body, setup) or not binds(repo, cache):
         return []
     head = (heads(repo, cache).get(number)
             or get(repo, f"pulls/{number}"))["head"]["sha"]

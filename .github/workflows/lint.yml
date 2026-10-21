@@ -1,0 +1,10 @@
+name: lint
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 .github/lint.py
+      - run: python3 -m unittest discover -s .agents/skills/sweep -p 'test_*.py'
+        working-directory: template/memory

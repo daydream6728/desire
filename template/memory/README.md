@@ -1,7 +1,7 @@
 # The board
 
 State only — what is ready, what is blocked on what, what is behind, and only where it crosses more
-than one head. **Under 200 lines, rewritten every turn, never appended to**: a turn that would push
+than one head. **Under 200 lines, never appended to**: a turn that would push
 it over drops the oldest section instead of adding one.
 
 Four things do not belong here. A fact about a single pull request is that head's own
@@ -9,7 +9,7 @@ Four things do not belong here. A fact about a single pull request is that head'
 narration — anything carrying a timestamp and an agent name — is a comment on the day PR. What
 waits on USER is an open `yours` or `waiting` issue on this repo.
 
-Last rewritten: never — this is the seed. Delete this line when the first turn writes a real one.
+Last updated: never — this is the seed. Delete this line when the first turn writes a real one.
 
 # Ruled, do not re-ask
 
