@@ -45,8 +45,8 @@ cheap to re-read and expensive to be wrong about, so a line that is three days o
 three days old rather than as true. A turn that re-reads them updates the date; a turn that does
 not, leaves it.
 
-**The log is the point.** It is what 🐦 Birdsong reads instead of re-deriving the queue from
-GitHub, and the only trace an interactive session leaves of work that stayed on its own PR. One
+**The log is the point.** It is what 🐦 Birdsong reads to see where a head stands, and the
+durable trace an interactive session leaves of work that stayed on its own PR. One
 line per turn, in the past tense, saying what *changed* — not what was scanned or read.
 
 A merge of the target branch is the one to get right. It is support work, so it never earns its own

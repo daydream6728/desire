@@ -6,8 +6,8 @@ it over drops the oldest section instead of adding one.
 
 Four things do not belong here. A fact about a single pull request is that head's own
 [`WORK/<repo>/<number>.md`](WORK). A convention or a ruling is an open issue on DESIRE_REPO. Turn
-narration — anything carrying a timestamp and an agent name — is [`TURNS/<date>.md`](TURNS). What
-waits on USER, and what USER is working on, is [`USER_TODO.md`](USER_TODO.md).
+narration — anything carrying a timestamp and an agent name — is a comment on the day PR. What
+waits on USER is an open `yours` or `waiting` issue on this repo.
 
 Last rewritten: never — this is the seed. Delete this line when the first turn writes a real one.
 
@@ -16,10 +16,9 @@ Last rewritten: never — this is the seed. Delete this line when the first turn
 <!-- Rulings USER has already made, one line each with the date. A turn that reopens one of these
 has cost a night. Empty until the first ruling. -->
 
-# The queue
+# Collisions and forced merge order
 
-<!-- Not a list of heads — that is what WORK/ is. What goes here is what one head's file cannot
-say on its own: forced merge order, live file collisions between two heads, a lane that is blocked
+<!-- What one head's file cannot say on its own: forced merge order, live file collisions between two heads, a lane that is blocked
 as a lane. -->
 
 # The open issues

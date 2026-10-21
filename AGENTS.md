@@ -8,7 +8,8 @@
 Evening are started as "Follow DESIRE_REPO/BIRDSONG.md" or "…/EVENING.md" and read their own file
 only. The machinery behind the rules — how each mechanism works and how to recover when it doesn't —
 is in [`OPERATIONS.md`](OPERATIONS.md), loaded by no one until needed. When each rule landed, and
-who ruled it, is in [`CHANGELOG.md`](CHANGELOG.md), never in the prompts.
+who ruled it, is in [`CHANGELOG.md`](CHANGELOG.md). **A rule says what is, as if it had always
+been so**: what it replaced, and what it is not because something else once was, belong there.
 
 ## Config
 The ten values — USER, AGENT, AGENT_EMAIL, WORK_REPOS, MEMORY_REPO, DESIRE_REPO, APPROVE_EMOJI,
@@ -90,17 +91,23 @@ each kind of file there is for and how long it lives — read that, it is not re
 follows is only what binds a turn in *this* repo.
 
 **Every turn writes the `WORK/` file of every item it touched**, whatever else it did, even when the
-work never left that one pull request: it is the only way a turn is visible to the next morning.
+work never left that one pull request: it is the item's durable record, where the turn's day-PR
+comment is its short-term account, and 🐦 Birdsong plans from both.
 Anything that affects *other* heads goes to the board or the day PR besides. A review of somebody
 else's pull request is also recorded in `OTHERS/<person>.md`: the note is what the item is and dies
 with it; `OTHERS/` is what working with that person has been like — what they own, what they have
 landed, what of theirs touches our lanes — and outlives every one of their pull requests.
-`USER_TODO.md` is the standing list of what waits on USER, kept current every turn.
+
+**What waits on USER is an open issue on MEMORY_REPO**, one per thing, labelled
+`yours` when only USER can do it, `waiting` when it is one react, one merge or one word, its title
+naming what answering unblocks. A point blocked on USER is still asked on its own pull request the
+same turn, and its issue links that comment. An agent closes a `waiting` issue on evidence — the
+react, the merge, the reply — linking it; it never closes a `yours` one. The sweep runs over
+MEMORY_REPO's issues like any other repo's, so USER can answer on the issue itself.
 
 **One pull request per day for the day's work, opened by 🐦 Birdsong** — ready for review rather than
-draft — titled with the day it covers. It carries everything whose lifetime is the day (the turn
-file, the board, `USER_TODO.md`, `WORK/` notes); every later turn of that day pushes there and
-leaves a comment rather than opening another. **The turn that opens a new day's PR first merges the
+draft — titled with the day it covers. It carries the day's file changes (the board, `WORK/` and `OTHERS/` notes); every later turn of
+that day pushes there and **leaves one comment saying what it did** — the turn's own account — rather than opening another PR. **The turn that opens a new day's PR first merges the
 previous day's PR itself**: whatever in that PR's comment thread should outlive it goes into a file
 or an issue first, a conflict is resolved by merging `main` into its branch, and the new day is cut
 from `main`. If no day PR is open, the turn opens one — Birdsong normally does, but any turn may,
@@ -127,7 +134,7 @@ when the PR merges; memory files stay as concise as possible.**
 ## One file per open item
 `WORK/<repo>/<number>.md` says what one open item does, where it stands, what it waits on, and
 carries one line per turn that touched it: one writer per file, one file per item, written by the
-turn that did the work rather than by a nightly re-derivation.
+turn that did the work.
 
 It covers the whole repository, not our own slice of it: someone else's pull
 request is what ours collides with, an issue nobody answered is why a head is stuck. Ownership —

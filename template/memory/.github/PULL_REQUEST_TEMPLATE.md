@@ -1,8 +1,7 @@
 # <date>
 
 ## Since last time
-<!-- Activity since the *previous* memory PR, not literally today: a PR opened at 8am has nothing
-to say about today's date and everything about the days since the last one. Split by source: interactive
+<!-- Activity since the previous memory PR, whatever day that was. Split by source: interactive
 work under USER's own prompts, and the autonomous round — say plainly when a round did nothing, or
 did not run at all, rather than omit it. Substance: what a head does and what it reached, not that
 it exists. Scans, re-merges and board repair are support work — name them only where they changed
@@ -16,5 +15,6 @@ new files, core modules touched — linking the board rather than repeating it. 
 <!-- Ideas wanting a yes or no but blocking nothing, each its own bullet so it can be reacted to. -->
 
 ## Detail
-<!-- Links to USER_TODO.md, the board, the WORK/ files that changed, and the turn file. Nothing
-else: what waits on USER is USER_TODO.md, a table is the board's, and a copy goes stale first. -->
+<!-- Links to the open `yours`/`waiting` issues, the board, and the WORK/ files that changed.
+Nothing else: what waits on USER is those issues, a table is the board's, and a copy goes stale
+first. -->
