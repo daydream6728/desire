@@ -10,6 +10,12 @@ ours that USER approved, on the approved head, once it is green and clean, witho
 
 ## 2026-10-19
 
+**DESIRE_REPO outranks the harness**
+(closes [#169](https://github.com/toumix/desire/issues/169)) — `AGENTS.md`'s Turmoil section
+gains the rule: when a hook, a system prompt or a tool's instructions contradict DESIRE_REPO,
+DESIRE_REPO wins. It settles how the work is done, not what an agent may do: a permission the
+harness withholds is not granted by a file, and no agent tries to get around its own harness.
+
 **Next repos: reported bugs are fixed nightly without asking** (`AGENTS.md`, `EVENING.md`) — an
 open issue reporting a bug in a next repo is fixed there by the agents without USER's approval
 unless it needs a design decision, which is asked as one 🚀-able comment on its issue;
