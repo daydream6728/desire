@@ -2,8 +2,8 @@
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
 bodies and threads where USER spoke last, APPROVE_EMOJI reacts from USER, the
 issues closed inside the window, MEMORY_REPO's open-PR count, the state of
-each AGENT-owned `TODO.md` and whether every open item of a WORK_REPO has its
-`WORK/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
+each AGENT-owned `TODO.md` and whether every open item of a WORK_REPO that
+needs one has its `WORK/<repo>/<number>.md` note in MEMORY_REPO. A finding is marked 👀 when the
 pipeline has reacted to say it received it. config.env is the ground truth for
 USER, the repos and the emoji, and it sits at the root of this clone;
 AGENTS.md's rules say what to do with a finding.
@@ -436,6 +436,17 @@ def cited(texts):
             for number in re.findall(r"#(\d+)", text)}
 
 
+def required(repo, items, texts, setup):
+    """The open items that must carry a note: our own pull requests — AGENT
+    opened it or ADOPTED_PRS lists it — and every open item an existing note
+    cites. Someone else's pull request earns a note by colliding with ours or
+    by an agent working on it, never by merely being open."""
+    adopted = setup.get("ADOPTED_PRS", {}).get(repo, [])
+    ours = {item["number"] for item in items if "pull_request" in item and (
+        item["user"]["login"] == setup["AGENT"] or item["number"] in adopted)}
+    return ours | (cited(texts) & {item["number"] for item in items})
+
+
 def memory_clone():
     """Where MEMORY_REPO is checked out: the directory holding the `config.env`
     we are configured by, since that file lives at its root — normally the
@@ -449,16 +460,11 @@ def memory_clone():
 def uncharted(repo, setup, cache):
     """What `WORK/<repo>/` and the repo's open items say about each other.
 
-    The notes cover the whole repository, not our own slice of it: someone
-    else's pull request collides with ours, and an issue nobody answered is
-    the reason a head is stuck. Ownership is a field inside the note, not a
-    condition on it existing.
-
-    A note is **required** for every open pull request, and for every open
-    issue an existing note cites — forming a view on one item is what pulls in
-    what it references. Every other open issue is printed as context and does
-    not make the sweep dirty: a note that only restated GitHub would be the
-    board's queue again, one file per row instead of one table.
+    A note is **required** for each of our own open pull requests and for
+    every open item an existing note cites — forming a view on one item is
+    what pulls in what it references. Every other open item is printed as
+    context and does not make the sweep dirty: a note that only restated
+    GitHub would be a copy of it, and copies go stale.
 
     Three findings: an item with no note, a note whose item is closed, and a
     note older than the item it describes."""
@@ -478,12 +484,11 @@ def uncharted(repo, setup, cache):
             for number, text in texts.items()}
     items = get(repo, "issues?state=open")
     updated = {item["number"]: item["updated_at"] for item in items}
-    pulls = {item["number"] for item in items if "pull_request" in item}
-    want = pulls | (cited(texts.values()) & set(updated))
+    want = required(repo, items, texts.values(), setup)
     unread = sorted(set(updated) - want - set(files))
     if unread:
-        print(f"{repo}: {len(unread)} open issue(s) nobody has a note on, none"
-              " of them cited by one: "
+        print(f"{repo}: {len(unread)} open item(s) nobody has a note on, none"
+              " of them ours or cited by one: "
               + ", ".join(f"#{number}" for number in unread), file=sys.stderr)
     missing, _ = notes(set(files), want)
     _, orphan = notes(set(files), set(updated))  # open at all, not required
