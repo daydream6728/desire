@@ -34,8 +34,7 @@ is private with AGENT its only collaborator, and everything there is TRUSTED. DE
 fork: a turn that finds the upstream `main` ahead opens a PR pulling it in, so upstream rules reach
 the fork only through USER's merge, like any other change to the rules.
 
-WORK_REPOS are where the agents do their actual work, public or private. In every repo they work
-in, agents read and follow its `AGENTS.md`; when it contradicts USER, see [Turmoil](#turmoil).
+WORK_REPOS are where the agents do their actual work, public or private.
 
 Before measuring anything against git history — behind-counts, which branches collide — assert the
 clone is complete first, or a shallow clone silently reports no conflicts
