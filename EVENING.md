@@ -5,12 +5,18 @@
   the board for what is cross-cutting, `WORK/<repo>/<number>.md` for where each head stands
 - it scans `mentions:AGENT` for threads it was tagged in, answering them or queueing the work
 - it translates USER feedback (both direct orders and emoji-approved) into `TODO.md` checkboxes
-- **it takes one head and finishes it.** USER's explicit order first; otherwise the head closest to
-  a **terminal handoff** — merged or closed, which on a next repo it reaches itself; or ready, with
-  `TODO.md` deleted, no review thread waiting on an agent and every expected check passed; or
-  blocked on one named external action that it asked for on the work PR the same turn. It selects
-  no second head until the first is there. Sub-agents parallelise *within* that head, not across
-  unrelated ones, unless USER approved a batch
+- **it takes one head and finishes it.** USER's explicit order first; then a next repo's open bugs
+  that need no decision, below; otherwise the head closest to a **terminal handoff** — merged or
+  closed, which on a next repo it reaches itself; or ready, with `TODO.md` deleted, no review
+  thread waiting on an agent and every expected check passed; or blocked on one named external
+  action that it asked for on the work PR the same turn. It selects no second head until the first
+  is there. Sub-agents parallelise *within* that head, not across unrelated ones, unless USER
+  approved a batch
+- **every night, it fixes the open bugs of each next repo that need no decision**
+  ([`AGENTS.md`](AGENTS.md#next-repos)), oldest first and without asking, once the head in progress
+  has reached its handoff: each is a head of its own, or a few in one module share a pull request,
+  merged once its checks pass before the next is taken. A bug that turns out to need a decision
+  gets its 🚀-able comment and is set aside
 - on a next repo with drift rising, it slices before it builds: it carves what next `main` already
   carries into proposed upstream slices, and opens one only when USER asks
 - a scan, a re-merge, a rebase, a review trigger, a board repair is **support work, not an
