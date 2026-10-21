@@ -90,7 +90,8 @@ each kind of file there is for and how long it lives — read that, it is not re
 follows is only what binds a turn in *this* repo.
 
 **Every turn writes the `WORK/` file of every item it touched**, whatever else it did, even when the
-work never left that one pull request: it is the only way a turn is visible to the next morning.
+work never left that one pull request: it is the item's durable record, where the turn's day-PR
+comment is its short-term account, and 🐦 Birdsong plans from both.
 Anything that affects *other* heads goes to the board or the day PR besides. A review of somebody
 else's pull request is also recorded in `OTHERS/<person>.md`: the note is what the item is and dies
 with it; `OTHERS/` is what working with that person has been like — what they own, what they have
