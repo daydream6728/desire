@@ -18,7 +18,7 @@ one.
 - **whose** <ours|login>, and whether it is ours to push to · read <date>
 - **does** one or two lines. The mathematics before the plumbing
 - **needs** the one thing that would move it: a read, a ruling, a merge, a fix — and from whom
-- **touches** the modules it changes, and the heads it collides with over which files
+- **touches** the modules it changes, and the items it collides with over which files
 - **blocks** what waits on it, and what it waits on
 
 - **<date> <phase or person>** what changed, in one line
@@ -45,13 +45,13 @@ An example, so the density is not a guess:
 update, so a note older than its item is reported as possibly stale. A turn that re-reads the item
 updates the date; a turn that does not, leaves it.
 
-**The log is the point**, and it keeps the last five turns: what 🐦 Birdsong reads to see where a
-head stands, and the durable trace an interactive session leaves of work that stayed on its own PR.
+**The log is the point**, and it keeps the last five turns: what 🐦 Birdsong reads to see where an
+item stands, and the durable trace an interactive session leaves of work that stayed on its own PR.
 One line per turn, in the past tense, saying what *changed* — not what was scanned or read. Older
 lines are in the file's git history.
 
-A merge of the target branch is the one to get right. It is support work, so it never earns its own
+A merge of the target branch is the one to get right. It is housekeeping, so it never earns its own
 clause beside real work: a turn that merged `main` and then fixed three review threads logs the
 three threads. But when it is the whole of the turn it is logged, plainly and alone — *"merged
-`main`, nothing else"* — because the head did move and because a night that finished nothing should
+`main`, nothing else"* — because the branch did move and because a night that finished nothing should
 read that way.

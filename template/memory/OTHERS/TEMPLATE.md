@@ -1,7 +1,7 @@
 # `OTHERS/<person>.md`
 
 One standing note per collaborator, rewritten when they are re-read — not per turn. What they own,
-what they have landed, what of theirs touches our lanes, and what they are waiting on from USER.
+what they have landed, what of theirs touches our work, and what they are waiting on from USER.
 
 **It is written every time a session reviews a pull request that is not ours**, alongside that
 item's `WORK/` note: the note says what the item is and dies when it merges, this says what working
@@ -17,7 +17,7 @@ USER has to do about them is an open `yours` or `waiting` issue, linked from her
 
 ## What they own
 ## What they have landed since <date>
-## What of theirs touches our heads
+## What of theirs touches our items
 ## What they are waiting on — links to the open `yours`/`waiting` issues, nothing restated
 ```
 

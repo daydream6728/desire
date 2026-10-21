@@ -3,12 +3,12 @@
 ## Since last time
 <!-- Activity since the previous memory PR, whatever day that was. Split by source: interactive
 work under USER's own prompts, and the autonomous round — say plainly when a round did nothing, or
-did not run at all, rather than omit it. Substance: what a head does and what it reached, not that
-it exists. Scans, re-merges and board repair are support work — name them only where they changed
+did not run at all, rather than omit it. Substance: what an item does and what it reached, not that
+it exists. Scans, re-merges and board repair are housekeeping — name them only where they changed
 what was available or ate the round. -->
 
 ## Ready for your review
-<!-- Which heads are ready and what reading each costs — lines changing existing code, lines in
+<!-- Which items are ready and what reading each costs — lines changing existing code, lines in
 new files, core modules touched — linking the board rather than repeating it. -->
 
 ## Agent proposals
