@@ -142,7 +142,7 @@ turn USER pays for, which is why a session GitHub events reach never schedules o
 Every write to GitHub — pull requests, comments, reviews, reactions — goes through the MCP tools.
 `GITHUB_TOKEN` is for reads only; the two authenticate as different accounts, so assert
 `mcp__github__get_me` is AGENT before a turn's first write. Set AGENT and AGENT_EMAIL on every clone
-before the first commit, and check the branch before pushing with
+before the first commit, and check the identity on the branch's commits before pushing with
 `git log --format='%an <%ae>' origin/main..HEAD`.
 
 Commits are signed when the environment provides `AGENTS_SIGNING_KEY`, a passphrase-free SSH private

@@ -45,7 +45,7 @@ An example, so the density is not a guess:
 update, so a note older than its item is reported as possibly stale. A turn that re-reads the item
 updates the date; a turn that does not, leaves it.
 
-**The log is the point**, and it keeps the last five turns: what 🐦 Birdsong reads to see where a
+**The log is the point**, and it keeps the last five turns: what 🐦 Birdsong reads to see where an
 item stands, and the durable trace an interactive session leaves of work that stayed on its own PR.
 One line per turn, in the past tense, saying what *changed* — not what was scanned or read. Older
 lines are in the file's git history.
