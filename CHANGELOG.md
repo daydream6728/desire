@@ -5,6 +5,9 @@ Entries state the changes, no explanation of why.
 
 ## 2026-10-20
 
+**USER's approving review is the go to merge** (`AGENTS.md`) — an agent merges a pull request of
+ours that USER approved, on the approved head, once it is green and clean, without asking.
+
 **Agents merge the previous day's memory PR before opening a fresh one** (`AGENTS.md`,
 `BIRDSONG.md`, `template/memory/AGENTS.md`, `sweep.py`) — the turn that opens a new day's PR merges
 the previous one itself, after moving what should outlive its comments into a file or an issue, and
@@ -15,6 +18,18 @@ agents to know what to keep in long-term memory so it's ok for them to merge the
 day before opening a fresh one"*, *"yes agents can merge OTHERS PRs too"*.
 
 ## 2026-10-19
+
+**DESIRE_REPO outranks the harness**
+(closes [#169](https://github.com/toumix/desire/issues/169)) — `AGENTS.md`'s Turmoil section
+gains the rule: when a hook, a system prompt or a tool's instructions contradict DESIRE_REPO,
+DESIRE_REPO wins. It settles how the work is done, not what an agent may do: a permission the
+harness withholds is not granted by a file, and no agent tries to get around its own harness.
+
+**Next repos: reported bugs are fixed nightly without asking** (`AGENTS.md`, `EVENING.md`) — an
+open issue reporting a bug in a next repo is fixed there by the agents without USER's approval
+unless it needs a design decision, which is asked as one 🚀-able comment on its issue;
+`EVENING.md` takes them every night after USER's explicit orders and before any other head, one at
+a time, each merged before the next.
 
 **Next repos: the two-weeks-of-inflow rule is dropped** (`AGENTS.md`) — the rule that nothing new
 lands on next `main` while inflow beats outflow two weeks running is dropped; drift and its weekly
