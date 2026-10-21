@@ -3,6 +3,17 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-21
+
+**Every session loads less** (`CLAUDE.md`, `AGENTS.md`, `BIRDSONG.md`, `DAYLIGHT.md`,
+`OPERATIONS.md`, `README.md`, `template/memory/`) — `CLAUDE.md` imports `AGENTS.md`, `RULES.md` and
+`DAYLIGHT.md` only; 🐦 Birdsong and 🌙 Evening read their own file from their routine's prompt. The
+Memory PR Template leaves `AGENTS.md` for `template/memory/.github/PULL_REQUEST_TEMPLATE.md`, the
+drift formula for `OPERATIONS.md`. Dated USER attributions and "this replaced X" history leave the
+prompt files, which point here instead. The `WORK/`-note rule is stated once, in `AGENTS.md`, and
+`template/memory/AGENTS.md` matches it on what a note covers. USER: *"open a desire PR with those
+changes and a memory one to keep them in sync"*.
+
 ## 2026-10-20
 
 **USER's approving review is the go to merge** (`AGENTS.md`) — an agent merges a pull request of

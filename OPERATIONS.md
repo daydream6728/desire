@@ -19,6 +19,10 @@ Before any behind-count or collision measurement, assert the clone is complete: 
 there is no merge base, so `git merge-tree` dies with exit 128 and no `CONFLICT` line — which reads
 as no conflicts, the silent failure the assertion prevents.
 
+## Measuring drift
+A next repo's drift is `git diff upstream/main...next/main -- . ':!.github'`, split library, tests
+and docs, reported with its trend: lines landed on next against lines merged upstream, per week.
+
 ## Reading the sweep
 [`sweep.py`](template/memory/.agents/skills/sweep/sweep.py) runs from the MEMORY_REPO clone as
 `.agents/skills/sweep/sweep.py [--since <ISO8601>] <owner/repo> [number...]`. It flags every

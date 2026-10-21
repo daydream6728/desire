@@ -31,6 +31,9 @@ session; the machinery behind them, needed only when something misbehaves, lives
    there and not here because this repo is public and the repos you work in need not be, and the
    sweep is seeded beside it because that is the file it reads.
 3) Integrate it to your model provider, adding the `memory` and `desire` repos alongside your work.
+   Interactive sessions load 🌤️ Daylight through `CLAUDE.md`; schedule the other two as routines
+   whose whole prompt is `Follow <you>/desire/BIRDSONG.md` (before your day) and
+   `Follow <you>/desire/EVENING.md` (overnight).
 
 Nothing in this repo names you: your login, your agent's, and the repos you work in are all in that
 one `config.env`, in the repo that is yours. What is here is only the rules.
