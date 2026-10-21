@@ -259,10 +259,10 @@ class ReviewComments(unittest.TestCase):
 
 
 class Memory(unittest.TestCase):
-    """One open day PR per day is the invariant. Siblings with distinct titles
-    are USER not having merged, no finding; two under one title is a day written
-    twice, which is. Whenever any are open the newest by `created_at` is named
-    as the branch to stack a new day's PR on, not `main` (desire#144)."""
+    """One open day PR is the invariant, since the turn that opens a new day
+    merges the previous one first. Two day PRs open, or two under one title,
+    are findings; an `OTHERS/` PR beside the day's is none. The open day PR is
+    named, to push today's turn to or merge before opening today's."""
 
     def patch(self, pulls):
         original = sweep.get
@@ -279,11 +279,28 @@ class Memory(unittest.TestCase):
             findings = sweep.memory("a/memory")
         return findings, stderr.getvalue()
 
-    def test_siblings_with_distinct_titles_are_no_finding(self):
+    def test_one_day_pr_beside_an_others_pr_is_no_finding(self):
+        self.patch([self.pull("2026-09-07", "day", "2026-09-07T00:00:00Z"),
+                    self.pull("OTHERS/x.md", "x", "2026-09-06T00:00:00Z")])
+        findings, err = self.run_memory()
+        self.assertEqual(findings, [])
+        self.assertIn("'day'", err)
+        self.assertNotIn("'x'", err)
+
+    def test_two_day_prs_open_is_a_finding(self):
         self.patch([self.pull("2026-09-07", "b", "2026-09-07T00:00:00Z"),
                     self.pull("2026-09-04", "a", "2026-09-04T00:00:00Z")])
         findings, _ = self.run_memory()
-        self.assertEqual(findings, [])
+        self.assertEqual(len(findings), 1)
+        self.assertIn("2026-09-04, 2026-09-07", findings[0])
+
+    def test_two_days_count_every_open_day_pr(self):
+        self.patch([self.pull("2026-09-07", "c", "2026-09-07T00:00:00Z"),
+                    self.pull("2026-09-07", "b", "2026-09-07T01:00:00Z"),
+                    self.pull("2026-09-04", "a", "2026-09-04T00:00:00Z")])
+        findings, _ = self.run_memory()
+        self.assertEqual(len(findings), 2)
+        self.assertTrue(any("3 day PRs open" in f for f in findings))
 
     def test_two_under_one_title_is_a_finding(self):
         self.patch([self.pull("2026-09-07", "b", "2026-09-07T00:00:00Z"),
@@ -292,18 +309,11 @@ class Memory(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertIn("2026-09-07", findings[0])
 
-    def test_the_newest_open_branch_is_named_to_stack_on(self):
-        self.patch([self.pull("2026-09-04", "older", "2026-09-04T00:00:00Z"),
-                    self.pull("2026-09-07", "newest", "2026-09-07T00:00:00Z")])
-        _, err = self.run_memory()
-        self.assertIn("'newest'", err)
-        self.assertNotIn("'older'", err)
-
-    def test_no_open_prs_names_no_branch(self):
+    def test_no_open_prs_names_no_day(self):
         self.patch([])
         findings, err = self.run_memory()
         self.assertEqual(findings, [])
-        self.assertNotIn("base a new day's PR", err)
+        self.assertNotIn("day PR", err)
 
 
 if __name__ == "__main__":

@@ -8,6 +8,15 @@ Entries state the changes, no explanation of why.
 **USER's approving review is the go to merge** (`AGENTS.md`) — an agent merges a pull request of
 ours that USER approved, on the approved head, once it is green and clean, without asking.
 
+**Agents merge the previous day's memory PR before opening a fresh one** (`AGENTS.md`,
+`BIRDSONG.md`, `template/memory/AGENTS.md`, `sweep.py`) — the turn that opens a new day's PR merges
+the previous one itself, after moving what should outlive its comments into a file or an issue, and
+cuts the new day from `main`. Replaces stacking each day on the newest unmerged one (#144). The
+sweep names the open day PR and reports two day PRs open as a finding. A first `OTHERS/<person>.md`
+PR is merged by agents too, at the latest when the next day's PR opens. USER: *"now I trust the
+agents to know what to keep in long-term memory so it's ok for them to merge the PR for the previous
+day before opening a fresh one"*, *"yes agents can merge OTHERS PRs too"*.
+
 ## 2026-10-19
 
 **DESIRE_REPO outranks the harness**
