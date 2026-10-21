@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """What the prompts promise about themselves, checked rather than trusted: the
-links resolve, the deny lists name real tools, the loaded prompts fit their
-budget, and with `--memory` a MEMORY_REPO clone matches the seed it came from
+links resolve, the deny lists name real tools, no rule is stated twice, the
+loaded prompts fit their budget, and with `--memory` a MEMORY_REPO clone matches the seed it came from
 and its board fits under 200 lines.
 
 Run: python3 .github/lint.py [--memory <path to MEMORY_REPO clone>]
@@ -25,6 +25,12 @@ SERVERS = {"claude-code-remote"}
 # Files a MEMORY_REPO clone carries verbatim from the seed.
 COPIES = [".claude/settings.json", ".claude/hooks/session-start.sh",
           ".agents/skills/sweep/sweep.py", ".agents/skills/sweep/test_sweep.py"]
+
+# The files that state rules, and the run of words two of them may not share.
+RULES = ["AGENTS.md", "DAYLIGHT.md", "BIRDSONG.md", "EVENING.md", "OPERATIONS.md",
+         "template/memory/AGENTS.md", "template/memory/README.md",
+         "template/memory/WORK/TEMPLATE.md", "template/memory/OTHERS/TEMPLATE.md"]
+PHRASE = 8
 
 LINK = re.compile(r"\]\(([^)\s]+)(?:\s+[^)]*)?\)")
 IMPORT = re.compile(r"^@(\S+)$", re.MULTILINE)
@@ -84,6 +90,26 @@ def budget():
     if (size := sum(loaded(ROOT / name, missing) for name in PROMPTS)) > BUDGET:
         yield f"the prompts load {size} bytes, over the budget of {BUDGET}"
     yield from missing
+
+
+def phrases(path):
+    """Every run of `PHRASE` words in a file, its link targets dropped."""
+    text = re.sub(r"\]\([^)]*\)", "]", path.read_text().lower())
+    words = re.findall(r"[\w']+", text)
+    return {" ".join(words[i:i + PHRASE])
+            for i in range(len(words) - PHRASE + 1)}
+
+
+def repeated():
+    """A rule stated in two files, which drift apart: say it in one, link
+    it from the other."""
+    seen, pairs = {}, {}
+    for name in RULES:
+        for phrase in sorted(phrases(ROOT / name)):
+            if seen.setdefault(phrase, name) != name:
+                pairs.setdefault((name, seen[phrase]), phrase)
+    for (name, first), phrase in pairs.items():
+        yield f"{name} repeats {first}: \"{phrase}\""
 
 
 def denied():
@@ -149,7 +175,7 @@ def main(arguments):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--memory", type=pathlib.Path)
     options = parser.parse_args(arguments)
-    findings = [*links(ROOT), *budget(), *deny()]
+    findings = [*links(ROOT), *budget(), *deny(), *repeated()]
     if options.memory:
         findings += memory(options.memory.resolve())
     print("\n".join(findings) or "clean")

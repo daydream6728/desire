@@ -5,6 +5,16 @@ Entries state the changes, no explanation of why.
 
 ## 2026-10-21
 
+**Role files are run orders; a rule is stated once** (`BIRDSONG.md`, `EVENING.md`, `DAYLIGHT.md`,
+`AGENTS.md`, `OPERATIONS.md`, `.github/lint.py`, `template/memory/`) — 🐦 Birdsong, 🌙 Evening and
+🌤️ Daylight are numbered steps in the order they run; Evening's CI and merge-reason mechanics move
+to `OPERATIONS.md` (*Reading CI*, *Measuring against git history*). `template/memory/AGENTS.md`
+says what is where and points to DESIRE_REPO's `AGENTS.md` instead of restating its rules, which
+gains the two that lived only there: no routine name in a day PR's title, and DESIRE_REPO's open
+issues read before planning. The `WORK/` and `OTHERS/` templates drop their restated rules.
+`lint.py` reports any run of eight words two rule files share. USER: *"file a PR for the other
+changes you proposed"*.
+
 **`AGENTS.md` halves; plain words for the routines' jargon** (`AGENTS.md`, `OPERATIONS.md`,
 `BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `template/memory/`) — `AGENTS.md` goes from 2,764 to
 about 1,500 words with five bold rules; the conditions, mechanics and edge cases move to new

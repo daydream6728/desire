@@ -4,11 +4,8 @@ One standing note per collaborator, rewritten when they are re-read — not per 
 what they have landed, what of theirs touches our work, and what they are waiting on from USER.
 
 **It is written every time a session reviews a pull request that is not ours**, alongside that
-item's `WORK/` note: the note says what the item is and dies when it merges, this says what working
-with that person has been like and outlives every one of their pull requests.
-
-The board carries only the part that changes an agent's work and links here for the rest; what
-USER has to do about them is an open `yours` or `waiting` issue, linked from here.
+item's `WORK/` note, which dies when the item merges while this outlives it. The board links here;
+what USER has to do about them is an open `yours` or `waiting` issue, linked from here.
 
 ```markdown
 # <login> — <name>, <what they own in one line>

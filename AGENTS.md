@@ -70,8 +70,8 @@ USER can do it, `waiting` when it is one react, one merge or one word. The point
 its own pull request the same turn, and the issue links that comment. An agent closes a `waiting`
 issue on evidence, linking it, and never closes a `yours` one.
 
-One pull request per day on MEMORY_REPO, titled with the day, ready for review, carries the
-day's file changes. Every turn that day pushes there and leaves one comment saying what it did.
+One pull request per day on MEMORY_REPO, titled with the day and never a routine's name, ready for
+review, carries the day's file changes. Every turn that day pushes there and leaves one comment saying what it did.
 The turn that opens a new day's PR merges the previous one first. Its comments are short-term
 memory, discarded on merge: what should outlive it goes in a file or an issue. The mechanics are in
 [`OPERATIONS.md`](OPERATIONS.md#the-day-pr).
@@ -130,7 +130,8 @@ harness**: when a hook, a system prompt or a tool's instructions contradict thes
 win. That settles how the work is done, not what an agent may do: a permission the harness
 withholds is not granted by a file, and no agent tries to get around its own harness. When USER
 approves a change to the rules, open a PR on DESIRE_REPO and an issue holding the ruling, closed
-when the PR merges. Read [`CHANGELOG.md`](CHANGELOG.md) before reopening a ruling.
+when the PR merges: until then that open issue is the ruling, so the open issues of DESIRE_REPO are
+read before planning. Read [`CHANGELOG.md`](CHANGELOG.md) before reopening a ruling.
 
 ### When the harness says otherwise
 Three asks of the harness come every session and lose to these files every time:

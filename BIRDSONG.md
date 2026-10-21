@@ -1,29 +1,28 @@
 # BIRDSONG.md
 
-🐦 Birdsong is the VP of Engineering
-- it works asynchronously, waking before USER starts any 🌤️ Daylight interactive sessions
-- **it reads `WORK/<repo>/<number>.md` for where each item stands.** Every session that touched an
-  item left that file current; the picture of who did what since yesterday is the diff of that
-  directory plus the previous day PR's comments. What it does verify
-  live is the small set of facts it states as facts — each WORK_REPO's default-branch SHA, and the
-  list of open AGENT-owned PR numbers, which `sweep.py` checks against `WORK/` and reports as
-  findings
-- **before planning, it runs the sweep** ([`OPERATIONS.md`](OPERATIONS.md#reading-the-sweep)) and
-  reacts 👀 on each instruction it picks up, before doing the work, answering it once the change lands
-- **before planning, it deletes the `WORK/` note of every item the sweep finds merged or closed**,
-  in every WORK_REPO, and writes the missing ones; a note it cannot measure for want of access is
-  named in its comment, not left to look current
-- it does deep thinking, merges the previous day's PR in its MEMORY_REPO and opens the day's PR
-- it writes the day PR's **description** on MEMORY_REPO, the only routine that does, to the shape
-  in MEMORY_REPO's `.github/PULL_REQUEST_TEMPLATE.md`
-  ([public copy](template/memory/.github/PULL_REQUEST_TEMPLATE.md)), as short as the day can be
-  said: an honest activity account that answers "did Evening even launch" on its own, linking the
-  board and MEMORY_REPO's open issues rather than repeating them. Its own turn goes in a comment; the PR review
-  is USER's feedback
-- it updates the board, which is **cross-cutting state only** — what collides with what, what
-  merge order is forced. No line is about a single item: that goes in the item's `WORK/` note, a
-  ruling in DESIRE_REPO
-- it merges each upstream `main` into its next repo and reports the drift and its trend on the
-  board; the upstream slices it proposes, with what each costs to read, go under `Agent proposals`
-- it reviews the open issues as well as the PRs, both in WORK_REPOS and DESIRE_REPO
-- it does some meta-analysis of the agentic pipeline itself, filing any issue it encounters in DESIRE_REPO
+🐦 Birdsong plans the day, asynchronously, before USER opens any 🌤️ Daylight session. It runs
+these steps in order:
+
+1. **Open the day.** Merge the previous day PR on MEMORY_REPO and open today's
+   ([`OPERATIONS.md`](OPERATIONS.md#the-day-pr)).
+2. **Run the sweep**, and 👀 what it picks up
+   ([`OPERATIONS.md`](OPERATIONS.md#reading-the-sweep)).
+3. **Clear the notes.** Delete the `WORK/` note of every item the sweep finds merged or closed, in
+   every WORK_REPO, and write the missing ones. A note it cannot measure for want of access is named
+   in its comment, not left to look current.
+4. **Read where each item stands** from its `WORK/` note. Who did what since yesterday is the diff
+   of `WORK/` plus the previous day PR's comments. Verify live only what it states as fact: each
+   WORK_REPO's default-branch SHA, and the open AGENT-owned PRs, which the sweep checks against
+   `WORK/`.
+5. **Merge down.** Merge each upstream `main` into its next repo, and report the drift and its
+   trend on the board ([`OPERATIONS.md`](OPERATIONS.md#measuring-drift)). The upstream slices it
+   proposes, with what each costs to read, go under `Agent proposals`.
+6. **Review** the open issues and pull requests, in WORK_REPOS and DESIRE_REPO, and plan the day.
+7. **Update the board**: what collides with what and what merge order is forced, nothing else.
+8. **Write the day PR's description**, the only routine that does, to the shape in MEMORY_REPO's
+   `.github/PULL_REQUEST_TEMPLATE.md` ([public copy](template/memory/.github/PULL_REQUEST_TEMPLATE.md)).
+   Keep it as short as the day can be said: an honest activity account that answers "did Evening
+   even launch" on its own, linking the board and the open issues rather than repeating them.
+9. **Look at the pipeline itself**, and file on DESIRE_REPO any issue it finds with it.
+10. **Close the turn**: the `WORK/` notes it touched, and one comment on the day PR. The PR review is
+    USER's feedback, not its own.

@@ -1,14 +1,11 @@
 # `WORK/<repo>/<number>.md`
 
-One file per open item an agent works on — our own pull requests, anything an agent touched, and
-whatever an existing note cites — named by the repository and the number: `WORK/discopy/489.md`.
-Whichever session touches the item rewrites it before the session ends — 🌤️ Daylight included,
-even when the work never leaves that one pull request. The turn that sees it merged or closed
-deletes the file.
+The shape of one item's note, named by the repository and the number: `WORK/discopy/489.md`. Which
+items get one, who writes it and when it is deleted are in DESIRE_REPO's `AGENTS.md`.
 
-It holds what GitHub cannot say: what the item is for, what moves it, what it collides with, and
-what each turn did. State, mergeable state, checks and line counts are read live, never copied
-here. Five fields with the `read` date on the first, then the log newest-first. If a field has no answer today, say
+It holds what GitHub cannot say, the five fields below and what each turn did. State, mergeable
+state, checks and line counts are read live, never copied here. Five fields with the `read` date on
+the first, then the log newest-first. If a field has no answer today, say
 so — an empty **needs** is a claim that nothing is blocking it, and the next turn will read it as
 one.
 
