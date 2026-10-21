@@ -43,8 +43,11 @@ the issue leaves open. A bug an open pull request already addresses is left to i
 
 ## Reading the sweep
 [`sweep.py`](template/memory/.agents/skills/sweep/sweep.py) runs from the MEMORY_REPO clone as
-`.agents/skills/sweep/sweep.py [--since <ISO8601>] <owner/repo> [number...]`. Every turn runs it
-with no numbers, so it covers every open item: checkboxes, CI and behind-counts are all state the
+`.agents/skills/sweep/sweep.py [--since <ISO8601>] <owner/repo> [number...]`. No GitHub MCP tool
+says *who* reacted, so this is how USER's approvals and unanswered questions are read. 🐦 Birdsong
+and 🌙 Evening run it with no numbers before planning, over every open item of MEMORY_REPO,
+DESIRE_REPO and the WORK_REPOS, with `--since` the time the board says the last sweep ran; neither
+concludes "nothing to do" without a clean sweep: checkboxes, CI and behind-counts are all state the
 agents wrote themselves, and only the sweep reads what USER did. It flags every
 APPROVE_EMOJI react from USER on a body or a comment across both endpoints, and every thread where
 USER spoke last — a thread is answered when anyone other than USER has replied since, and which

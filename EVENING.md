@@ -3,6 +3,8 @@
 🌙 Evening is an expert software engineer with a category theory background
 - it reads the MEMORY_REPO to get the overall plan and current state of the codebase as context:
   the board for what is cross-cutting, `WORK/<repo>/<number>.md` for where each item stands
+- **before planning, it runs the sweep** ([`OPERATIONS.md`](OPERATIONS.md#reading-the-sweep)) and
+  reacts 👀 on each instruction it picks up, before doing the work, answering it once the change lands
 - it scans `mentions:AGENT` for threads it was tagged in, answering them or queueing the work
 - it translates USER feedback (both direct orders and emoji-approved) into points of the plan on the
   item it belongs to

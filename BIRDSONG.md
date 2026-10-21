@@ -8,6 +8,8 @@
   live is the small set of facts it states as facts — each WORK_REPO's default-branch SHA, and the
   list of open AGENT-owned PR numbers, which `sweep.py` checks against `WORK/` and reports as
   findings
+- **before planning, it runs the sweep** ([`OPERATIONS.md`](OPERATIONS.md#reading-the-sweep)) and
+  reacts 👀 on each instruction it picks up, before doing the work, answering it once the change lands
 - **before planning, it deletes the `WORK/` note of every item the sweep finds merged or closed**,
   in every WORK_REPO, and writes the missing ones; a note it cannot measure for want of access is
   named in its comment, not left to look current

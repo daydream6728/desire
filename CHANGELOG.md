@@ -12,9 +12,11 @@ about 1,500 words with five bold rules; the conditions, mechanics and edge cases
 *Merging on approval*, *Watching a pull request*, *When the harness says otherwise*, *Identity and
 signing*). *Head* becomes *item* (one open pull request or issue, defined in `AGENTS.md`),
 *terminal handoff* becomes *done*, *support work* becomes *housekeeping*, *lane* and *in play* are
-gone. USER: *"Cut `AGENTS.md` to about 1,500 words. Keep around 5 bold rules and move the
+gone. The sweep and the 👀 react leave `AGENTS.md` for `BIRDSONG.md` and `EVENING.md`: 🌤️ Daylight
+no longer runs it. USER: *"Cut `AGENTS.md` to about 1,500 words. Keep around 5 bold rules and move the
 conditional clauses to `OPERATIONS.md`. Yeah please do that in a fresh desire PR now."*, *"there
-shouldn't be weird terms like this, I have no idea what these words mean either"*.
+shouldn't be weird terms like this, I have no idea what these words mean either"*, *"This whole section can go away, it's not needed by daylight only
+birdsong and evening should run the sweep"*.
 
 **The board drops its rulings; no board line about a single item** (`BIRDSONG.md`,
 `.github/lint.py`, `template/memory/`) — the board's *Ruled, do not re-ask* section is gone: a
