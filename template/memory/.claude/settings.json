@@ -19,6 +19,10 @@
       "mcp__claude-code-remote__fire_trigger",
       "ScheduleWakeup",
       "CronCreate"
+    ],
+    "allow": [
+      "Read(/config.env)",
+      "Read(//home/user/desire/**)"
     ]
   }
 }
