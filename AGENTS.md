@@ -70,8 +70,8 @@ USER can do it, `waiting` when it is one react, one merge or one word. The point
 its own pull request the same turn, and the issue links that comment. An agent closes a `waiting`
 issue on evidence, linking it, and never closes a `yours` one.
 
-One pull request per day on MEMORY_REPO, titled with the day and never a routine's name, ready for
-review, carries the day's file changes. Every turn that day pushes there and leaves one comment saying what it did.
+One pull request per day on MEMORY_REPO, titled with the day, ready for review, carries the day's
+file changes. Every turn that day pushes there and leaves one comment saying what it did.
 The turn that opens a new day's PR merges the previous one first. Its comments are short-term
 memory, discarded on merge: what should outlive it goes in a file or an issue. The mechanics are in
 [`OPERATIONS.md`](OPERATIONS.md#the-day-pr).

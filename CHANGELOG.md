@@ -10,10 +10,12 @@ Entries state the changes, no explanation of why.
 🌤️ Daylight are numbered steps in the order they run; Evening's CI and merge-reason mechanics move
 to `OPERATIONS.md` (*Reading CI*, *Measuring against git history*). `template/memory/AGENTS.md`
 says what is where and points to DESIRE_REPO's `AGENTS.md` instead of restating its rules, which
-gains the two that lived only there: no routine name in a day PR's title, and DESIRE_REPO's open
-issues read before planning. The `WORK/` and `OTHERS/` templates drop their restated rules.
+gains the one that lived only there: DESIRE_REPO's open issues read before planning. 🌙 Evening
+finishes every item left, sub-agents taking items that do not collide in parallel, instead of one
+item at a time. The `WORK/` and `OTHERS/` templates drop their restated rules.
 `lint.py` reports any run of eight words two rule files share. USER: *"file a PR for the other
-changes you proposed"*.
+changes you proposed"*, *"why just one item a night? it should finish whatever is left, spawning
+subagents if needed"*.
 
 **`AGENTS.md` halves; plain words for the routines' jargon** (`AGENTS.md`, `OPERATIONS.md`,
 `BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `template/memory/`) — `AGENTS.md` goes from 2,764 to
