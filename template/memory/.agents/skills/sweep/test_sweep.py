@@ -125,8 +125,13 @@ class Cited(unittest.TestCase):
 
     def test_another_repos_number_is_not_the_notes_own(self):
         self.assertEqual(sweep.cited(
-            ["builds on rel-int/optyx#16, see desire#162 and (#54's ruling)"]),
-            {54})
+            ["builds on rel-int/optyx#16, see desire#162 and (#54's ruling)"],
+            "bio"), {54})
+
+    def test_the_notes_own_repo_and_a_list_are_its_own(self):
+        self.assertEqual(sweep.cited(
+            ["on discopy#803, collides with #21/#23/#24"], "discopy"),
+            {803, 21, 23, 24})
 
     def test_a_note_citing_nothing_pulls_in_nothing(self):
         self.assertEqual(sweep.cited(["no numbers here"]), set())
