@@ -3,7 +3,7 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
-## 2026-10-21
+## 2026-10-22
 
 **Role files are run orders; a rule is stated once** (`BIRDSONG.md`, `EVENING.md`, `DAYLIGHT.md`,
 `AGENTS.md`, `OPERATIONS.md`, `.github/lint.py`, `template/memory/`) — 🐦 Birdsong, 🌙 Evening and
@@ -18,6 +18,19 @@ keeps our open items moving. The `WORK/` and `OTHERS/` templates drop their rest
 changes you proposed"*, *"why just one item a night? it should finish whatever is left, spawning
 subagents if needed"*, *"this applies only to the next repos, for the others it should mostly do
 housekeeping not develop new stuff"*.
+
+**Birdsong reads every day PR since its last turn; an unreachable repo is an issue**
+(`BIRDSONG.md`) — the day PR description covers all the day PRs since the last one, not only the
+latest; a WORK_REPO the routine cannot reach is a `yours` issue on MEMORY_REPO instead of a line in
+the summary. USER on memory#153: *"there were two day PRs yesterday you only summarised the second
+one"*, *"raise an issue whenever a repo is missing from the routine's scope rather than burying it
+in the summary"*.
+
+**The sweep reads only bare `#<number>` as a note's own citation** (`template/memory/`) — a
+number qualified by a repository, `desire#162` or `rel-int/optyx#16`, no longer makes the note's
+own repository's item of that number required. Closes #171.
+
+## 2026-10-21
 
 **`AGENTS.md` halves; plain words for the routines' jargon** (`AGENTS.md`, `OPERATIONS.md`,
 `BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `template/memory/`) — `AGENTS.md` goes from 2,764 to
