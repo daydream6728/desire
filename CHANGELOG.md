@@ -32,6 +32,14 @@ own repository's item of that number required. Closes #171.
 
 ## 2026-10-21
 
+**A review is read as USER signal, where the sweep saw only comments**
+(`template/memory/.agents/skills/sweep/sweep.py`, `test_sweep.py`) — `verdicts(...)` reads
+`pulls/<n>/reviews`, the one endpoint serving a review's state and body, and `item` reports every
+review of USER's that nothing of ours has answered, with its state. A review carries no reactions
+endpoint, so 👀 cannot quiet one and `--since` never hides one: what answers a review is a post of
+ours after it, so the comments are read beside the reviews rather than each alone. A `PENDING`
+review is a draft and is not read. The public copy is byte-identical to MEMORY_REPO's live one.
+
 **`AGENTS.md` halves; plain words for the routines' jargon** (`AGENTS.md`, `OPERATIONS.md`,
 `BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `template/memory/`) — `AGENTS.md` goes from 2,764 to
 about 1,500 words with five bold rules; the conditions, mechanics and edge cases move to new
