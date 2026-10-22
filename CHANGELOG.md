@@ -94,6 +94,15 @@ changes and a memory one to keep them in sync"*.
 
 ## 2026-10-20
 
+**A read nobody answered is retried, so one dropped connection stops costing a whole sweep**
+(`template/memory/.agents/skills/sweep/sweep.py`, `test_sweep.py`) — `read(request)` does the one
+REST read and retries while nobody has answered: three retries at 2s doubling, `TRANSPORT` naming
+the failures that mean silence, which the per-repo guard already reads, so the two cannot drift. An
+`HTTPError` is raised on the first attempt, unretried, since GitHub answering no is an answer and
+every caller reads the status code off it. When the last attempt drops too the failure is raised,
+where the sweep names the repo unreadable and exits 2. The public copy is byte-identical to
+MEMORY_REPO's live one, which `memory#73` merged on 2026-10-19.
+
 **USER's approving review is the go to merge** (`AGENTS.md`) — an agent merges a pull request of
 ours that USER approved, on the approved head, once it is green and clean, without asking.
 
