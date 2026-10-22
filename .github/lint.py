@@ -29,7 +29,8 @@ COPIES = [".claude/settings.json", ".claude/hooks/session-start.sh",
 # The files that state rules, and the run of words two of them may not share.
 RULES = ["AGENTS.md", "DAYLIGHT.md", "BIRDSONG.md", "EVENING.md", "OPERATIONS.md",
          "template/memory/AGENTS.md", "template/memory/README.md",
-         "template/memory/WORK/TEMPLATE.md", "template/memory/OTHERS/TEMPLATE.md"]
+         "template/memory/WORK/TEMPLATE.md", "template/memory/OTHERS/TEMPLATE.md",
+         "template/memory/.github/PULL_REQUEST_TEMPLATE.md"]
 PHRASE = 8
 
 LINK = re.compile(r"\]\(([^)\s]+)(?:\s+[^)]*)?\)")

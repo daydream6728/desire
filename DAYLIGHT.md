@@ -16,7 +16,7 @@ unforgeably them: they authorize approvals and new tasks. A session runs in this
    the design.
 4. **Leave the plan** that 🌙 Evening works through at night on each item's issue or pull request,
    and check that every agent pull request still matches its plan.
-5. **Write a `WORK/` note for each item worked**, before it ends
+5. **Write the `WORK/` note of each item it touched**, before it ends
    ([`AGENTS.md`](AGENTS.md#memory)): it is how 🐦 Birdsong sees the session at all.
 
 Feedback that stays within the assigned work lives on its issue or pull request and its `WORK/`

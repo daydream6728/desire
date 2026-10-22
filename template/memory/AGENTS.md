@@ -1,8 +1,8 @@
 # The memory
 
 This private repo is the MEMORY_REPO of 🐦 Birdsong, 🌤️ Daylight and 🌙 Evening. The rules they
-follow are public and live in DESIRE_REPO, whose `AGENTS.md` is the one place they are stated —
-the Memory and One file per open item sections above all; this is the work, so it stays here.
+follow are public and live in DESIRE_REPO, whose `AGENTS.md` states them and `OPERATIONS.md` their
+mechanics — the Memory and One file per open item sections above all; this is the work, so it stays here.
 [`config.env`](config.env) at the root is the one file that names USER, AGENT and the repos, and
 both the prompts and the tooling read it from here.
 

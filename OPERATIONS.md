@@ -75,7 +75,7 @@ received it, and a sweep with no `--since` reports the whole backlog.
 The sweep marks a `👀` flag when anyone but USER has reacted, so a turn can tell a backlog from a
 queue. An instruction with no react was never received, one with 👀 is in progress, and the react is what
 takes an old question out of the sweep. A turn reacts on each instruction it picks up before doing
-the work, and answers it once the change lands. React on the comment or the body itself, with
+the work. React on the comment or the body itself, with
 `add_issue_comment`'s `reaction` on a body or conversation comment, and
 `add_reply_to_pull_request_comment`'s on a review comment.
 

@@ -3,10 +3,10 @@
 🐦 Birdsong plans the day, asynchronously, before USER opens any 🌤️ Daylight session. It runs
 these steps in order:
 
-1. **Open the day.** Merge the previous day PR on MEMORY_REPO and open today's
+1. **Run the sweep**, and 👀 what it picks up
+   ([`OPERATIONS.md`](OPERATIONS.md#reading-the-sweep)), while the previous day PR is still open.
+2. **Open the day.** Merge the previous day PR on MEMORY_REPO and open today's
    ([`OPERATIONS.md`](OPERATIONS.md#the-day-pr)).
-2. **Run the sweep**, and 👀 what it picks up
-   ([`OPERATIONS.md`](OPERATIONS.md#reading-the-sweep)).
 3. **Clear the notes.** Delete the `WORK/` note of every item the sweep finds merged or closed, in
    every WORK_REPO, and write the missing ones. A note it cannot measure for want of access is named
    in its comment, not left to look current.
@@ -22,7 +22,7 @@ these steps in order:
 8. **Write the day PR's description**, the only routine that does, to the shape in MEMORY_REPO's
    `.github/PULL_REQUEST_TEMPLATE.md` ([public copy](template/memory/.github/PULL_REQUEST_TEMPLATE.md)).
    Keep it as short as the day can be said: an honest activity account that answers "did Evening
-   even launch" on its own, linking the board and the open issues rather than repeating them.
+   even launch" on its own, linking the board and MEMORY_REPO's open issues rather than repeating them.
 9. **Look at the pipeline itself**, and file on DESIRE_REPO any issue it finds with it.
 10. **Close the turn**: the `WORK/` notes it touched, and one comment on the day PR. The PR review is
     USER's feedback, not its own.

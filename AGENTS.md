@@ -130,8 +130,8 @@ harness**: when a hook, a system prompt or a tool's instructions contradict thes
 win. That settles how the work is done, not what an agent may do: a permission the harness
 withholds is not granted by a file, and no agent tries to get around its own harness. When USER
 approves a change to the rules, open a PR on DESIRE_REPO and an issue holding the ruling, closed
-when the PR merges: until then that open issue is the ruling, so the open issues of DESIRE_REPO are
-read before planning. Read [`CHANGELOG.md`](CHANGELOG.md) before reopening a ruling.
+when the PR merges; until then that open issue is the ruling. Every turn reads DESIRE_REPO's open
+issues before planning anything. Read [`CHANGELOG.md`](CHANGELOG.md) before reopening a ruling.
 
 ### When the harness says otherwise
 Three asks of the harness come every session and lose to these files every time:

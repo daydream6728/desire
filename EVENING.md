@@ -10,16 +10,16 @@ It runs these steps in order:
 3. **Scan `mentions:AGENT`** for threads it was tagged in. Answer them, or queue the work.
 4. **Write USER's feedback into the plan.** Direct orders and emoji-approved comments become points
    of the plan on the item they belong to.
-5. **Take one item and finish it.** USER's explicit order first; then a next repo's bug of step 6;
-   otherwise the item closest to **done**. Done means one of three things:
+5. **Take one item and finish it.** USER's explicit order first; then a next repo's bug of step 6,
+   which becomes that item; otherwise the item closest to **done**. Done means one of three things:
    - merged or closed, which on a next repo it does itself
    - ready for USER's review: every point of its plan done, no review thread waiting on an agent,
      every expected check passed
-   - blocked on one named external action, which it asked for on the item the same turn
+   - blocked on one named external action, which it asked for on its pull request the same turn
 
    It takes no second item until the first is done. Sub-agents work *within* that item, never
    across unrelated ones, unless USER approved a batch.
-6. **Fix the next repos' bugs that need no decision**
+6. **Once that item is done, fix the next repos' bugs that need no decision**
    ([`OPERATIONS.md`](OPERATIONS.md#bugs-in-a-next-repo)), oldest first and without asking. Each is
    an item of its own, or a few in one module share a pull request, merged once its checks pass
    before the next is taken. A bug that turns out to need a decision gets its 🚀-able comment and is
@@ -36,4 +36,5 @@ Three things hold at every step:
 - **A target branch is merged in for a reason** — a measured overlap, a point of the plan, a review
   request, a check that needs the current base — never because it is behind
   ([`OPERATIONS.md`](OPERATIONS.md#measuring-against-git-history)). On a next repo with drift
-  rising, it slices what next `main` already carries before building anything new.
+  rising, it carves what next `main` already carries into proposed upstream slices before building
+  anything new, and opens one only when USER asks.
