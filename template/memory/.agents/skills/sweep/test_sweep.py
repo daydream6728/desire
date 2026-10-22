@@ -123,6 +123,11 @@ class Cited(unittest.TestCase):
     def test_every_note_contributes(self):
         self.assertEqual(sweep.cited(["#1", "#2 and #1"]), {1, 2})
 
+    def test_another_repos_number_is_not_the_notes_own(self):
+        self.assertEqual(sweep.cited(
+            ["builds on rel-int/optyx#16, see desire#162 and (#54's ruling)"]),
+            {54})
+
     def test_a_note_citing_nothing_pulls_in_nothing(self):
         self.assertEqual(sweep.cited(["no numbers here"]), set())
 

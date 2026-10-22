@@ -306,13 +306,18 @@ def stale(read, updated):
 READ = re.compile(r"\bread (\d{4}-\d{2}-\d{2})")
 
 
+BARE = re.compile(r"(?<![\w./-])#(\d+)")
+
+
 def cited(texts):
-    """Every `#<number>` an existing note mentions. Forming a view on one item
-    pulls in what it references, which is how an issue earns a note without a
-    human deciding it has: a note that says a head waits on a ruling names the
-    issue, and that issue is then in play."""
+    """Every bare `#<number>` an existing note mentions. Forming a view on one
+    item pulls in what it references, which is how an issue earns a note
+    without a human deciding it has: a note that says a head waits on a ruling
+    names the issue, and that issue is then in play. A number qualified by a
+    repository, `desire#162` or `rel-int/optyx#16`, is that repository's
+    item, not one of the note's own."""
     return {int(number) for text in texts
-            for number in re.findall(r"#(\d+)", text)}
+            for number in BARE.findall(text)}
 
 
 def required(repo, items, texts, setup):
