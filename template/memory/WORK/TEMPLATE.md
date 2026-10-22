@@ -52,9 +52,9 @@ it was true. Write the field on the **whose** line and put the prose elsewhere.
 
 **`base <sha>` is a field too**, and it is the second sign-off condition written down: the tip of
 the head's **own** base ref — `split/3`, not `main` — that the head's checks ran against (why that
-matters is in [`OPERATIONS.md`](../../../OPERATIONS.md#reading-the-sweep)). `sweep.py` reads the
-count live from `compare`, and it reads this field to tell a head that owes a merge-down from a note that owes a
-re-read. It is parsed the way `read <date>` is — through backticks and emphasis, so
+matters is in DESIRE_REPO's `OPERATIONS.md`, *Reading the sweep*). `sweep.py` reads the count live
+from `compare`, and it reads this field to tell a head that owes a merge-down from a note that owes
+a re-read. It is parsed the way `read <date>` is — through backticks and emphasis, so
 ``base **`4d96025`**`` is the same field — and the ref is named in the behind-count beside it
 rather than between the field and its sha. A note carrying no `base` is silent, not stale: the
 arithmetic is live and needs no note, and the field is there so that a reader of the note can do it
