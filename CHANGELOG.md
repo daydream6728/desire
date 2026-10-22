@@ -3,6 +3,12 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-22
+
+**The sweep reads only bare `#<number>` as a note's own citation** (`template/memory/`) — a
+number qualified by a repository, `desire#162` or `rel-int/optyx#16`, no longer makes the note's
+own repository's item of that number required. Closes #171.
+
 ## 2026-10-21
 
 **`AGENTS.md` halves; plain words for the routines' jargon** (`AGENTS.md`, `OPERATIONS.md`,
