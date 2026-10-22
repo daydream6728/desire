@@ -5,6 +5,13 @@ Entries state the changes, no explanation of why.
 
 ## 2026-10-22
 
+**Birdsong reads every day PR since its last turn; an unreachable repo is an issue**
+(`BIRDSONG.md`) — the day PR description covers all the day PRs since the last one, not only the
+latest; a WORK_REPO the routine cannot reach is a `yours` issue on MEMORY_REPO instead of a line in
+the summary. USER on memory#153: *"there were two day PRs yesterday you only summarised the second
+one"*, *"raise an issue whenever a repo is missing from the routine's scope rather than burying it
+in the summary"*.
+
 **The sweep reads only bare `#<number>` as a note's own citation** (`template/memory/`) — a
 number qualified by a repository, `desire#162` or `rel-int/optyx#16`, no longer makes the note's
 own repository's item of that number required. Closes #171.
