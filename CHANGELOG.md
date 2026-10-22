@@ -163,6 +163,12 @@ USER: *"always push your work to github, no need to ask for permission"*, clarif
 
 ## 2026-10-22
 
+**The memory seed reads DESIRE_REPO's clone and links nothing outside itself**
+(`template/memory/.claude/settings.json`, `template/memory/WORK/TEMPLATE.md`) — the settings allow
+reading `config.env` and the `desire` clone beside it without a prompt, as MEMORY_REPO's live copy
+already did; `WORK/TEMPLATE.md` names `OPERATIONS.md`'s *Reading the sweep* in prose, since a
+relative link out of the seed breaks in every MEMORY_REPO clone.
+
 **Role files are run orders; a rule is stated once** (`BIRDSONG.md`, `EVENING.md`, `DAYLIGHT.md`,
 `AGENTS.md`, `OPERATIONS.md`, `.github/lint.py`, `template/memory/`) — 🐦 Birdsong, 🌙 Evening and
 🌤️ Daylight are numbered steps in the order they run; Evening's CI and merge-reason mechanics move
