@@ -2,11 +2,11 @@
 """Sweep open PRs and issues for USER signal the pipeline has not acted on:
 bodies and threads where USER spoke last, the reviews of USER's that nothing
 of ours has answered, APPROVE_EMOJI reacts from USER, the
-issues closed inside the window, MEMORY_REPO's open-PR count, the state of
-each AGENT-owned `TODO.md`, the review threads of an AGENT-owned pull request
-that wait on an agent, whether its checks ran against its own base's tip and
-whether every open item of a WORK_REPO has its `WORK/<repo>/<number>.md` note
-in MEMORY_REPO. A finding is marked 👀 when the
+issues closed inside the window, MEMORY_REPO's open-PR count, the review
+threads of an AGENT-owned pull request that wait on an agent, whether its
+checks ran against its own base's tip, and whether every open item of a
+WORK_REPO that needs one has its `WORK/<repo>/<number>.md` note in
+MEMORY_REPO. A finding is marked 👀 when the
 pipeline has reacted to say it received it. config.env is the ground truth for
 USER, the repos and the emoji, and it sits at the root of this clone;
 AGENTS.md's rules say what to do with a finding.
@@ -28,10 +28,7 @@ Exit 1 with one line per finding, exit 2 when a repo in play could not be read
 is how a live 🚀 goes unanswered — and exit 0 otherwise. A read nobody answered
 is retried before it counts as unreadable, since one dropped connection in
 some two hundred used to end the run with a traceback, i.e. on exit 1.
-Open `TODO.md` boxes are printed as context and do not make the sweep dirty.
 """
-import base64
-import datetime
 import http.client
 import json
 import os
@@ -55,11 +52,8 @@ TRANSPORT = (urllib.error.URLError, http.client.HTTPException,
              ConnectionError, TimeoutError)
 ATTEMPTS = 4      # one read and three retries, which a sweep can afford
 BACKOFF = 2.0     # seconds before the first retry, doubling after it
-BOX = re.compile(r"^\s*[-*] \[([^]]*)\]")
-CLAIM = re.compile(r"\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?"
-                   r"(?:Z|[+-]\d{2}:?\d{2})?)?")
-STALE = datetime.timedelta(hours=12)
 CONFIG = pathlib.Path(__file__).parents[3] / "config.env"
+DAY = re.compile(r"\d{4}-\d{2}-\d{2}\b")
 FOOTER_LINK = re.compile(r"\[[^\]]*\]\((https://[^\s)]+)\)")
 
 
@@ -268,15 +262,44 @@ def waiting(threads, comments, setup):
     return waits
 
 
+def heads(repo, cache):
+    """Every open pull request by number, so the whole repo costs one request
+    rather than one per pull request."""
+    if "heads" not in cache:
+        cache["heads"] = {pull["number"]: pull
+                          for pull in get(repo, "pulls?state=open")}
+    return cache["heads"]
+
+
+def authored(repo, number, body, setup):
+    """Whether this pull request is ours: AGENT opened it or ADOPTED_PRS lists
+    it, the same test the board and the scans use. Which is also whether we may
+    post on it at all — `AGENTS.md` keeps the agents off somebody else's item
+    beyond a factual status reply that commits to nothing."""
+    return "pull_request" in body and (
+        body["user"]["login"] == setup["AGENT"]
+        or number in setup.get("ADOPTED_PRS", {}).get(repo, []))
+
+
+def owned(repo, number, body, setup):
+    """Whether the sign-off checks bind this pull request: it is ours, and the
+    work happens there. Nobody else's branch waits on us, and neither does ours
+    in a repo WORK_REPOS does not name — MEMORY_REPO, whose day pull request is
+    the turn writing itself down. A review of USER's is routed on `authored`
+    instead: our own head is ours to answer on wherever it lives."""
+    return (repo in setup["WORK_REPOS"]
+            and authored(repo, number, body, setup))
+
+
 def signed_off(repo, number, body, review, setup):
     """The threads standing between an AGENT-owned pull request and sign-off.
 
-    `AGENTS.md` asks three things of a ready head: no `TODO.md`, green CI, and
-    no review thread waiting on an agent. `todo` checks the first, CI is read
-    off the check runs, and until today nothing checked the third — so it was
-    enforced by whichever turn happened to open the head and look. On that
-    record, discopy #752 on 09-09, #660 on 09-12 and #662 on 09-15 were each
-    called ready with a thread open on them, every one found by accident."""
+    A work repo's `AGENTS.md` asks three things of a ready head: no `TODO.md`,
+    green CI, and no review thread waiting on an agent. Nothing checked the
+    third, so it was enforced by whichever turn happened to open the head and
+    look. On that record, discopy #752 on 09-09, #660 on 09-12 and #662 on
+    09-15 were each called ready with a thread open on them, every one found by
+    accident."""
     if not owned(repo, number, body, setup):
         return []
     threads = resolutions(repo, number)
@@ -501,161 +524,34 @@ def asking(repo, kind, target, setup, since, cache):
 
 
 def memory(repo):
-    """MEMORY_REPO holds one open PR per day, checked whatever the window since
-    it is an invariant rather than a delta. Several open at once is USER not
-    having merged the past days, which is theirs and no finding of ours; two
-    under one title is a day written twice, which is ours. The count and the
-    URLs are printed either way, so a turn sees what is waiting to be merged
-    without the sweep calling it dirty. When any are open the newest is named
-    as the branch to cut a new day's PR from, not `main`, so unmerged days
-    stack rather than conflict on `README.md`/`USER_TODO.md` (desire#144)."""
+    """MEMORY_REPO holds one open day PR, a PR titled with its date, checked
+    whatever the window since it is an invariant rather than a delta. The turn
+    that opens a new day's PR merges the previous one first, so two day PRs
+    open at once is a turn that skipped the merge, and two under one title is
+    a day written twice: both are findings of ours. Every open PR is printed,
+    the `OTHERS/` ones included, and the open day PR is named as the one to
+    push today's turn to, or to merge before opening today's."""
     open_prs = get(repo, "pulls?state=open")
     print(f"{repo}: {len(open_prs)} open PR(s)"
           + "".join("\n  " + pr["html_url"] for pr in open_prs), file=sys.stderr)
-    if open_prs:
-        newest = max(open_prs, key=lambda pull: pull["created_at"])
-        print(f"{repo}: base a new day's PR on {newest['head']['ref']!r}"
-              f" ({newest['title']!r}, the newest still open), not main, so"
-              " unmerged days stack rather than conflict (desire#144)",
-              file=sys.stderr)
     days = {}
     for pull in open_prs:
-        days.setdefault(pull["title"], []).append(pull["html_url"])
-    return [f"{repo}: {len(urls)} open PRs titled {title!r}, one a day is the"
-            " rule — push to one and close the rest: " + ", ".join(urls)
-            for title, urls in days.items() if len(urls) > 1]
-
-
-def heads(repo, cache):
-    """Every open pull request by number. `TODO.md` is read off the head
-    commit, which the listing already carries, so the whole repo costs one
-    request rather than one per pull request."""
-    if "heads" not in cache:
-        cache["heads"] = {pull["number"]: pull
-                          for pull in get(repo, "pulls?state=open")}
-    return cache["heads"]
-
-
-def contents(repo, path, ref):
-    """A file at one commit, `None` when that commit does not carry it: a
-    missing `TODO.md` is a finding here rather than an error. Undecodable bytes
-    are replaced rather than raised, since one unreadable file would otherwise
-    abort the whole sweep. `validate=True` is wrong here — GitHub wraps the
-    base64 it serves, which the strict decoder rejects."""
-    try:
-        blob = get(repo, f"contents/{path}?ref={ref}")
-    except urllib.error.HTTPError as error:
-        if error.code == 404:
-            return None
-        raise
-    return base64.b64decode(blob["content"]).decode(errors="replace")
-
-
-def claimed(box):
-    """When a `[WIP]` box was claimed, `None` when it carries no readable date.
-    Rule 3 stamps `@<SessionID>-<yyyy-MM-dd HH:mm>`, in practice with an offset
-    or a `Z` and sometimes a range, so the first date on the line wins and a
-    naive one is read as UTC."""
-    stamp = CLAIM.search(box)
-    if not stamp:
-        return None
-    text = re.sub(r"([+-]\d{2})(\d{2})$", r"\1:\2",
-                  stamp.group().replace(" ", "T").replace("Z", "+00:00"))
-    try:
-        when = datetime.datetime.fromisoformat(text)
-    except ValueError:
-        return None
-    return when if when.tzinfo else when.replace(
-        tzinfo=datetime.timezone.utc)
-
-
-def cleared(repo, head, cache):
-    """Whether this branch carried a `TODO.md` and deleted it, which is what
-    clears the merge gate. Both cases read as missing at the head, and the
-    diff cannot tell them apart either: adding a file and deleting it again
-    nets out to nothing. The branch's own commits touching the path do, once
-    the ones it inherits from `main` are taken out. Asked only of a branch
-    already known to have no `TODO.md`."""
-    if "cleared" not in cache:
-        cache["cleared"] = {commit["sha"] for commit in get(
-            repo, "commits?sha=main&path=TODO.md")}
-    return any(commit["sha"] not in cache["cleared"] for commit in get(
-        repo, f"commits?sha={head}&path=TODO.md"))
-
-
-def elapsed(age):
-    """An age in whole hours, in days once there are two of them: the window
-    is twelve hours and the claims that break it run to weeks."""
-    hours = int(age.total_seconds() // 3600)
-    return f"{hours // 24} days" if hours >= 48 else f"{hours} hours"
-
-
-def authored(repo, number, body, setup):
-    """Whether this pull request is ours: AGENT opened it or ADOPTED_PRS lists
-    it, the same test the board and the scans use. Which is also whether we may
-    post on it at all — `AGENTS.md` keeps the agents off somebody else's item
-    beyond a factual status reply that commits to nothing."""
-    return "pull_request" in body and (
-        body["user"]["login"] == setup["AGENT"]
-        or number in setup.get("ADOPTED_PRS", {}).get(repo, []))
-
-
-def owned(repo, number, body, setup):
-    """Whether this pull request owes us a `TODO.md`: it is ours, and the work
-    happens there. Nobody else's branch owes one, and neither does ours in a
-    repo WORK_REPOS does not name — MEMORY_REPO, whose day pull request is the
-    turn writing itself down. That rule binds where the work happens, which is
-    why this is `authored` and a repo rather than `authored` alone, and why a
-    review of USER's is routed on `authored` instead: our own head is ours to
-    answer on wherever it lives."""
-    return (repo in setup["WORK_REPOS"]
-            and authored(repo, number, body, setup))
-
-
-def todo(repo, number, body, setup, cache):
-    """The `TODO.md` findings on one AGENT-owned pull request. Its boxes are
-    the mutex between parallel agents and deleting the file is what clears the
-    merge gate, so it is the one file that says whether a pull request is
-    finished and nothing else in the sweep reads it. Open boxes are printed
-    the way MEMORY_REPO's PR count is — work left is the normal state of a
-    branch, not a finding — while a claim past Rule 3's twelve hours and a
-    branch that never carried the file are reported.
-
-    A branch that never carried one broke `RULES.md` 1, which asks every agent
-    branch to open one, and that is all it broke: `RULES.md` 2 settles the
-    readiness question the other way — *"a branch that never carried one keeps
-    whatever state its author gave it. Read the boxes, not the badge."* There
-    are no boxes, so nothing is pending. Saying such a head "cannot reach
-    sign-off" put a merge gate in front of discopy#763 that no rule asks for."""
-    if not owned(repo, number, body, setup):
-        return []
-    head = (heads(repo, cache).get(number)
-            or get(repo, f"pulls/{number}"))["head"]["sha"]
-    text = contents(repo, "TODO.md", head)
-    if text is None:
-        return [] if cleared(repo, head, cache) else [
-            f"#{number} never carried a TODO.md, so it never opened one to"
-            " work from (RULES.md 1); its readiness is untouched (RULES.md 2): "
-            + body["html_url"]]
-    boxes = [(mark.group(1).strip(), line) for line in text.splitlines()
-             for mark in [BOX.match(line)] if mark]
-    if opened := [line for mark, line in boxes if not mark]:
-        print(f"{repo}#{number}: {len(opened)} of {len(boxes)} TODO.md"
-              " point(s) open", file=sys.stderr)
-    findings = []
-    for mark, line in boxes:
-        if "WIP" not in mark.upper():
-            continue
-        when = claimed(line)
-        age = None if when is None else (
-            datetime.datetime.now(datetime.timezone.utc) - when)
-        if age is not None and age < STALE:
-            continue
-        findings.append(
-            f"#{number} stale [WIP] claim, "
-            + ("no readable date" if age is None else
-               f"{when:%Y-%m-%d} ({elapsed(age)} old)")
-            + ", reclaim it: " + body["html_url"])
+        if DAY.match(pull["title"]):
+            days.setdefault(pull["title"], []).append(pull)
+    for title, pulls in sorted(days.items()):
+        for pull in pulls:
+            print(f"{repo}: day PR {title!r} on {pull['head']['ref']!r}: push"
+                  " today's turn there if it is today's, else merge it before"
+                  " opening today's from main", file=sys.stderr)
+    findings = [f"{repo}: {len(pulls)} open PRs titled {title!r}, one a day is"
+                " the rule — push to one and close the rest: "
+                + ", ".join(pull["html_url"] for pull in pulls)
+                for title, pulls in days.items() if len(pulls) > 1]
+    if len(days) > 1:
+        findings.append(f"{repo}: {sum(map(len, days.values()))} day PRs open, "
+                        + ", ".join(sorted(days)) + " — close the duplicates"
+                        " of a title first, then merge all but the newest,"
+                        " oldest first")
     return findings
 
 
@@ -722,8 +618,7 @@ def item(repo, number, setup, since, cache):
             f" {'pull request' if 'pull_request' in body else 'issue'}:"
             f" {body['html_url']}" + flag)
     return (findings + signed_off(repo, number, body, review, setup)
-            + condition_two(repo, number, body, setup, cache)
-            + todo(repo, number, body, setup, cache))
+            + condition_two(repo, number, body, setup, cache))
 
 
 def notes(have, want):
@@ -813,25 +708,33 @@ def noted_base(repo, number):
     return base_sha(note.read_text()) if note.is_file() else None
 
 
-CITE = re.compile(r"(?P<where>[\w.-]+(?:/[\w.-]+)?)?#(?P<number>\d+)")
+CITE = re.compile(r"([\w./-]*)#(\d+)")
 
 
-def cited(repo, texts):
-    """Every `#<number>` an existing note mentions **of this repo**. Forming a
+def cited(texts, repo=None):
+    """Every `#<number>` an existing note mentions, bare or qualified by the
+    note's own `repo`, as `discopy#803` or `discopy/discopy#803`. Forming a
     view on one item pulls in what it references, which is how an issue earns
     a note without a human deciding it has: a note that says a head waits on a
-    ruling names the issue, and that issue is then in play.
+    ruling names the issue, and that issue is then in play. A number
+    qualified by another repository, `desire#162`, `rel-int/optyx#16` or
+    `other/discopy#803`, is that repository's item; a slash alone is a list,
+    `#21/#23`."""
+    own = {"", repo, repo.split("/")[-1]} if repo else {""}
+    return {int(number) for text in texts
+            for prefix, number in CITE.findall(text)
+            if prefix.strip("/") in own}
 
-    A citation carrying a repo belongs to that repo, not to this one. Bare
-    `#26` is this one's, and so are `discopy#26` and `discopy/discopy#26` when
-    sweeping `discopy/discopy`; `desire#26` is somebody else's. Matching the
-    number alone made `WORK/discopy/661.md`, which cites `desire#26`, demand a
-    note for discopy's own unrelated #26 — one finding a night that no turn
-    could act on, and noise a real one can hide behind."""
-    name = repo.split("/")[-1]
-    return {int(match["number"]) for text in texts
-            for match in CITE.finditer(text)
-            if match["where"] in (None, repo, name)}
+
+def required(repo, items, texts, setup):
+    """The open items that must carry a note: our own pull requests — AGENT
+    opened it or ADOPTED_PRS lists it — and every open item an existing note
+    cites. Someone else's pull request earns a note by colliding with ours or
+    by an agent working on it, never by merely being open."""
+    adopted = setup.get("ADOPTED_PRS", {}).get(repo, [])
+    ours = {item["number"] for item in items if "pull_request" in item and (
+        item["user"]["login"] == setup["AGENT"] or item["number"] in adopted)}
+    return ours | (cited(texts, repo) & {item["number"] for item in items})
 
 
 def memory_clone():
@@ -847,16 +750,11 @@ def memory_clone():
 def uncharted(repo, setup, cache):
     """What `WORK/<repo>/` and the repo's open items say about each other.
 
-    The notes cover the whole repository, not our own slice of it: someone
-    else's pull request collides with ours, and an issue nobody answered is
-    the reason a head is stuck. Ownership is a field inside the note, not a
-    condition on it existing.
-
-    A note is **required** for every open pull request, and for every open
-    issue an existing note cites — forming a view on one item is what pulls in
-    what it references. Every other open issue is printed as context and does
-    not make the sweep dirty: a note that only restated GitHub would be the
-    board's queue again, one file per row instead of one table.
+    A note is **required** for each of our own open pull requests and for
+    every open item an existing note cites — forming a view on one item is
+    what pulls in what it references. Every other open item is printed as
+    context and does not make the sweep dirty: a note that only restated
+    GitHub would be a copy of it, and copies go stale.
 
     Three findings: an item with no note, a note whose item is closed, and a
     note older than the item it describes."""
@@ -875,12 +773,11 @@ def uncharted(repo, setup, cache):
     read = {number: read_date(text) for number, text in texts.items()}
     items = get(repo, "issues?state=open")
     updated = {item["number"]: item["updated_at"] for item in items}
-    pulls = {item["number"] for item in items if "pull_request" in item}
-    want = pulls | (cited(repo, texts.values()) & set(updated))
+    want = required(repo, items, texts.values(), setup)
     unread = sorted(set(updated) - want - set(files))
     if unread:
-        print(f"{repo}: {len(unread)} open issue(s) nobody has a note on, none"
-              " of them cited by one: "
+        print(f"{repo}: {len(unread)} open item(s) nobody has a note on, none"
+              " of them ours or cited by one: "
               + ", ".join(f"#{number}" for number in unread), file=sys.stderr)
     missing, _ = notes(set(files), want)
     _, orphan = notes(set(files), set(updated))  # open at all, not required

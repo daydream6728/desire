@@ -1,5 +1,2 @@
 @AGENTS.md
-@RULES.md
-@BIRDSONG.md
 @DAYLIGHT.md
-@EVENING.md

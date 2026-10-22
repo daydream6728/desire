@@ -330,32 +330,43 @@ class Cited(unittest.TestCase):
     issue earns a note without a human deciding it has."""
 
     def test_numbers_are_read_out_of_prose(self):
-        self.assertEqual(sweep.cited("a/b", ["waits on #625, blocks #443"]),
+        self.assertEqual(sweep.cited(["waits on #625, blocks #443"]),
                          {625, 443})
 
     def test_every_note_contributes(self):
-        self.assertEqual(sweep.cited("a/b", ["#1", "#2 and #1"]), {1, 2})
+        self.assertEqual(sweep.cited(["#1", "#2 and #1"]), {1, 2})
+
+    def test_another_repos_number_is_not_the_notes_own(self):
+        self.assertEqual(sweep.cited(
+            ["builds on rel-int/optyx#16, see desire#162, v2#17, path.#18,",
+             "repo-#20, other/bio#21 and (#54's ruling)"], "rel-int/bio"),
+            {54})
+
+    def test_the_notes_own_repo_and_a_list_are_its_own(self):
+        self.assertEqual(sweep.cited(
+            ["on discopy#803 and discopy/discopy#804, with #21/#23/#24"],
+            "discopy/discopy"), {803, 804, 21, 23, 24})
 
     def test_a_note_citing_nothing_pulls_in_nothing(self):
-        self.assertEqual(sweep.cited("a/b", ["no numbers here"]), set())
+        self.assertEqual(sweep.cited(["no numbers here"]), set())
 
     def test_a_citation_naming_another_repo_is_that_repo_s(self):
         """`WORK/discopy/661.md` cites `desire#26`, which said nothing about
         discopy's own #26 — the sweep asked for a note on it every night."""
-        self.assertEqual(sweep.cited("discopy/discopy", ["waits on desire#26"]),
+        self.assertEqual(sweep.cited(["waits on desire#26"], "discopy/discopy"),
                          set())
         self.assertEqual(
-            sweep.cited("discopy/discopy",
-                        ["[desire#26](https://github.com/o/desire/issues/26)"]),
+            sweep.cited(["[desire#26](https://github.com/o/desire/issues/26)"],
+                        "discopy/discopy"),
             set())
 
     def test_this_repo_named_in_full_or_short_still_counts(self):
-        self.assertEqual(sweep.cited("discopy/discopy", ["discopy#661"]), {661})
+        self.assertEqual(sweep.cited(["discopy#661"], "discopy/discopy"), {661})
         self.assertEqual(
-            sweep.cited("discopy/discopy", ["discopy/discopy#661"]), {661})
+            sweep.cited(["discopy/discopy#661"], "discopy/discopy"), {661})
 
     def test_an_anchor_or_a_url_fragment_is_not_a_citation(self):
-        self.assertEqual(sweep.cited("a/b", ["README.md#ready", "p/1#issue-2"]),
+        self.assertEqual(sweep.cited(["README.md#ready", "p/1#issue-2"]),
                          set())
 
 
@@ -377,6 +388,43 @@ class Notes(unittest.TestCase):
 
     def test_nothing_open_makes_every_note_an_orphan(self):
         self.assertEqual(sweep.notes({1, 2}, set()), ([], [1, 2]))
+
+
+class Required(unittest.TestCase):
+    """A note is owed by our own pull requests and by what a note cites,
+    never by an item merely being open."""
+
+    setup = {"AGENT": "bot", "ADOPTED_PRS": {"a/b": [7]}}
+
+    @staticmethod
+    def pull(number, login):
+        return {"number": number, "user": {"login": login},
+                "pull_request": {}}
+
+    def test_our_pull_request_is_required(self):
+        items = [self.pull(1, "bot")]
+        self.assertEqual(sweep.required("a/b", items, [], self.setup), {1})
+
+    def test_someone_elses_pull_request_is_not(self):
+        items = [self.pull(2, "alice")]
+        self.assertEqual(sweep.required("a/b", items, [], self.setup), set())
+
+    def test_an_adopted_pull_request_is_ours(self):
+        items = [self.pull(7, "alice")]
+        self.assertEqual(sweep.required("a/b", items, [], self.setup), {7})
+
+    def test_a_cited_item_is_required_whoever_opened_it(self):
+        items = [self.pull(2, "alice"), {"number": 3, "user": {"login": "x"}}]
+        self.assertEqual(sweep.required(
+            "a/b", items, ["collides with #2, waits on #3"], self.setup),
+            {2, 3})
+
+    def test_a_citation_of_a_closed_item_requires_nothing(self):
+        self.assertEqual(sweep.required("a/b", [], ["#9"], self.setup), set())
+
+    def test_our_issue_is_not_required_uncited(self):
+        items = [{"number": 4, "user": {"login": "bot"}}]
+        self.assertEqual(sweep.required("a/b", items, [], self.setup), set())
 
 
 class MemoryClone(unittest.TestCase):
@@ -695,7 +743,7 @@ class Ours(unittest.TestCase):
 
 class Authored(unittest.TestCase):
     """Whether a pull request is ours, which `owned` is plus the one clause
-    that was only ever about who owes a `TODO.md`."""
+    that says where the sign-off checks bind."""
 
     setup = {"AGENT": "nightmare", "WORK_REPOS": ["a/work"],
              "ADOPTED_PRS": {"a/work": [347]}}
@@ -708,9 +756,9 @@ class Authored(unittest.TestCase):
             "a/work", 49, {"user": {"login": "nightmare"}}, self.setup))
 
     def test_our_own_head_outside_work_repos_is_still_ours(self):
-        """A day pull request in MEMORY_REPO owes no `TODO.md` and is ours to
-        answer on all the same, which is the whole reason the two predicates
-        had to come apart."""
+        """A day pull request in MEMORY_REPO is outside the sign-off checks
+        and ours to answer on all the same, which is the whole reason the two
+        predicates had to come apart."""
         self.assertTrue(sweep.authored("a/memory", 89, self.pull(), self.setup))
         self.assertFalse(sweep.owned("a/memory", 89, self.pull(), self.setup))
 
@@ -775,10 +823,10 @@ class Routed(unittest.TestCase):
 
 
 class Memory(unittest.TestCase):
-    """One open day PR per day is the invariant. Siblings with distinct titles
-    are USER not having merged, no finding; two under one title is a day written
-    twice, which is. Whenever any are open the newest by `created_at` is named
-    as the branch to stack a new day's PR on, not `main` (desire#144)."""
+    """One open day PR is the invariant, since the turn that opens a new day
+    merges the previous one first. Two day PRs open, or two under one title,
+    are findings; an `OTHERS/` PR beside the day's is none. The open day PR is
+    named, to push today's turn to or merge before opening today's."""
 
     def patch(self, pulls):
         original = sweep.get
@@ -795,11 +843,28 @@ class Memory(unittest.TestCase):
             findings = sweep.memory("a/memory")
         return findings, stderr.getvalue()
 
-    def test_siblings_with_distinct_titles_are_no_finding(self):
+    def test_one_day_pr_beside_an_others_pr_is_no_finding(self):
+        self.patch([self.pull("2026-09-07", "day", "2026-09-07T00:00:00Z"),
+                    self.pull("OTHERS/x.md", "x", "2026-09-06T00:00:00Z")])
+        findings, err = self.run_memory()
+        self.assertEqual(findings, [])
+        self.assertIn("'day'", err)
+        self.assertNotIn("'x'", err)
+
+    def test_two_day_prs_open_is_a_finding(self):
         self.patch([self.pull("2026-09-07", "b", "2026-09-07T00:00:00Z"),
                     self.pull("2026-09-04", "a", "2026-09-04T00:00:00Z")])
         findings, _ = self.run_memory()
-        self.assertEqual(findings, [])
+        self.assertEqual(len(findings), 1)
+        self.assertIn("2026-09-04, 2026-09-07", findings[0])
+
+    def test_two_days_count_every_open_day_pr(self):
+        self.patch([self.pull("2026-09-07", "c", "2026-09-07T00:00:00Z"),
+                    self.pull("2026-09-07", "b", "2026-09-07T01:00:00Z"),
+                    self.pull("2026-09-04", "a", "2026-09-04T00:00:00Z")])
+        findings, _ = self.run_memory()
+        self.assertEqual(len(findings), 2)
+        self.assertTrue(any("3 day PRs open" in f for f in findings))
 
     def test_two_under_one_title_is_a_finding(self):
         self.patch([self.pull("2026-09-07", "b", "2026-09-07T00:00:00Z"),
@@ -808,18 +873,11 @@ class Memory(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertIn("2026-09-07", findings[0])
 
-    def test_the_newest_open_branch_is_named_to_stack_on(self):
-        self.patch([self.pull("2026-09-04", "older", "2026-09-04T00:00:00Z"),
-                    self.pull("2026-09-07", "newest", "2026-09-07T00:00:00Z")])
-        _, err = self.run_memory()
-        self.assertIn("'newest'", err)
-        self.assertNotIn("'older'", err)
-
-    def test_no_open_prs_names_no_branch(self):
+    def test_no_open_prs_names_no_day(self):
         self.patch([])
         findings, err = self.run_memory()
         self.assertEqual(findings, [])
-        self.assertNotIn("base a new day's PR", err)
+        self.assertNotIn("day PR", err)
 
 
 class Everywhere(unittest.TestCase):
