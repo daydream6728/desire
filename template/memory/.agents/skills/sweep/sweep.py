@@ -306,19 +306,22 @@ def stale(read, updated):
 READ = re.compile(r"\bread (\d{4}-\d{2}-\d{2})")
 
 
-CITE = re.compile(r"([\w.-]*)#(\d+)")
+CITE = re.compile(r"([\w./-]*)#(\d+)")
 
 
-def cited(texts, name=None):
+def cited(texts, repo=None):
     """Every `#<number>` an existing note mentions, bare or qualified by the
-    note's own repository `name`. Forming a view on one item pulls in what it
-    references, which is how an issue earns a note without a human deciding it
-    has: a note that says a head waits on a ruling names the issue, and that
-    issue is then in play. A number qualified by another repository,
-    `desire#162` or `rel-int/optyx#16`, is that repository's item."""
+    note's own `repo`, as `discopy#803` or `discopy/discopy#803`. Forming a
+    view on one item pulls in what it references, which is how an issue earns
+    a note without a human deciding it has: a note that says a head waits on a
+    ruling names the issue, and that issue is then in play. A number
+    qualified by another repository, `desire#162`, `rel-int/optyx#16` or
+    `other/discopy#803`, is that repository's item; a slash alone is a list,
+    `#21/#23`."""
+    own = {"", repo, repo.split("/")[-1]} if repo else {""}
     return {int(number) for text in texts
             for prefix, number in CITE.findall(text)
-            if prefix in ("", name)}
+            if prefix.strip("/") in own}
 
 
 def required(repo, items, texts, setup):
@@ -329,9 +332,7 @@ def required(repo, items, texts, setup):
     adopted = setup.get("ADOPTED_PRS", {}).get(repo, [])
     ours = {item["number"] for item in items if "pull_request" in item and (
         item["user"]["login"] == setup["AGENT"] or item["number"] in adopted)}
-    name = repo.split("/")[-1]
-    return ours | (
-        cited(texts, name) & {item["number"] for item in items})
+    return ours | (cited(texts, repo) & {item["number"] for item in items})
 
 
 def memory_clone():
