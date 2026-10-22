@@ -8,7 +8,7 @@ tonight on `discopy#813`: USER's `APPROVED` of `2026-10-21T09:09:59Z` is hidden 
 toumix-agents' own comment of `16:06:15Z`, so the sweep printed nothing about the one signal
 desire#49 built it to see.
 
-- [ ] `ours(post, setup)`: a post the pipeline wrote — AGENT's handle, or USER's with an
+- [WIP] @session_01Y3oYmLqKzK9ZHcPExsq4Gc-2026-10-22 00:3x `ours(post, setup)`: a post the pipeline wrote — AGENT's handle, or USER's with an
       AGENT_FOOTER — and `verdicts` silences a review on that, not on `answered`
 - [ ] `authored(repo, number, body, setup)`: a pull request of ours in any repo, with `owned`
       delegating to it for the WORK_REPOS half
