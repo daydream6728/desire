@@ -4,8 +4,8 @@
 <!-- Activity since the previous memory PR, whatever day that was. Split by source: interactive
 work under USER's own prompts, and the autonomous round — say plainly when a round did nothing, or
 did not run at all, rather than omit it. Substance: what an item does and what it reached, not that
-it exists. Scans, re-merges and board repair are housekeeping, named only where they
-mattered. -->
+it exists. Scans, re-merges and board repair are housekeeping, named only when they
+unblocked or blocked work, or took the whole round. -->
 
 ## Ready for your review
 <!-- Which items are ready and what reading each costs, counted as
