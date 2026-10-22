@@ -5,6 +5,20 @@ Entries state the changes, no explanation of why.
 
 ## 2026-10-22
 
+**Role files are run orders; a rule is stated once** (`BIRDSONG.md`, `EVENING.md`, `DAYLIGHT.md`,
+`AGENTS.md`, `OPERATIONS.md`, `.github/lint.py`, `template/memory/`) — 🐦 Birdsong, 🌙 Evening and
+🌤️ Daylight are numbered steps in the order they run; Evening's CI and merge-reason mechanics move
+to `OPERATIONS.md` (*Reading CI*, *Measuring against git history*). `template/memory/AGENTS.md`
+says what is where and points to DESIRE_REPO's `AGENTS.md` instead of restating its rules, which
+gains the one that lived only there: DESIRE_REPO's open issues read before planning. 🌙 Evening
+finishes every item left in the next repos, sub-agents taking items that do not collide in
+parallel, instead of one item at a time; everywhere else it builds nothing USER did not order and
+keeps our open items moving. The `WORK/` and `OTHERS/` templates drop their restated rules.
+`lint.py` reports any run of eight words two rule files share. USER: *"file a PR for the other
+changes you proposed"*, *"why just one item a night? it should finish whatever is left, spawning
+subagents if needed"*, *"this applies only to the next repos, for the others it should mostly do
+housekeeping not develop new stuff"*.
+
 **Birdsong reads every day PR since its last turn; an unreachable repo is an issue**
 (`BIRDSONG.md`) — the day PR description covers all the day PRs since the last one, not only the
 latest; a WORK_REPO the routine cannot reach is a `yours` issue on MEMORY_REPO instead of a line in

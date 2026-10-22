@@ -30,6 +30,17 @@ Measure a branch against its base, never a pair: `git merge-tree` with the base 
 is degenerate and always reads clean, so to weigh a branch against its base, merge it in a worktree
 and read the result.
 
+Whether a pull request needs its target branch is measured on paths: the files touched by the
+commits the base gained, intersected with the files the pull request itself changed since its merge
+base.
+
+## Reading CI
+Before calling CI green, enumerate the checks a pull request is expected to have. The commit-status
+API is not the check-run API and is empty on these repos, so an empty status list is never "no CI
+ran". A pull request with no `build` run at all has a merge conflict rather than a slow runner: a
+`pull_request` job runs against `refs/pull/N/merge`, which does not exist while the pull request is
+dirty.
+
 ## Measuring drift
 A next repo's drift is `git diff upstream/main...next/main -- . ':!.github'`, split library, tests
 and docs, reported with its trend: lines landed on next against lines merged upstream, per week. Moving work
@@ -63,7 +74,8 @@ received it, and a sweep with no `--since` reports the whole backlog.
 
 The sweep marks a `👀` flag when anyone but USER has reacted, so a turn can tell a backlog from a
 queue. An instruction with no react was never received, one with 👀 is in progress, and the react is what
-takes an old question out of the sweep. React on the comment or the body itself, with
+takes an old question out of the sweep. A turn reacts on each instruction it picks up before doing
+the work. React on the comment or the body itself, with
 `add_issue_comment`'s `reaction` on a body or conversation comment, and
 `add_reply_to_pull_request_comment`'s on a review comment.
 
@@ -83,7 +95,7 @@ before it is linked, and an internal session or thread ID is not a URL and must 
 one.
 
 ## The day PR
-- The turn that opens a new day's PR first merges the previous one: whatever in its comment thread
+- Opening a new day's PR first merges the previous one: whatever in its comment thread
   should outlive it goes into a file or an issue first, a conflict is resolved by merging `main`
   into its branch, and the new day is cut from `main`.
 - If no day PR is open, the turn opens one rather than borrowing whichever branch is open. `sweep.py`
@@ -124,7 +136,7 @@ USER's approval must be on the head commit being merged; a push after it needs a
 pull request must also pass its checks, merge cleanly and have no thread waiting on an agent.
 
 ## Watching a pull request
-A runtime that cannot wake on a webhook falls back to a heartbeat: every Codex task that opens a
+A runtime with no webhook wake-up falls back to a heartbeat: every Codex task that opens a
 pull request uses [`pr-shepherd`](.agents/skills/pr-shepherd/SKILL.md) to schedule one in the same
 task. It checks the pull request, handles USER's instructions and valid in-scope bug or style
 reports from any author, backs off exponentially while nothing changes, resets on activity, and
