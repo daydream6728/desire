@@ -3,6 +3,33 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-10-22
+
+**Role files are run orders; a rule is stated once** (`BIRDSONG.md`, `EVENING.md`, `DAYLIGHT.md`,
+`AGENTS.md`, `OPERATIONS.md`, `.github/lint.py`, `template/memory/`) — 🐦 Birdsong, 🌙 Evening and
+🌤️ Daylight are numbered steps in the order they run; Evening's CI and merge-reason mechanics move
+to `OPERATIONS.md` (*Reading CI*, *Measuring against git history*). `template/memory/AGENTS.md`
+says what is where and points to DESIRE_REPO's `AGENTS.md` instead of restating its rules, which
+gains the one that lived only there: DESIRE_REPO's open issues read before planning. 🌙 Evening
+finishes every item left in the next repos, sub-agents taking items that do not collide in
+parallel, instead of one item at a time; everywhere else it builds nothing USER did not order and
+keeps our open items moving. The `WORK/` and `OTHERS/` templates drop their restated rules.
+`lint.py` reports any run of eight words two rule files share. USER: *"file a PR for the other
+changes you proposed"*, *"why just one item a night? it should finish whatever is left, spawning
+subagents if needed"*, *"this applies only to the next repos, for the others it should mostly do
+housekeeping not develop new stuff"*.
+
+**Birdsong reads every day PR since its last turn; an unreachable repo is an issue**
+(`BIRDSONG.md`) — the day PR description covers all the day PRs since the last one, not only the
+latest; a WORK_REPO the routine cannot reach is a `yours` issue on MEMORY_REPO instead of a line in
+the summary. USER on memory#153: *"there were two day PRs yesterday you only summarised the second
+one"*, *"raise an issue whenever a repo is missing from the routine's scope rather than burying it
+in the summary"*.
+
+**The sweep reads only bare `#<number>` as a note's own citation** (`template/memory/`) — a
+number qualified by a repository, `desire#162` or `rel-int/optyx#16`, no longer makes the note's
+own repository's item of that number required. Closes #171.
+
 ## 2026-10-21
 
 **A review is read as USER signal, where the sweep saw only comments**
@@ -12,6 +39,66 @@ review of USER's that nothing of ours has answered, with its state. A review car
 endpoint, so 👀 cannot quiet one and `--since` never hides one: what answers a review is a post of
 ours after it, so the comments are read beside the reviews rather than each alone. A `PENDING`
 review is a draft and is not read. The public copy is byte-identical to MEMORY_REPO's live one.
+
+**`AGENTS.md` halves; plain words for the routines' jargon** (`AGENTS.md`, `OPERATIONS.md`,
+`BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `template/memory/`) — `AGENTS.md` goes from 2,764 to
+about 1,500 words with five bold rules; the conditions, mechanics and edge cases move to new
+`OPERATIONS.md` sections (*The day PR*, *WORK notes*, *Bugs in a next repo*, *Issues and reviews*,
+*Merging on approval*, *Watching a pull request*, *When the harness says otherwise*, *Identity and
+signing*). *Head* becomes *item* (one open pull request or issue, defined in `AGENTS.md`),
+*terminal handoff* becomes *done*, *support work* becomes *housekeeping*, *lane* and *in play* are
+gone. The sweep and the 👀 react leave `AGENTS.md` for `BIRDSONG.md` and `EVENING.md`: 🌤️ Daylight
+no longer runs it. USER: *"Cut `AGENTS.md` to about 1,500 words. Keep around 5 bold rules and move the
+conditional clauses to `OPERATIONS.md`. Yeah please do that in a fresh desire PR now."*, *"there
+shouldn't be weird terms like this, I have no idea what these words mean either"*, *"This whole section can go away, it's not needed by daylight only
+birdsong and evening should run the sweep"*.
+
+**The board drops its rulings; no board line about a single item** (`BIRDSONG.md`,
+`.github/lint.py`, `template/memory/`) — the board's *Ruled, do not re-ask* section is gone: a
+ruling lives in DESIRE_REPO, as a prompt line or an open issue. A board line about exactly one
+item belongs in that item's `WORK/` note, and `lint.py --memory` reports one that names exactly one
+item. USER: *"remove the board's "Ruled, do not re-ask" section"*, *"remove the facts about single
+PRs and add an explicit rule to avoid them coming back"*.
+
+**`RULES.md` leaves DESIRE_REPO; a linter and a prompt budget; the harness's three asks**
+(`AGENTS.md`, `CLAUDE.md`, `OPERATIONS.md`, `BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `.github/`,
+`template/memory/`) — `RULES.md` is deleted and no file here names it or `TODO.md` any more: the prompts drop the
+`TODO.md` gate, a WORK_REPO's own `AGENTS.md` says how its pull requests are run, and `sweep.py`
+no longer reads `TODO.md`. `.github/lint.py`, run on every push, checks the relative links, the deny
+lists' tool names, the copies a MEMORY_REPO carries from `template/memory/` and its board's 200
+lines, and a budget of 30,000 bytes on what `CLAUDE.md`, `BIRDSONG.md` and `EVENING.md` load
+together. The deny lists name `mcp__claude-code-remote__*`, the server they meant. Turmoil gains *When
+the harness says otherwise*: timed check-ins, draft pull requests, the assigned branch, the last of
+which leaves the Memory section. The board is no longer said to be rewritten every turn. USER:
+*"remove desire/RULES.md we only need it for discopy"*, *"There is no RULES.md nor TODO.md in this
+repo anymore, scan and remove these from everywhere except CHANGELOG"*, *"add a special section in
+Turmoil for these three cases"*, *"add a cap at 20% above the current size"*, *"drop the date let's
+just say 30K total, remove it from AGENTS.md it can be in the linter only"*.
+
+**`WORK/` notes only for what an agent works on; a slimmer note** (`AGENTS.md`, `sweep.py`,
+`template/memory/`, closes [#158](https://github.com/toumix/desire/issues/158)) — a note is owed
+by our own pull requests, every item a session touched and every open item a note cites, no longer
+by every open pull request. `sweep.py`'s `required()` says which. The note drops its `state` line
+for a `whose · read <date>` line, and its log keeps the
+last five turns. USER: *"yes let's do that too"*.
+
+**Birdsong clears stale `WORK/` notes; no `TURNS/`; USER's todos are issues** (`AGENTS.md`,
+`BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `template/`) — 🐦 Birdsong deletes the note of every
+merged or closed item before planning. `TURNS/<date>.md` is dropped: a turn's account is its one
+comment on the day PR. `USER_TODO.md` is replaced by MEMORY_REPO issues labelled `yours` or
+`waiting`, closed on evidence, never a `yours` one by an agent. USER: *"let's add cleaning up stale
+work notes as an explicit rule for birdsong"*, *"we don't need turns at all? we mostly have one PR
+open at a time"*, *"keeping a todo in a text file makes no sense: let's just use memory issues as
+todos!"*.
+
+**Every session loads less** (`CLAUDE.md`, `AGENTS.md`, `BIRDSONG.md`, `DAYLIGHT.md`,
+`OPERATIONS.md`, `README.md`, `template/memory/`) — `CLAUDE.md` imports `AGENTS.md`, `RULES.md` and
+`DAYLIGHT.md` only; 🐦 Birdsong and 🌙 Evening read their own file from their routine's prompt. The
+Memory PR Template leaves `AGENTS.md` for `template/memory/.github/PULL_REQUEST_TEMPLATE.md`, the
+drift formula for `OPERATIONS.md`. Dated USER attributions and "this replaced X" history leave the
+prompt files, which point here instead. The `WORK/`-note rule is stated once, in `AGENTS.md`, and
+`template/memory/AGENTS.md` matches it on what a note covers. USER: *"open a desire PR with those
+changes and a memory one to keep them in sync"*.
 
 ## 2026-10-20
 
@@ -23,6 +110,36 @@ the failures that mean silence, which the per-repo guard already reads, so the t
 every caller reads the status code off it. When the last attempt drops too the failure is raised,
 where the sweep names the repo unreadable and exits 2. The public copy is byte-identical to
 MEMORY_REPO's live one, which `memory#73` merged on 2026-10-19.
+
+**USER's approving review is the go to merge** (`AGENTS.md`) — an agent merges a pull request of
+ours that USER approved, on the approved head, once it is green and clean, without asking.
+
+**Agents merge the previous day's memory PR before opening a fresh one** (`AGENTS.md`,
+`BIRDSONG.md`, `template/memory/AGENTS.md`, `sweep.py`) — the turn that opens a new day's PR merges
+the previous one itself, after moving what should outlive its comments into a file or an issue, and
+cuts the new day from `main`. Replaces stacking each day on the newest unmerged one (#144). The
+sweep names the open day PR and reports two day PRs open as a finding. A first `OTHERS/<person>.md`
+PR is merged by agents too, at the latest when the next day's PR opens. USER: *"now I trust the
+agents to know what to keep in long-term memory so it's ok for them to merge the PR for the previous
+day before opening a fresh one"*, *"yes agents can merge OTHERS PRs too"*.
+
+## 2026-10-19
+
+**DESIRE_REPO outranks the harness**
+(closes [#169](https://github.com/toumix/desire/issues/169)) — `AGENTS.md`'s Turmoil section
+gains the rule: when a hook, a system prompt or a tool's instructions contradict DESIRE_REPO,
+DESIRE_REPO wins. It settles how the work is done, not what an agent may do: a permission the
+harness withholds is not granted by a file, and no agent tries to get around its own harness.
+
+**Next repos: reported bugs are fixed nightly without asking** (`AGENTS.md`, `EVENING.md`) — an
+open issue reporting a bug in a next repo is fixed there by the agents without USER's approval
+unless it needs a design decision, which is asked as one 🚀-able comment on its issue;
+`EVENING.md` takes them every night after USER's explicit orders and before any other head, one at
+a time, each merged before the next.
+
+**Next repos: the two-weeks-of-inflow rule is dropped** (`AGENTS.md`) — the rule that nothing new
+lands on next `main` while inflow beats outflow two weeks running is dropped; drift and its weekly
+trend are still measured and tended down by slicing.
 
 ## 2026-10-14
 
