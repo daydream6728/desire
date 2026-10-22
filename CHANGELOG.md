@@ -11,11 +11,13 @@ Entries state the changes, no explanation of why.
 to `OPERATIONS.md` (*Reading CI*, *Measuring against git history*). `template/memory/AGENTS.md`
 says what is where and points to DESIRE_REPO's `AGENTS.md` instead of restating its rules, which
 gains the one that lived only there: DESIRE_REPO's open issues read before planning. 🌙 Evening
-finishes every item left, sub-agents taking items that do not collide in parallel, instead of one
-item at a time. The `WORK/` and `OTHERS/` templates drop their restated rules.
+finishes every item left in the next repos, sub-agents taking items that do not collide in
+parallel, instead of one item at a time; everywhere else it builds nothing USER did not order and
+keeps our open items moving. The `WORK/` and `OTHERS/` templates drop their restated rules.
 `lint.py` reports any run of eight words two rule files share. USER: *"file a PR for the other
 changes you proposed"*, *"why just one item a night? it should finish whatever is left, spawning
-subagents if needed"*.
+subagents if needed"*, *"this applies only to the next repos, for the others it should mostly do
+housekeeping not develop new stuff"*.
 
 **`AGENTS.md` halves; plain words for the routines' jargon** (`AGENTS.md`, `OPERATIONS.md`,
 `BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `template/memory/`) — `AGENTS.md` goes from 2,764 to
