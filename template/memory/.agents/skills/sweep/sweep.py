@@ -195,7 +195,13 @@ def verdicts(repo, number, body, comments, setup):
     after it, which is why the comments are read here beside the reviews
     rather than each alone. A `PENDING` review is a draft nobody but its
     author can read, and the state is part of the finding — an `APPROVED` is
-    what unblocks a head and a `CHANGES_REQUESTED` is work."""
+    what unblocks a head and a `CHANGES_REQUESTED` is work.
+
+    A post *of ours* is `ours`, not `answered`. The two agree only where USER
+    and the pipeline are the sole voices on an item, and a head of somebody
+    else's is never that: read with `answered`, toumix-agents' own comment on
+    discopy#813 counted as our answer and hid USER's `APPROVED` of it — the
+    signal desire#49 built this reader to see, missed by the reader itself."""
     if "pull_request" not in body:
         return []
     reviewed = [(review["submitted_at"], review)
@@ -203,10 +209,10 @@ def verdicts(repo, number, body, comments, setup):
                 if review["state"] != "PENDING"]
     posted = reviewed + [(comment["created_at"], comment)
                          for comment in comments]
-    ours = max((when for when, post in posted if answered(post, setup)),
-               default="")
+    spoke = max((when for when, post in posted if ours(post, setup)),
+                default="")
     return [review for when, review in sorted(reviewed, key=lambda it: it[0])
-            if not answered(review, setup) and when > ours]
+            if not answered(review, setup) and when > spoke]
 
 
 def resolutions(repo, number):
@@ -460,6 +466,27 @@ def answered(comment, setup):
             or agent_footer(comment["body"], setup))
 
 
+def ours(post, setup):
+    """Whether the pipeline wrote this post: AGENT's own handle, or USER's
+    handle with an AGENT_FOOTER on it.
+
+    `answered` asks whether anybody but USER wrote it, which is the right
+    question about a comment thread — anyone's reply moves the last word off
+    USER, and `asking` reads it that way. It is the wrong question about a
+    review, where the only thing that can clear one is a post of ours.
+
+    **An AGENT_FOOTER counts on USER's handle and nowhere else.** The marker
+    says *an agent wrote this*, not *our* agent: every other prompter's agent
+    runs the same runtimes and appends the same line, and toumix-agents' posts
+    on discopy#813 each carry `claude.ai/code`. `answered` is safe from this
+    by construction — it reaches the footer only for a post from USER's own
+    handle — and a predicate that reads the footer first is not."""
+    login = post["user"]["login"]
+    return login == setup.get("AGENT") or (
+        login == setup.get("USER")
+        and agent_footer(post.get("body"), setup))
+
+
 def asking(repo, kind, target, setup, since, cache):
     """The 👀 flag when `target` is a question of USER's still waiting on us,
     `None` when it is not: either somebody answered it, or the pipeline reacted
@@ -563,14 +590,23 @@ def elapsed(age):
     return f"{hours // 24} days" if hours >= 48 else f"{hours} hours"
 
 
-def owned(repo, number, body, setup):
-    """Whether the pipeline is answerable for this pull request: AGENT opened
-    it or ADOPTED_PRS lists it, the same test the board and the scans use.
-    Nobody else's branch owes us a `TODO.md`, and neither does one in
-    DESIRE_REPO or MEMORY_REPO — the rule binds where the work happens."""
-    return "pull_request" in body and repo in setup["WORK_REPOS"] and (
+def authored(repo, number, body, setup):
+    """Whether this pull request is ours: AGENT opened it or ADOPTED_PRS lists
+    it, the same test the board and the scans use. Which is also whether we may
+    post on it at all — `AGENTS.md` keeps the agents off somebody else's item
+    beyond a factual status reply that commits to nothing."""
+    return "pull_request" in body and (
         body["user"]["login"] == setup["AGENT"]
         or number in setup.get("ADOPTED_PRS", {}).get(repo, []))
+
+
+def owned(repo, number, body, setup):
+    """Whether this pull request owes us a `TODO.md`: it is ours, and the work
+    happens there. Nobody else's branch owes one, and neither does ours in
+    DESIRE_REPO or MEMORY_REPO — that rule binds where the work happens, which
+    is why this is `authored` and a repo rather than `authored` alone."""
+    return (repo in setup["WORK_REPOS"]
+            and authored(repo, number, body, setup))
 
 
 def todo(repo, number, body, setup, cache):
@@ -629,7 +665,13 @@ def item(repo, number, setup, since, cache):
     wrote is the thread when nothing else was said on it, which is the shape a
     standing order arrives in; once anyone comments, that thread's last word
     answers for it and the body would only report it twice. `asking` decides
-    which of the two are still waiting on us."""
+    which of the two are still waiting on us.
+
+    A review is only a finding on a head of ours. On anybody else's it is
+    printed as context: the information is worth having — USER approving is
+    what satisfies CONTRIBUTING.md's second human — but no move of ours could
+    clear the line, so counting it would make every sweep from here on dirty
+    for something nobody may act on."""
     findings, threads, body = [], {}, get(repo, f"issues/{number}")
     kind = f"issues/{number}/reactions"
     if approved(repo, kind, body, setup, cache):
@@ -651,10 +693,16 @@ def item(repo, number, setup, since, cache):
                 + seen(repo, kind, comment, setup, cache))
     for review in verdicts(repo, number, body,
                            [comment for comment, _, _ in comments], setup):
-        findings.append(
-            f"#{number} unanswered {setup['USER']}"
-            f" {review['state'].lower().replace('_', ' ')} review:"
-            f" {review['html_url']}")
+        said = (f"unanswered {setup['USER']}"
+                f" {review['state'].lower().replace('_', ' ')} review:"
+                f" {review['html_url']}")
+        if authored(repo, number, body, setup):
+            findings.append(f"#{number} {said}")
+        else:
+            print(f"{repo}#{number} {said} — context: no move of ours clears"
+                  " a review on somebody else's head, which carries no"
+                  " reactions endpoint and which AGENTS.md keeps us off",
+                  file=sys.stderr)
     for (endpoint, _), thread in threads.items():
         asked = thread[-1]  # both endpoints list oldest first
         kind = f"{endpoint}/comments/{asked['id']}/reactions"

@@ -8,11 +8,11 @@ tonight on `discopy#813`: USER's `APPROVED` of `2026-10-21T09:09:59Z` is hidden 
 toumix-agents' own comment of `16:06:15Z`, so the sweep printed nothing about the one signal
 desire#49 built it to see.
 
-- [WIP] @session_01Y3oYmLqKzK9ZHcPExsq4Gc-2026-10-22 00:3x `ours(post, setup)`: a post the pipeline wrote — AGENT's handle, or USER's with an
+- [x] `ours(post, setup)`: a post the pipeline wrote — AGENT's handle, or USER's with an
       AGENT_FOOTER — and `verdicts` silences a review on that, not on `answered`
-- [ ] `authored(repo, number, body, setup)`: a pull request of ours in any repo, with `owned`
+- [x] `authored(repo, number, body, setup)`: a pull request of ours in any repo, with `owned`
       delegating to it for the WORK_REPOS half
-- [ ] an unanswered review on a head that is **not** ours is printed as context, not counted as a
+- [x] an unanswered review on a head that is **not** ours is printed as context, not counted as a
       finding: `AGENTS.md` keeps us off it and a review carries no reactions endpoint, so no move
       of ours could ever clear one
-- [ ] tests for all three, and the same file in `template/memory/` and in MEMORY_REPO's clone
+- [x] tests for all three, and the same file in `template/memory/` and in MEMORY_REPO's clone
