@@ -602,9 +602,12 @@ def authored(repo, number, body, setup):
 
 def owned(repo, number, body, setup):
     """Whether this pull request owes us a `TODO.md`: it is ours, and the work
-    happens there. Nobody else's branch owes one, and neither does ours in
-    DESIRE_REPO or MEMORY_REPO — that rule binds where the work happens, which
-    is why this is `authored` and a repo rather than `authored` alone."""
+    happens there. Nobody else's branch owes one, and neither does ours in a
+    repo WORK_REPOS does not name — MEMORY_REPO, whose day pull request is the
+    turn writing itself down. That rule binds where the work happens, which is
+    why this is `authored` and a repo rather than `authored` alone, and why a
+    review of USER's is routed on `authored` instead: our own head is ours to
+    answer on wherever it lives."""
     return (repo in setup["WORK_REPOS"]
             and authored(repo, number, body, setup))
 

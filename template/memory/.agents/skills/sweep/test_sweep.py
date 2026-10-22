@@ -708,11 +708,11 @@ class Authored(unittest.TestCase):
             "a/work", 49, {"user": {"login": "nightmare"}}, self.setup))
 
     def test_our_own_head_outside_work_repos_is_still_ours(self):
-        """Our pull requests in DESIRE_REPO and MEMORY_REPO owe no `TODO.md`
-        and are ours to answer on all the same, which is the whole reason the
-        two predicates had to come apart."""
-        self.assertTrue(sweep.authored("a/desire", 51, self.pull(), self.setup))
-        self.assertFalse(sweep.owned("a/desire", 51, self.pull(), self.setup))
+        """A day pull request in MEMORY_REPO owes no `TODO.md` and is ours to
+        answer on all the same, which is the whole reason the two predicates
+        had to come apart."""
+        self.assertTrue(sweep.authored("a/memory", 89, self.pull(), self.setup))
+        self.assertFalse(sweep.owned("a/memory", 89, self.pull(), self.setup))
 
     def test_an_adopted_pull_request_is_ours(self):
         self.assertTrue(sweep.authored(
