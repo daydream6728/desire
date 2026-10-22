@@ -13,15 +13,53 @@ identity rather than set a stale one, so committing fails loudly; the hook warns
 itself fails. The public copies under [`template/`](template) are the seed a new MEMORY_REPO is
 built from, which is why a change to either reader lands in both the same turn.
 
+ADOPTED_PRS maps each repo to the pull requests treated as AGENT's own wherever authorship decides:
+sweeps, scans, the board.
+
+## When DESIRE_REPO is a fork
+A turn that finds the upstream `main` ahead opens a PR pulling it in, so upstream rules reach the
+fork only through USER's merge, like any other change to the rules.
+
 ## Measuring against git history
 Before any behind-count or collision measurement, assert the clone is complete: `git rev-parse
 --is-shallow-repository` must print `false`, else `git fetch --unshallow origin`. On a shallow clone
 there is no merge base, so `git merge-tree` dies with exit 128 and no `CONFLICT` line — which reads
 as no conflicts, the silent failure the assertion prevents.
 
+Measure a branch against its base, never a pair: `git merge-tree` with the base itself on one side
+is degenerate and always reads clean, so to weigh a branch against its base, merge it in a worktree
+and read the result.
+
+Whether a pull request needs its target branch is measured on paths: the files touched by the
+commits the base gained, intersected with the files the pull request itself changed since its merge
+base.
+
+## Reading CI
+Before calling CI green, enumerate the checks a pull request is expected to have. The commit-status
+API is not the check-run API and is empty on these repos, so an empty status list is never "no CI
+ran". A pull request with no `build` run at all has a merge conflict rather than a slow runner: a
+`pull_request` job runs against `refs/pull/N/merge`, which does not exist while the pull request is
+dirty.
+
+## Measuring drift
+A next repo's drift is `git diff upstream/main...next/main -- . ':!.github'`, split library, tests
+and docs, reported with its trend: lines landed on next against lines merged upstream, per week. Moving work
+from upstream to next adds no drift, it only moves it.
+
+## Bugs in a next repo
+An open issue reporting a bug in a next repo needs no design decision when what is right is already
+said — by a law, a docstring, `STYLE.md` or the behaviour upstream — and the fix chooses nothing: no
+public name beyond the protocol it completes, no stated convention changed, no pick between readings
+the issue leaves open. A bug an open pull request already addresses is left to it.
+
 ## Reading the sweep
 [`sweep.py`](template/memory/.agents/skills/sweep/sweep.py) runs from the MEMORY_REPO clone as
-`.agents/skills/sweep/sweep.py [--since <ISO8601>] [<owner/repo> [number...]]`. It flags every
+`.agents/skills/sweep/sweep.py [--since <ISO8601>] [<owner/repo> [number...]]`. No GitHub MCP
+tool says *who* reacted, so this is how USER's approvals and unanswered questions are read. 🐦
+Birdsong and 🌙 Evening run it with no repo and no numbers before planning, over every open item of
+MEMORY_REPO, DESIRE_REPO and the WORK_REPOS, with `--since` the time the board says the last sweep ran; neither
+concludes "nothing to do" without a clean sweep: checkboxes, CI and behind-counts are all state the
+agents wrote themselves, and only the sweep reads what USER did. It flags every
 APPROVE_EMOJI react from USER on a body or a comment across both endpoints, and every thread where
 USER spoke last — a thread is answered when anyone other than USER has replied since, and which
 agent closed it does not matter. Every finding names its own repo, since one invocation can cover
@@ -47,11 +85,11 @@ so a question landing between two sweeps is never lost, an old one goes quiet on
 received it, and a sweep with no `--since` reports the whole backlog.
 
 The sweep marks a `👀` flag when anyone but USER has reacted, so a turn can tell a backlog from a
-queue. React with `add_issue_comment`'s `reaction` on a body or conversation comment, and
+queue. An instruction with no react was never received, one with 👀 is in progress, and the react is what
+takes an old question out of the sweep. A turn reacts on each instruction it picks up before doing
+the work. React on the comment or the body itself, with
+`add_issue_comment`'s `reaction` on a body or conversation comment, and
 `add_reply_to_pull_request_comment`'s on a review comment.
-
-It also reads [`RULES.md`](RULES.md)'s `TODO.md` off every AGENT-owned head in WORK_REPOS: open
-boxes as context, a claim past its twelve hours and a branch that never carried one as findings.
 
 It reads `WORK/` against the live open items three ways: an open item with no note, a note whose
 item is closed, and a note older than the item it describes. The last is arithmetic on the note's
@@ -60,8 +98,8 @@ a date wrapped onto the next line are both the field, prose between the two is n
 no date the parser can see is reported as carrying none rather than as read `None`: it is stale by
 construction, and what it wants is a date written, where an old date wants its head re-read.
 
-On those same heads it checks the second sign-off condition — *CI green on the real jobs, **with the
-target branch merged in***. One `compare` of the head against its **own** base ref answers it
+On every AGENT-owned head in WORK_REPOS it checks the second sign-off condition — *CI green on the
+real jobs, **with the target branch merged in***. One `compare` of the head against its **own** base ref answers it
 exactly: a `pull_request` job checks out `refs/pull/N/merge`, the head merged with its base as of
 the checkout, so a head whose base tip is already an ancestor of it has checks that ran on the tree
 USER would merge, and a head one commit behind has checks that attest to a merge nobody will
@@ -84,6 +122,9 @@ runtime that serves no such route reports the condition **unchecked** rather tha
 unreadable thread and a settled one are not the same claim.
 
 ## Matching an attribution footer
+Every entry of AGENT_FOOTERS is current: removing one whose runtime is still in use makes every post
+carrying it read as USER's own unanswered question.
+
 A reply from USER counts as an agent's when its last line is one of AGENT_FOOTERS — as the whole
 line, or inside the HTTPS *target* of a Markdown link on it (which is how a URL token matches the
 footer wrapping it). A link's *label* never counts, since the label is the half a human types, so
@@ -95,7 +136,69 @@ way `claude.ai/code` is, rather than relying on the label; the snapshot is opene
 before it is linked, and an internal session or thread ID is not a URL and must never be turned into
 one.
 
-## Commit signing
+## The day PR
+- Opening a new day's PR first merges the previous one: whatever in its comment thread
+  should outlive it goes into a file or an issue first, a conflict is resolved by merging `main`
+  into its branch, and the new day is cut from `main`.
+- If no day PR is open, the turn opens one rather than borrowing whichever branch is open. `sweep.py`
+  names the open day PR. Its description follows MEMORY_REPO's
+  `.github/PULL_REQUEST_TEMPLATE.md`, and only 🐦 Birdsong writes it.
+- A file that is a substantial read in its own right, `OTHERS/<person>.md` above all, opens its own
+  pull request the first time it is written, titled for the file, so it can be read on its own.
+  Agents merge it themselves at the latest when the next day's PR opens; later edits go to the day
+  PR.
+- Two day PRs open at once, or two under one title, is a turn that skipped the merge: the sweep
+  prints MEMORY_REPO's open PRs and fails on it. `git log` is not the check.
+- Feedback happens as comments on the day PR or in interactive chats, recorded as agent comments
+  with verbatim quotes. Memory files stay as concise as possible.
+
+## WORK notes
+- One writer per file, one file per item, written by the turn that did the work. `<repo>` is the
+  repository name alone and `<number>` is GitHub's, which numbers issues and pull requests in one
+  space (`WORK/discopy/489.md`).
+- An open item with no note is printed by the sweep as context only. A closed item's note is
+  deleted, archiving nothing: what a merged PR did is in `main`, what a closed one was is on
+  GitHub.
+- `sweep.py` reads the directory against the live open items: a required item with no file, a file
+  with no open item, and a file whose `read` date is older than its item's last update are all
+  findings.
+- `OTHERS/<person>.md` records what they own, what they have landed and what of theirs touches the
+  work we do; a `WORK/` note records the one item.
+
+## Issues and reviews
+- A blocker recorded only in a note or on the board has not been asked: it is asked on its PR.
+- A pull request closing an issue uses GitHub's syntax, one keyword per issue on the same line as
+  its reference; what merging closes is read from `closed_by_pull_requests`, never from our prose.
+- Answer a thread once the change has landed, then resolve it if your job is done.
+- Review cost counts lines because churn is a proxy for how much there is to scan, not to think
+  about.
+
+## Merging on approval
+USER's approval must be on the head commit being merged; a push after it needs a new one. The
+pull request must also pass its checks, merge cleanly and have no thread waiting on an agent.
+
+## Watching a pull request
+A runtime with no webhook wake-up falls back to a heartbeat: every Codex task that opens a
+pull request uses [`pr-shepherd`](.agents/skills/pr-shepherd/SKILL.md) to schedule one in the same
+task. It checks the pull request, handles USER's instructions and valid in-scope bug or style
+reports from any author, backs off exponentially while nothing changes, resets on activity, and
+deletes itself when the pull request merges or closes. Every scheduled fire that finds nothing is a
+turn USER pays for, which is why a session GitHub events reach never schedules one.
+
+## When the harness says otherwise
+- Wherever the SessionStart hook runs, it denies the scheduling tools, so a timed check-in cannot be
+  scheduled by accident.
+- A stop hook asking for a commit identity other than AGENT's loses to these files too.
+- The day PR's branch winning in MEMORY_REPO is standing permission: a memory turn that asks which
+  branch to push to has misread the rule.
+
+## Identity and signing
+Every write to GitHub — pull requests, comments, reviews, reactions — goes through the MCP tools.
+`GITHUB_TOKEN` is for reads only; the two authenticate as different accounts, so assert
+`mcp__github__get_me` is AGENT before a turn's first write. Set AGENT and AGENT_EMAIL on every clone
+before the first commit, and check the identity on the branch's commits before pushing with
+`git log --format='%an <%ae>' origin/main..HEAD`.
+
 Commits are signed through whichever key the session has, both registered on AGENT's account. The
 environment's setup script imports a passphrase-free GPG key and sets `gpg.format openpgp`,
 `user.signingkey` and `commit.gpgsign`, which covers every session of that environment; the

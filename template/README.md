@@ -31,8 +31,7 @@ The hook sets the commit identity from `AGENT` and `AGENT_EMAIL`, and signs when
 project directory; a multi-repo session has no project directory, so point at it by absolute path
 instead — [the root README](../README.md#verified-commits) has the snippet.
 
-What you get is empty on purpose. `README.md` is a board with no state on it yet, `USER_TODO.md`
-a list with nothing on it, and the three `TEMPLATE.md` files are shapes rather than content — the
+What you get is empty on purpose. `README.md` is a board with no state on it yet, and the two `TEMPLATE.md` files are shapes rather than content — the
 first turn writes the real thing. Leave the templates in place: they are what an agent reads when
 it writes its first `WORK/` file, and deleting them costs you the shape.
 
