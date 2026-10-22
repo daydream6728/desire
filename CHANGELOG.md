@@ -5,6 +5,18 @@ Entries state the changes, no explanation of why.
 
 ## 2026-10-22
 
+**A review of USER's is answered by a post of ours, and an AGENT_FOOTER is ours only on USER's
+handle** (`template/memory/.agents/skills/sweep/sweep.py`, `test_sweep.py`) — `ours(post, setup)`
+is AGENT's own handle, or USER's handle carrying an AGENT_FOOTER, and `verdicts(...)` silences a
+review on that instead of on `answered`, which is true of anybody but USER. The handle is read
+before the footer: the marker means an agent wrote this, not *our* agent, and every other
+prompter's agent runs the same runtimes. `authored(repo, number, body, setup)` is "this pull
+request is ours" in any repo, and `owned` is that plus the WORK_REPOS clause, which binds only the
+sign-off checks. An unanswered review on a head that is not ours is printed as context rather than
+counted as a finding: `AGENTS.md` keeps the agents off somebody else's item and a review carries
+no reactions endpoint, so no move of ours could clear one. The public copy is byte-identical to
+MEMORY_REPO's live one.
+
 **The memory seed reads DESIRE_REPO's clone and links nothing outside itself**
 (`template/memory/.claude/settings.json`, `template/memory/WORK/TEMPLATE.md`) — the settings allow
 reading `config.env` and the `desire` clone beside it without a prompt, as MEMORY_REPO's live copy
@@ -37,6 +49,14 @@ number qualified by a repository, `desire#162` or `rel-int/optyx#16`, no longer 
 own repository's item of that number required. Closes #171.
 
 ## 2026-10-21
+
+**A review is read as USER signal, where the sweep saw only comments**
+(`template/memory/.agents/skills/sweep/sweep.py`, `test_sweep.py`) — `verdicts(...)` reads
+`pulls/<n>/reviews`, the one endpoint serving a review's state and body, and `item` reports every
+review of USER's that nothing of ours has answered, with its state. A review carries no reactions
+endpoint, so 👀 cannot quiet one and `--since` never hides one: what answers a review is a post of
+ours after it, so the comments are read beside the reviews rather than each alone. A `PENDING`
+review is a draft and is not read. The public copy is byte-identical to MEMORY_REPO's live one.
 
 **`AGENTS.md` halves; plain words for the routines' jargon** (`AGENTS.md`, `OPERATIONS.md`,
 `BIRDSONG.md`, `DAYLIGHT.md`, `EVENING.md`, `template/memory/`) — `AGENTS.md` goes from 2,764 to
