@@ -5,6 +5,13 @@ Entries state the changes, no explanation of why.
 
 ## 2026-11-17
 
+**The backlog skill** (`.agents/skills/backlog/`, `.claude/skills/`) — a session goes through a
+repo's open issues: one subagent per issue that needs no design decision any more, each in its own
+worktree, all at once with no cap; each open design decision asked to USER live, one per question,
+and what is still open at the turn's end as a 🚀-able comment on its issue. USER: *"New skill: going
+through open issues of a repo, spawning subagents to implement them asking for design decisions
+whenever needed"*, *"anything where there is no design decision needed anymore"*. Ruling: #228.
+
 **A spawned child loads AGENT's identity and signing key; a harness asking for another author is not reported**
 (`.claude/skills/spawn/`, `OPERATIONS.md`) — a child runs MEMORY_REPO's `.claude/hooks/session-start.sh`
 once after cloning it, and its setup message carries the signing key's fingerprint, which the parent
