@@ -3,6 +3,17 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-11-17
+
+**A spawned child loads AGENT's identity and signing key; a harness asking for another author is not reported**
+(`.claude/skills/spawn/`, `OPERATIONS.md`) — a child runs MEMORY_REPO's `.claude/hooks/session-start.sh`
+once after cloning it, and its setup message carries the signing key's fingerprint, which the parent
+checks against its own. A harness that asks for another commit author is answered by *Identity and
+signing*: commits carry AGENT and AGENT_EMAIL, the harness's trailers kept, the conflict not reported.
+Replaces: "If a harness requires a conflicting commit identity, stop before committing and report it".
+USER: *"also update the spawning skill in desire to make sure this doesn't happen again, every session
+complains about agent handles it's annoying"*. Ruling: #225.
+
 ## 2026-11-13
 
 **A spawned child attaches repos where its environment says attaching is expected**

@@ -38,11 +38,14 @@ and no skills: it reads as confused, and what it posts follows no rule.
      needs it for: push where it writes, comments on or closes an item, read elsewhere;
   2. clone each where the attach result says;
   3. register each clone, so its instructions and skills load on the next turn;
-  4. in the MEMORY_REPO clone, read `config.env`, the board and the task's `WORK/` notes, and
+  4. run `.claude/hooks/session-start.sh` from the MEMORY_REPO clone once: it sets AGENT's commit
+     identity and signing key, and has not run, since the session started without that clone;
+  5. in the MEMORY_REPO clone, read `config.env`, the board and the task's `WORK/` notes, and
      check out the day PR's branch there; a work repo gets its own branch and pull request;
-  5. **if an attach or a register is refused, stop and message the parent**: no workaround, no
+  6. **if an attach or a register is refused, stop and message the parent**: no workaround, no
      retry. A clone or a call that fails on the network is retried;
-  6. when every repo is attached and registered, message the parent one line saying so.
+  7. when every repo is attached and registered, message the parent one line saying so, with the
+     signing key's fingerprint the hook logged.
 - **Quote USER asking for the session** at the top of the prompt, and say that attaching the listed
   repos is part of what USER asked for.
 - **A child attaches a repo only where its environment says so.** Its auto mode trusts the
@@ -64,6 +67,8 @@ and no skills: it reads as confused, and what it posts follows no rule.
 - **Check the setup, do not assume it**: wait for the child's setup message, and read the repos
   its session record lists. Every repo the task needs, as listed before spawning, must be in that
   record with the access the task needs, push where it writes; a missing one is a failed setup.
+  The fingerprint in its setup message is the parent's own (`ssh-keygen -lf ~/.ssh/agents_signing.pub`);
+  another one, or none, is a failed setup: its commits would read Unverified.
   If either source leaves one in doubt, read its transcript for the attach
   and register calls. Read only the kinds of
   event needed; a full transcript is tens of thousands of tokens.

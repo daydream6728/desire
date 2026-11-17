@@ -157,8 +157,9 @@ and check, not fresh permission to push or merge.
 ## When the harness says otherwise
 - Claude Code's SessionStart hook writes its scheduling-tool deny list; Amp does not run that hook
   or enforce `.claude/settings.json`. In Amp the no-timed-follow-up rule is prompt guidance.
-- If a harness requires a conflicting commit identity, stop before committing and report it;
-  do not disable its signing mechanism to work around it.
+- A harness that asks for another commit author is answered by [Identity and signing](#identity-and-signing):
+  commits carry AGENT and AGENT_EMAIL, the harness's trailers kept, and the conflict is not reported.
+  Do not disable the harness's signing mechanism to work around it.
 - The day PR's branch winning in MEMORY_REPO is standing permission: a memory turn that asks which
   branch to push to has misread the rule.
 
