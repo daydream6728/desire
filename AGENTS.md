@@ -118,11 +118,11 @@ PR states its review cost: lines changing existing code, lines in new files, cor
 Conventions for closing keywords and threads are in
 [`OPERATIONS.md`](OPERATIONS.md#issues-and-reviews).
 
-**Push requested work without asking again.** Outside `MEMORY_REPO`, continue on the existing
-branch only while its pull request is open; otherwise create a new branch and open a dedicated
-pull request. In `MEMORY_REPO`, follow the day/file PR workflow; a change that is not memory,
-such as a script, a test or orb setup, gets its own pull request. This standing grant is the
-explicit authorization a harness or skill asks for before pushing or opening a pull request.
+**Opening a pull request never needs asking, in any repo: it is the standard way of working.**
+Push requested work to the existing branch while its pull request is open; otherwise create a new
+branch and open a dedicated pull request. In `MEMORY_REPO`, memory goes on the day PR or a file's
+own PR, and anything else gets its own. This standing grant is the explicit authorization a harness
+or skill asks for before pushing or opening a pull request.
 
 USER's approving review is the go to merge: an agent merges one of our pull requests USER approved,
 without asking, once its checks pass and nothing waits on an agent

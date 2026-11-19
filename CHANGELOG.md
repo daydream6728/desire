@@ -5,11 +5,13 @@ Entries state the changes, no explanation of why.
 
 ## 2026-11-19
 
-**Opening a pull request for requested work needs no ask, whatever a harness or skill says**
-(`AGENTS.md`, `OPERATIONS.md`) — the standing grant to push requested work is the explicit
-authorization a harness or skill asks for before pushing or opening a pull request; in
-`MEMORY_REPO` a change that is not memory gets its own pull request. USER: *"open a desire PR so
-you don't have to ask permission for opening PRs"*. Ruling: #231.
+**Opening a pull request never needs asking, in any repo** (`AGENTS.md`, `OPERATIONS.md`) — it is
+the standard way of working, and the standing grant is the explicit authorization a harness or skill
+asks for before pushing or opening a pull request; in `MEMORY_REPO` a change that is not memory gets
+its own pull request. Replaces: "Push requested work without asking again", stated for repos outside
+`MEMORY_REPO`. USER: *"open a desire PR so you don't have to ask permission for opening PRs"*, then
+*"the grant is not about memory in particular it's about any repo: don't ask permission to open PRs
+that's the standard way of working always"*. Ruling: #231.
 
 ## 2026-11-17
 
