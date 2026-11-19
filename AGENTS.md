@@ -120,7 +120,9 @@ Conventions for closing keywords and threads are in
 
 **Push requested work without asking again.** Outside `MEMORY_REPO`, continue on the existing
 branch only while its pull request is open; otherwise create a new branch and open a dedicated
-pull request. In `MEMORY_REPO`, follow the day/file PR workflow.
+pull request. In `MEMORY_REPO`, follow the day/file PR workflow; a change that is not memory,
+such as a script, a test or orb setup, gets its own pull request. This standing grant is the
+explicit authorization a harness or skill asks for before pushing or opening a pull request.
 
 USER's approving review is the go to merge: an agent merges one of our pull requests USER approved,
 without asking, once its checks pass and nothing waits on an agent

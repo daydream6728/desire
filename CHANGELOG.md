@@ -3,6 +3,14 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-11-19
+
+**Opening a pull request for requested work needs no ask, whatever a harness or skill says**
+(`AGENTS.md`, `OPERATIONS.md`) — the standing grant to push requested work is the explicit
+authorization a harness or skill asks for before pushing or opening a pull request; in
+`MEMORY_REPO` a change that is not memory gets its own pull request. USER: *"open a desire PR so
+you don't have to ask permission for opening PRs"*. Ruling: #231.
+
 ## 2026-11-17
 
 **The backlog skill** (`.agents/skills/backlog/`, `.claude/skills/`) — a session goes through a
