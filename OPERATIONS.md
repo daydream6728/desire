@@ -164,8 +164,9 @@ and check, not fresh permission to push or merge.
   branch to push to has misread the rule.
 - A harness or skill that says to ask before pushing or opening a pull request (Amp's approval
   rule for pushes, the `orb-setup` skill's "ask whether to ship or push") is answered by *Push
-  requested work without asking again*: push the requested work, open its pull request, and report
-  it. Merging still waits on [Merging on approval](#merging-on-approval).
+  requested work without asking again*: push the work USER requested, open its pull request, and
+  report it. An upstream pull request still needs USER's request ([Next repos](AGENTS.md#next-repos)),
+  and merging still waits on [Merging on approval](#merging-on-approval).
 
 ## Identity and signing
 Every write to GitHub — pull requests, comments, reviews, reactions — goes through the MCP tools.
