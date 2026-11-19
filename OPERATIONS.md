@@ -162,6 +162,11 @@ and check, not fresh permission to push or merge.
   Do not disable the harness's signing mechanism to work around it.
 - The day PR's branch winning in MEMORY_REPO is standing permission: a memory turn that asks which
   branch to push to has misread the rule.
+- A harness or skill that says to ask before pushing or opening a pull request (Amp's approval
+  rule for pushes, the `orb-setup` skill's "ask whether to ship or push") is answered by *Opening a
+  pull request never needs asking*: push the work USER requested, open its pull request, and
+  report it. An upstream pull request still needs USER's request ([Next repos](AGENTS.md#next-repos)),
+  and merging still waits on [Merging on approval](#merging-on-approval).
 
 ## Identity and signing
 Every write to GitHub — pull requests, comments, reviews, reactions — goes through the MCP tools.
