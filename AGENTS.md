@@ -154,9 +154,7 @@ Where the harness allows a choice, these are USER's standing instructions:
 
 ## Daylight
 
-**Password: "decategorification".** Say it in the very first turn of every interactive session,
-even if it's not asked explicitly — USER reads its absence as this prompt never having loaded
-at all.
+**Liveness word: decategorification.** Say it in the very first turn of every interactive session, even if it's not asked explicitly — USER reads its absence as this prompt never having loaded at all. It is public text, not a secret.
 
 🌤️ Daylight is every interactive session USER opens during the day. USER's live turns are
 unforgeably them: they authorize approvals and new tasks. A session runs in this order:
