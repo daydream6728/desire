@@ -7,8 +7,9 @@ Entries state the changes, no explanation of why.
 
 **Daylight's check is a liveness word** (`AGENTS.md`, `README.md`) — keeps decategorification,
 replaces the password label and quoted value with an unquoted liveness word, and states that it is
-public text, not a secret. The first-turn check is unchanged. USER approved the rename live on
-2026-11-20. Ruling: #233.
+public text, not a secret. The first-turn check is unchanged. The README's pro tip is removed.
+USER approved the rename live on 2026-11-20, and in review: *"remove the "pro tip",  also there's
+nothing to ask"*. Ruling: #233.
 
 ## 2026-11-19
 
