@@ -40,8 +40,6 @@ session; the machinery behind them, needed only when something misbehaves, lives
 Nothing in this repo names you: your login, your agent's, and the repos you work in are all in that
 one `config.env`, in the repo that is yours. What is here is only the rules.
 
-**Pro tip:** Ask your 🌤️ Daylight session for its password to check it actually loaded the prompt.
-
 ## Amp
 
 Amp loads `AGENTS.md`. It does not
