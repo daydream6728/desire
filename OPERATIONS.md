@@ -78,7 +78,7 @@ queue. An instruction with no react was never received, one with 👀 is in prog
 takes an old question out of the sweep. A turn reacts on each instruction it picks up before doing
 the work. React on the comment or the body itself, with
 `add_issue_comment`'s `reaction` on a body or conversation comment, and
-`add_reply_to_pull_request_comment`'s on a review comment.
+`add_reply_to_pull_request_comment`'s on a comment on a line of the diff.
 
 ## Matching an attribution footer
 AGENT_FOOTERS includes markers on existing posts, even if their harness is no longer used:
@@ -91,7 +91,7 @@ accepting it would let any destination silence a thread; nor does a marker in pr
 human writing about the convention. This is how the adopted PRs read.
 
 A harness whose footer links to a shareable session snapshot puts its URL token in AGENT_FOOTERS
-rather than relying on the label; the snapshot is opened and reviewed before it is linked, and an
+rather than relying on the label; the snapshot is opened and read before it is linked, and an
 internal session or thread ID is not a URL and must never be turned into one.
 
 ## The day PR
@@ -128,23 +128,23 @@ the docstring of
 - `OTHERS/<person>.md` records what they own, what they have landed and what of theirs touches the
   work we do; a `WORK/` note records the one item.
 
-## Issues and reviews
+## Issues and asks
 - A blocker recorded only in a note or on the board has not been asked: it is asked on its PR.
-- An ask's 48 hours run from its own comment. Any comment, review or react of USER's on the item
+- An ask's 48 hours run from its own comment. Any comment or react of USER's on the item
   or its issue since then is a word, and the ask waits for a turn to read it. A later PR can
   reverse a change that was only committed to next `main`: nothing was released or sent.
 - A pull request closing an issue uses GitHub's syntax, one keyword per issue on the same line as
   its reference; what merging closes is read from `closed_by_pull_requests`, never from our prose.
 - Answer a thread once the change has landed, then resolve it if your job is done.
-- Review cost counts lines because churn is a proxy for how much there is to scan, not to think
-  about.
 
-## Merging on approval
-USER's approval must be on the head commit being merged; a push after it needs a new one. The
-pull request must also pass its checks, merge cleanly and have no thread waiting on an agent.
+## Merging
+What a pull request needs is what its base branch's rulesets and branch protection require:
+checks, approvals, resolved threads. GitHub says when that is met, with a `mergeable_state` of
+`clean` or `has_hooks` on the head being merged. Every expected check must also have passed, and
+no thread or `TODO.md` box may wait on an agent. A push can void an approval the rulesets count.
 
 ## Watching a pull request
-In Amp, discover `create_github_subscription` and subscribe this thread to comments and reviews
+In Amp, discover `create_github_subscription` and subscribe this thread to its comments
 after opening a PR, and to CI for the exact head SHA and branch after each push, with
 `automatic: true`. Supply `branch` only for CI. Check the returned subscription is enabled and
 unblocked; an existing paused listener is not active. Access depends on the connected GitHub
@@ -166,10 +166,10 @@ and check, not fresh permission to push or merge.
   rule for pushes, the `orb-setup` skill's "ask whether to ship or push") is answered by *Opening a
   pull request never needs asking*: push the work USER requested, open its pull request, and
   report it. An upstream pull request still needs USER's request ([Next repos](AGENTS.md#next-repos)),
-  and merging still waits on [Merging on approval](#merging-on-approval).
+  and merging still waits on [Merging](#merging).
 
 ## Identity and signing
-Every write to GitHub — pull requests, comments, reviews, reactions — goes through the MCP tools.
+Every write to GitHub — pull requests, comments, reactions — goes through the MCP tools.
 `GITHUB_TOKEN` is for reads only; it need not authenticate as the MCP account. Discover GitHub's
 authenticated-user tool (`get_me` in Amp) and assert its login is AGENT before the first write.
 On every clone set local `user.name` and `user.email` from AGENT and AGENT_EMAIL before committing;

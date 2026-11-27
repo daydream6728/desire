@@ -35,7 +35,7 @@ def status(**fields):
             "state": "open", "draft": False, "mergeable": "clean", "ran": True,
             "expected": [],
             "checks": (["build"], [], []), "compare": (0, 1), "todo": None,
-            "threads": ([], []), "approval": SHA}
+            "threads": ([], [])}
     return {**base, **fields}
 
 
@@ -268,44 +268,14 @@ class Todo(unittest.TestCase):
                          {"open": 1, "wip": 1, "done": 2})
 
 
-class Approval(unittest.TestCase):
-
-    def review(self, state, sha, user="human"):
-        return {"user": {"login": user}, "state": state, "commit_id": sha}
-
-    def test_the_latest_approval_is_read(self):
-        self.assertEqual(pr_status.approval(
-            [self.review("APPROVED", "old"), self.review("APPROVED", SHA)],
-            "human"), SHA)
-
-    def test_changes_requested_after_approval_cancels_it(self):
-        self.assertIsNone(pr_status.approval(
-            [self.review("APPROVED", SHA),
-             self.review("CHANGES_REQUESTED", SHA)], "human"))
-
-    def test_a_comment_review_does_not_cancel(self):
-        self.assertEqual(pr_status.approval(
-            [self.review("APPROVED", SHA), self.review("COMMENTED", "b")],
-            "human"), SHA)
-
-    def test_someone_elses_approval_is_not_users(self):
-        self.assertIsNone(pr_status.approval(
-            [self.review("APPROVED", SHA, "bot")], "human"))
-
-
 class Verdict(unittest.TestCase):
 
-    def test_go_needs_approval_on_this_head(self):
+    def test_clean_with_nothing_waiting_is_go(self):
         self.assertEqual(pr_status.verdict(status()), ("GO", []))
 
-    def test_an_approval_on_an_older_head_is_ready(self):
-        self.assertEqual(pr_status.verdict(status(approval="b" * 40))[0],
-                         "ready")
-
-    def test_approved_but_blocked_is_ready(self):
-        verdict, reasons = pr_status.verdict(status(mergeable="blocked"))
-        self.assertEqual((verdict, reasons), ("ready",
-                                              ["approved head but blocked"]))
+    def test_blocked_by_the_rulesets_is_ready_not_go(self):
+        self.assertEqual(pr_status.verdict(status(mergeable="blocked")),
+                         ("ready", ["blocked"]))
 
     def test_dirty_with_no_checks_reads_as_conflict(self):
         verdict, reasons = pr_status.verdict(status(
@@ -332,7 +302,7 @@ class Verdict(unittest.TestCase):
                          "waiting-on-USER")
 
     def test_an_unread_field_is_incomplete_never_go(self):
-        for key in ("threads", "checks", "expected", "approval", "compare",
+        for key in ("threads", "checks", "expected", "compare",
                     "todo"):
             with self.subTest(key=key):
                 self.assertEqual(pr_status.verdict(status(**{key: "n/a"}))[0],

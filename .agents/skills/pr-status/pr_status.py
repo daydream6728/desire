@@ -152,15 +152,6 @@ def todo_counts(text):
             "done": found.count("x") + found.count("X")}
 
 
-def approval(reviews, user):
-    """The commit USER's latest deciding review approved, None if it did not."""
-    mine = [r for r in reviews if (r.get("user") or {}).get("login") == user
-            and r["state"] in ("APPROVED", "CHANGES_REQUESTED", "DISMISSED")]
-    if not mine or mine[-1]["state"] != "APPROVED":
-        return None
-    return mine[-1]["commit_id"]
-
-
 def verdict(s):
     """(verdict, reasons) from a measured status; 'n/a' fields are unknown."""
     if s["state"] in ("merged", "closed"):
@@ -184,16 +175,13 @@ def verdict(s):
     if agent:
         return "waiting-on-agent", agent
     unknown = [k for k in ("mergeable", "checks", "expected", "todo",
-                           "threads", "approval", "compare") if s[k] == "n/a"]
+                           "threads", "compare") if s[k] == "n/a"]
     if unknown or s["mergeable"] == "unknown":
         return "incomplete", [f"n/a {', '.join(unknown) or 'mergeable'}"]
     if s["threads"][1]:
         return "waiting-on-USER", [f"{len(s['threads'][1])} thread(s) on USER"]
-    if s["approval"] != s["sha"]:
-        return "ready", [f"approval on {s['approval'][:7]}, not the head"
-                         if s["approval"] else "no approval from USER"]
     if s["mergeable"] not in ("clean", "has_hooks"):
-        return "ready", [f"approved head but {s['mergeable']}"]
+        return "ready", [s["mergeable"]]
     return "GO", []
 
 
@@ -298,9 +286,6 @@ def measure(repo, number, setup, now, given=None, wait=time.sleep):
         base64.b64decode(body["content"]).decode(errors="replace"))
     raw = given if given is not None else attempt(threads, repo, number)
     s["threads"] = raw if raw == "n/a" else split_threads(raw, setup)
-    reviews = attempt(get, repo, f"pulls/{number}/reviews")
-    s["approval"] = "n/a" if reviews in ("n/a", None) else approval(
-        reviews, setup["USER"])
     s["verdict"], s["reasons"] = verdict(s)
     return s
 
@@ -322,9 +307,7 @@ def line(s, full=False):
         "threads " + field(s["threads"], lambda t: f"{len(t[0])} on agent, "
                            f"{len(t[1])} on USER"),
         "TODO.md " + field(s["todo"], lambda t: "absent" if t is None else
-                           "[ ]{open} [WIP]{wip} [x]{done}".format(**t)),
-        "approval " + field(s["approval"], lambda a: "none" if not a else
-                            "on head" if a == s["sha"] else f"on {a[:7]}")]
+                           "[ ]{open} [WIP]{wip} [x]{done}".format(**t))]
     why = f" ({'; '.join(s['reasons'])})" if s["reasons"] else ""
     return (head + f"{s['state']}{' draft' if s['draft'] else ''} {s['mergeable']}, "
             + "; ".join(parts) + f" -> {s['verdict']}{why}")

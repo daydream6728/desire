@@ -8,7 +8,7 @@ Software engineering prompts inspired by the asymmetric board game Root:
 
 - 🐦 [Birdsong](BIRDSONG.md) plans, asynchronously, before the day starts
 - 🌤️ [Daylight](AGENTS.md#daylight) activates in every interactive session you open
-- 🌙 [Evening](EVENING.md) reviews and implements, overnight, what you approved
+- 🌙 [Evening](EVENING.md) implements, overnight, what you approved
 
 [AGENTS.md](AGENTS.md) is the operating base they all follow: the two layers of memory, what
 authorizes a change — with the values it runs on in `config.env`, which lives in your

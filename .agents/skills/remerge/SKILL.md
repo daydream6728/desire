@@ -48,9 +48,9 @@ fails after the commit is printed, not a stop.
 Gotchas:
 - It never pushes. Push with `git push origin HEAD` only after fixing what step 5 lists and
   rerunning the checks; if it says the base moved again, run it again first.
-- A push voids an approval on the old commit
-  ([OPERATIONS.md](../../../OPERATIONS.md#merging-on-approval)): it prints the old and new SHA
-  for the comment asking again. A review bot may not re-review a push that only merges the base.
+- A push can void an approval on the old commit
+  ([OPERATIONS.md](../../../OPERATIONS.md#merging)): it prints the old and new SHA
+  for the comment asking again. An approving bot may not approve again a push that only merges the base.
 - It stops on a `CHANGELOG.md` the branch edited rather than only added to, or whose added block
   has no unique place in the base's file: resolve that by hand, keeping both sides' meaning,
   never with `--ours`, `--theirs` or a union driver.

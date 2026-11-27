@@ -14,7 +14,7 @@ one.
 
 - **whose** <ours|login>, and whether it is ours to push to · read <date>
 - **does** one or two lines. The mathematics before the plumbing
-- **needs** the one thing that would move it: a read, a ruling, a merge, a fix — and from whom
+- **needs** the one thing that would move it: a decision, a ruling, a merge, a fix — and from whom
 - **touches** the modules it changes, and the items it collides with over which files
 - **blocks** what waits on it, and what it waits on
 
@@ -29,11 +29,11 @@ An example, so the density is not a guess:
 - **whose** ours · read 2026-09-01
 - **does** adds `let` to the internal language of closed categories, and drops the assumption that
   the product is strictly associative, so a term can name an intermediate value
-- **needs** USER's read. Nothing is waiting on an agent
+- **needs** USER's word on whether `let` binds lazily, asked 2026-09-01, default eager
 - **touches** `closed.py`, `biclosed.py`, `test/closed.py` — collides with #442 and #511 on `closed.py`
 - **blocks** #443's last box, which wants the `trace(0)` fix this carries
 
-- **2026-09-01 🌙 Evening** resolved 19 review threads — 8 fixed, #693 and #694 filed for two,
+- **2026-09-01 🌙 Evening** resolved 19 threads — 8 fixed, #693 and #694 filed for two,
   4 design questions left for a human, marked it ready
 - **2026-08-27 🌤️ Daylight** designed the `let` encoding with USER, wrote the plan
 ```
@@ -48,7 +48,7 @@ One line per turn, in the past tense, saying what *changed* — not what was sca
 lines are in the file's git history.
 
 A merge of the target branch is the one to get right. It is housekeeping, so it never earns its own
-clause beside real work: a turn that merged `main` and then fixed three review threads logs the
+clause beside real work: a turn that merged `main` and then fixed three threads logs the
 three threads. But when it is the whole of the turn it is logged, plainly and alone — *"merged
 `main`, nothing else"* — because the branch did move and because a night that finished nothing should
 read that way.

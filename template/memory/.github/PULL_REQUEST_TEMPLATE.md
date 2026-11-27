@@ -7,10 +7,6 @@ did not run at all, rather than omit it. Substance: what an item does and what i
 it exists. Scans, re-merges and board repair are housekeeping, named only when they
 unblocked or blocked work, or took the whole round. -->
 
-## Ready for your review
-<!-- Which items are ready and what reading each costs, counted as
-DESIRE_REPO's `AGENTS.md` says, linking the board rather than repeating it. -->
-
 ## Agent proposals
 <!-- Ideas wanting a yes or no but blocking nothing, each its own bullet so it can be reacted to. -->
 

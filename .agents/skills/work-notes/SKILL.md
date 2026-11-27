@@ -39,7 +39,7 @@ left is for an item this turn did not touch.
 
 `involves:` covers authoring, commenting, mentions and assignment, at any time: an item AGENT
 was in once and someone else updated since is listed too, so skip a finding for an item this turn
-did not touch. A push to someone else's pull request, or a review with no comment, is not found:
+did not touch. A push to someone else's pull request, or an approval with no comment, is not found:
 add those items by hand.
 
 ## Linting the notes

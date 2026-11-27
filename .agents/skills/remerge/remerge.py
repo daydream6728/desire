@@ -318,8 +318,8 @@ def merge(repo, branch, remote, mb, head, arguments):
             print(f"{remote} moved again: run this again before pushing")
     except Stop as stop:
         print(f"could not check whether {remote} moved again: {stop}")
-    print("push with: git push origin HEAD\na push voids an approval given on the old"
-          " SHA, and a review bot may not re-review a push that only merges the base")
+    print("push with: git push origin HEAD\na push can void an approval given on the old"
+          " SHA, and an approving bot may not approve again a push that only merges the base")
     return 1 if hits else 0
 
 

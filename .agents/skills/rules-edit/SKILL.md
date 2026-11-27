@@ -1,13 +1,13 @@
 ---
 name: rules-edit
-description: Change DESIRE_REPO's rule files (AGENTS.md, OPERATIONS.md, the role files, template/, CHANGELOG.md) in one review round. Use before writing any rules PR, and again before every push to it, review rounds included.
+description: Change DESIRE_REPO's rule files (AGENTS.md, OPERATIONS.md, the role files, template/, CHANGELOG.md) right the first time. Use before writing any rules PR, and again before every push to it.
 ---
 
 # Rules edit
 
 The ceremony itself is in [Turmoil](../../../AGENTS.md#turmoil); the merge gate is
-[Merging on approval](../../../OPERATIONS.md#merging-on-approval). This is the order that keeps
-a rules PR to one round.
+[Merging](../../../OPERATIONS.md#merging). This is the order that gets a rules PR right in one
+push.
 
 1. **Look for the ruling first.** Search DESIRE_REPO's open issues with `Ruling` in the title,
    and grep [`CHANGELOG.md`](../../../CHANGELOG.md) for the topic's key words. If one exists,
@@ -54,5 +54,5 @@ a rules PR to one round.
      quote; a removed `only`/`every`/`never`/`unless`/`once` clause no sentence on the branch still
      says; a backticked name, `def` or `class` that left a file and is still used elsewhere; a changelog
      entry missing, not at the top, or not under the date of the last commit.
-7. **Merge `main` in before asking for approval**, and again whenever another rules PR lands
+7. **Merge `main` in before merging**, and again whenever another rules PR lands
    first. Re-run step 6 on the merge.

@@ -16,8 +16,8 @@ these steps in order:
    `WORK/`.
 5. **Merge down.** Merge each upstream `main` into its next repo, and report the drift and its
    trend on the board ([`OPERATIONS.md`](OPERATIONS.md#measuring-drift)). The upstream slices it
-   proposes, with what each costs to read, go under `Agent proposals`.
-6. **Review** the open issues and pull requests, in WORK_REPOS and DESIRE_REPO, and plan the day.
+   proposes go under `Agent proposals`.
+6. **Read** the open issues and pull requests, in WORK_REPOS and DESIRE_REPO, and plan the day.
 7. **Update the board**: what collides with what and what merge order is forced, nothing else.
    A caution the board or a `WORK/` note carries (hands off, blocked, waits on) is checked against
    its reason, and deleted once that reason no longer holds.
@@ -27,5 +27,4 @@ these steps in order:
    even launch" on its own, covering every day PR since the last description, and linking the
    board and MEMORY_REPO's open issues rather than repeating them.
 9. **Look at the pipeline itself**, and file on DESIRE_REPO any issue it finds with it.
-10. **Close the turn**: the `WORK/` notes it touched, and one comment on the day PR. The PR review is
-    USER's feedback, not its own.
+10. **Close the turn**: the `WORK/` notes it touched, and one comment on the day PR.

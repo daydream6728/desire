@@ -21,7 +21,7 @@ What it finds:
 - **Closing keywords** (`close`, `fix`, `resolve` and their forms), outside code: a keyword
   followed by several references (`Closes #1, #2`), a reference on the next line, a noun
   before it (`Closes issue #1`), and `Closes name#N` without the owner. Write `Closes #1` and `Closes #2`. The rule is in
-  [Issues and reviews](../../../OPERATIONS.md#issues-and-reviews).
+  [Issues and asks](../../../OPERATIONS.md#issues-and-asks).
 - **Footer**: the last non-empty line carries exactly one AGENT_FOOTERS marker, read as
   [Matching an attribution footer](../../../OPERATIONS.md#matching-an-attribution-footer) says;
   a bare URL line counts as a link target. A second footer line higher up is a finding too.

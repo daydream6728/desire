@@ -12,8 +12,8 @@ python3 <DESIRE_REPO clone>/.agents/skills/pr-status/pr_status.py owner/repo#N [
 ```
 
 One line per pull request: head SHA, the UTC time it measured, state, `mergeable_state`, behind/ahead
-of the base, check runs on the head, unresolved review threads split by who must answer, `TODO.md`
-boxes, USER's approval, then `-> verdict (reasons)`; a merged or closed one prints only that. Exit 0
+of the base, check runs on the head, unresolved threads split by who must answer, `TODO.md`
+boxes, then `-> verdict (reasons)`; a merged or closed one prints only that. Exit 0
 on ready, GO, merged or closed, 1 on waiting, 2 when a read failed or the verdict is `incomplete`.
 
 - **Writing status.** Run it first and quote its line, SHA and time included. Never copy a status
@@ -27,11 +27,11 @@ on ready, GO, merged or closed, 1 on waiting, 2 when a read failed or the verdic
 - `--json` prints every field instead of the line.
 
 The rules it measures are [Reading CI](../../../OPERATIONS.md#reading-ci) and
-[Merging on approval](../../../OPERATIONS.md#merging-on-approval).
+[Merging](../../../OPERATIONS.md#merging).
 
 ## When the token cannot read
 
-Review threads come from the REST route `pulls/N/ccr/review_threads` where the session serves one,
+Threads come from the REST route `pulls/N/ccr/review_threads` where the session serves one,
 else from GraphQL. Where neither, or the repo, is readable, the field prints `n/a`
 and the verdict is `incomplete` unless something already waits on an agent. Read the same data
 through the MCP tools instead, with `mcp__github__pull_request_read` on the pull request:
@@ -40,7 +40,6 @@ through the MCP tools instead, with `mcp__github__pull_request_read` on the pull
 |---|---|
 | `get` | head SHA, state, draft, `mergeable_state` (read again after 2s while `unknown`) |
 | `get_check_runs` | check runs on the head; never `get_status`, which is empty on Actions |
-| `get_reviews` | USER's latest APPROVED, CHANGES_REQUESTED or DISMISSED review and its `commit_id` |
 | `get_review_comments` | threads with `is_resolved` and their comments |
 
 Threads alone can be handed back: save the `get_review_comments` answer to a file, as a JSON list
@@ -55,7 +54,7 @@ Decide in this order, first match wins:
 | draft; `dirty` or `behind`; a check failed; a check queued, running, or expected and never created; `TODO.md` present; an unresolved thread whose last comment is not the agent's | waiting-on-agent |
 | any field unread, or `mergeable_state` still `unknown` | incomplete |
 | an unresolved thread whose last comment is the agent's | waiting-on-USER |
-| no USER approval on this exact head SHA, or `mergeable_state` neither `clean` nor `has_hooks` | ready |
+| `mergeable_state` neither `clean` nor `has_hooks`: the rulesets still wait, on an approval for instance | ready |
 | otherwise | GO |
 
 A comment is the agent's when AGENT wrote it, or USER's account did and its last line carries an

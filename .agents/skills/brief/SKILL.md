@@ -1,12 +1,11 @@
 ---
 name: brief
-description: Turn USER's few lines of intent into a prompt that a fresh session can run with no memory of this one, and post it for USER to read and 🚀 instead of running it. Two shapes, an issue brief (a change to a code repo, a next repo above all) and an experiment brief (a run whose result goes to a write-up). Use when USER says "write the issue / brief / prompt for X", "don't implement", or hands over an idea too large to run in one sitting; before Evening or another session picks it up.
+description: Turn USER's few lines of intent into a prompt that a fresh session can run with no memory of this one, and post it for USER to 🚀 instead of running it. Two shapes, an issue brief (a change to a code repo, a next repo above all) and an experiment brief (a run whose result goes to a write-up). Use when USER says "write the issue / brief / prompt for X", "don't implement", or hands over an idea too large to run in one sitting; before Evening or another session picks it up.
 ---
 
 # Brief
 
-USER writes the intent; the agent writes the prompt; USER reads the prompt, which is cheaper than
-reading a diff; another session runs it. A brief is design, so it is never delegated
+USER writes the intent; the agent writes the prompt; USER 🚀s it; another session runs it. A brief is design, so it is never delegated
 ([Daylight](../../../AGENTS.md#daylight)), and writing one runs nothing: no code, no run, no branch.
 
 ## Before writing
@@ -29,8 +28,7 @@ For a change to a code repo. In this order:
   must move. A change that will not state this way is not ready to brief.
 - **Where**: files and classes by path, the level of the hierarchy each change belongs at, and
   what is out of scope.
-- **Slices**: each one pull request that a reader finishes in one sitting, in merge order, with
-  its review cost (lines changing existing code, lines in new files, core modules touched).
+- **Slices**: each one pull request, in merge order.
 - **Done**: the checks that must pass, by command, and the test or property that would fail on
   today's `main` and pass after. "CI green" alone is a proxy.
 - **Boxes**: the slices as `[ ]`, ready to become the `TODO.md` of the first branch.
@@ -66,7 +64,7 @@ stand alone, the design is not finished: go back to USER, not forward to code.
 
 - One brief is one issue on the repo where it runs, or one comment on the item it extends, so
   USER can 🚀 it whole, and like any ask it has a default and a date
-  ([Issues and reviews](../../../AGENTS.md#issues-and-reviews)). Never a
+  ([Issues and asks](../../../AGENTS.md#issues-and-asks)). Never a
   batch of briefs in one turn.
 - Write like [bob](../bob/SKILL.md): the brief is read by USER first, the runner second.
 - Run `post-check` on the draft before posting it, where that skill is installed.

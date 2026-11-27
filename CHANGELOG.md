@@ -3,6 +3,19 @@
 What landed on `main`, newest first — when each rule started binding, and what it replaced.
 Entries state the changes, no explanation of why.
 
+## 2026-11-27
+
+**A repo's rulesets decide when a pull request merges; USER is asked only for design decisions**
+(`AGENTS.md`, `BIRDSONG.md`, `EVENING.md`, `OPERATIONS.md`, `README.md`, `template/`,
+`.agents/skills/`) — an agent merges one of our pull requests once every check and approval its
+base branch requires has passed and nothing waits on an agent, and `pr-status` says GO on a
+`mergeable_state` of `clean` or `has_hooks`. A session ends with its result or with one ask. Every
+mention of review leaves the prompts: the review cost a turn stated, Evening's "ready for USER's
+review", Birdsong's review step and the day PR's "Ready for your review" section. *Issues and
+reviews* is *Issues and asks*, *Merging on approval* is *Merging*. Replaces: "The limit is USER's
+review time" and "USER's approving review is the go to merge". USER, live on 2026-11-27: *"yeah
+github rules are enough let's remove all mentions of review from the desire prompts"*. Ruling: #247.
+
 ## 2026-11-20
 
 **Daylight's check is a liveness word** (`AGENTS.md`, `README.md`) — keeps decategorification,

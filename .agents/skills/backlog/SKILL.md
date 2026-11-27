@@ -29,7 +29,7 @@ a subagent that meets a decision stops and hands it back.
 3. **Ask the design live**, while USER is in the session: one decision per question, the
    recommended option first. An answer turns the issue ready. A question still open when the
    turn ends becomes a 🚀-able comment on its issue, with a default and a date
-   ([Issues and reviews](../../../AGENTS.md#issues-and-reviews)).
+   ([Issues and asks](../../../AGENTS.md#issues-and-asks)).
 
 ## Dispatch
 
@@ -42,7 +42,7 @@ a subagent that meets a decision stops and hands it back.
 - **The subagent** re-reads the files the issue names on today's `main`, writes the code and a
   test that fails before it, runs the repo's checks, pushes its branch and opens one pull
   request that closes its issue, after `post-check` on the body. It reports the link, the checks
-  run and their result, and the review cost.
+  run and their result.
 - **A decision met halfway is not taken.** The subagent stops, pushes nothing, and reports the
   question with its options and the one it recommends. The parent asks USER, then resumes that
   subagent with the answer.
@@ -53,6 +53,6 @@ a subagent that meets a decision stops and hands it back.
 
 - **Measure each pull request** with `pr-status` before saying it is ready; a subagent's report
   is a claim.
-- **Tell USER, per issue**: the pull request or the question, what was checked, the review cost.
+- **Tell USER, per issue**: the pull request or the question, and what was checked.
 - **Write the `WORK/` note** of every issue and pull request touched, with
   [`work-notes`](../work-notes/SKILL.md), and log the run in the day PR's comment.
