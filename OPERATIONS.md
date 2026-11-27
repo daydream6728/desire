@@ -141,7 +141,7 @@ the docstring of
 What a pull request needs is what its base branch's rulesets and branch protection require:
 checks, approvals, resolved threads. GitHub says when that is met, with a `mergeable_state` of
 `clean` or `has_hooks` on the head being merged. Every expected check must also have passed, and
-no thread or `TODO.md` box may wait on an agent. A push can void an approval the rulesets count.
+no thread may wait on an agent. A push can void an approval the rulesets count.
 
 ## Watching a pull request
 In Amp, discover `create_github_subscription` and subscribe this thread to its comments

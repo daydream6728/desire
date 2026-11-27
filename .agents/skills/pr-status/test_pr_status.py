@@ -270,8 +270,11 @@ class Todo(unittest.TestCase):
 
 class Verdict(unittest.TestCase):
 
-    def test_clean_with_nothing_waiting_is_go(self):
-        self.assertEqual(pr_status.verdict(status()), ("GO", []))
+    def test_clean_or_has_hooks_with_nothing_waiting_is_go(self):
+        for mergeable in ("clean", "has_hooks"):
+            with self.subTest(mergeable=mergeable):
+                self.assertEqual(pr_status.verdict(status(
+                    mergeable=mergeable)), ("GO", []))
 
     def test_blocked_by_the_rulesets_is_ready_not_go(self):
         self.assertEqual(pr_status.verdict(status(mergeable="blocked")),

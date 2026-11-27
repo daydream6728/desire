@@ -12,10 +12,10 @@ and keeps everything else moving. It runs these steps in order:
    of the plan on the item they belong to.
 5. **In the next repos, finish every item left**, each driven to **done** before it counts. Done
    means one of three things:
-   - merged or closed, which it does itself once its base branch's rulesets allow
+   - merged or closed, which it does itself once its base branch allows
      ([`AGENTS.md`](AGENTS.md#issues-and-asks))
    - complete: every point of its plan done, no thread waiting on an agent, every expected check
-     passed, and only an approval its rulesets require of someone else left
+     passed, and only an approval its base branch requires of someone else left
    - blocked on one named external action, which it asked for on its pull request the same turn
 
    USER's explicit orders come first, then the asks that are due, then the next repos' bugs that

@@ -90,7 +90,8 @@ NEXT_REPOS pairs a WORK_REPO with its next repo, `<upstream>:<next>`. The upstre
 maintainers'; the next repo is the agents'. Their work is measured by the library's quality as
 it all merges into one repo; the drift between the two is measured every night as a reading.
 
-- Next `main` is upstream `main` plus work meant to go upstream. Agents merge into it themselves.
+- Next `main` is upstream `main` plus work meant to go upstream. Agents merge into it themselves
+  once its checks pass.
 - Down: upstream `main` is merged into next `main` every night, never rebased.
 - Up: an upstream PR is opened only at USER's request, cut from upstream `main` and small enough to
   read; agents propose the slices.

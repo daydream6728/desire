@@ -5,7 +5,7 @@ private repository, and then it is that repository's to rewrite — with these e
 `.agents/skills/sweep/`, `.claude/`, and the memory linter (script, tests, dependencies
 and CI workflow), which run identically in both places. **A
 change to these lands in this copy and in the live one the same turn**: this is the public half,
-so it is the one anyone can read, and the two drifting apart is code nobody can read.
+so it is the one anyone can read, and a live copy that drifts from it is code no one else can read.
 
 The two clones sit side by side, and these run from the directory holding them — the same layout
 a session opens in:

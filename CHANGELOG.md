@@ -13,7 +13,9 @@ base branch requires has passed and nothing waits on an agent, and `pr-status` s
 mention of review leaves the prompts: the review cost a turn stated, Evening's "ready for USER's
 review", Birdsong's review step and the day PR's "Ready for your review" section. *Issues and
 reviews* is *Issues and asks*, *Merging on approval* is *Merging*. Replaces: "The limit is USER's
-review time" and "USER's approving review is the go to merge". USER, live on 2026-11-27: *"yeah
+review time", "USER's approving review is the go to merge", "stays fully human-reviewed" for an
+upstream, brief slices "that a reader finishes in one sitting", Birdsong's upstream slices "with
+what each costs to read", and rules-edit's "before asking for approval". USER, live on 2026-11-27: *"yeah
 github rules are enough let's remove all mentions of review from the desire prompts"*. Ruling: #247.
 
 ## 2026-11-20
